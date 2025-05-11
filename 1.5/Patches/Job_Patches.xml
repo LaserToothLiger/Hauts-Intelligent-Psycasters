@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+	<Operation Class="PatchOperationAddModExtension"><!--the following jobs also count as "fleeing" for the purposes of the AI. If it says 5 instead of 3, they have to be holding something (such as a burgled object or napped pawn)-->
+		<xpath>/Defs/JobDef[defName="Steal"]</xpath>
+		<value>
+			<li Class="HVPAA.PsycastPermissiveMentalState"><id>5</id></li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/JobDef[defName="Kidnap"]</xpath>
+		<value>
+			<li Class="HVPAA.PsycastPermissiveMentalState"><id>5</id></li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/JobDef[defName="Flee"]</xpath>
+		<value>
+			<li Class="HVPAA.PsycastPermissiveMentalState"><id>3</id></li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/JobDef[defName="FeedPatient" or defName="TendPatient" or defName="Rescue" or defName="Capture" or defName="Arrest" or defName="ReleasePrisoner" or defName="EscortPrisonerToBed" or defName="TakeWoundedPrisonerToBed" or defName="TakeToBedToOperate" or defName="Tame" or defName="Train" or defName="GotoSafeTemperature"]</xpath>
+		<value>
+			<li Class="HVPAA.LimitsHVPAACasting" />
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Combat Psycasts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/JobDef[defName="CP_CastLightSlug" or defName="CP_CastMediumSlug" or defName="CP_CastHeavySlug" or defName="CP_CastPsychicPellets" or defName="CP_CastPsychicChoke"]</xpath>
+					<value>
+						<li Class="HVPAA.LimitsHVPAACasting" />
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

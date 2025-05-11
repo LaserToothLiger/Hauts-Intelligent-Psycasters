@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+    <name>Hauts' Intelligent Psycasters: Allies and Adversaries</name>
+    <author>Hautarche</author>
+    <packageId>Hautarche.HVPAA</packageId>
+    <supportedVersions>
+		<li>1.5</li>
+    </supportedVersions>
+	<description>Adds non-player-controlled psycasters, and allows them to use psycasts intelligently. Currently supports psycasts from Royalty, Combat Psycasts, Cooler Psycasts, Extra Psycasts (Continued), [FSF] More Psycast Powers, Hauts' Offbeat Psycasts, Melee Psycasts (Continued), More Psycasts (Continued), and Sleepy's More Psycasts.
+	
+Psycasters can be found in raids, caravans, settlements, world sites, and even ancient dangers' cryptosleep caskets. Some factions have more psycasters than others, some have higher-level psycasters than others, and some field specific kinds of elite psycasters, such as the Empire's court psycasters or persona-wielding archotemplar.
+
+You can hire mercenary psycasters on a temporary basis, through either trade caravans, settlements, or the comms console.
+
+Use the mod settings to adjust what psycasts NPCs can use, how frequently they use them, and how common NPC casters are.
+
+See the full description here: https://docs.google.com/document/d/1VgFlFlvd3N4Xun0LHjdBwH-vXqQse1vLXDTUMdLLUug/edit?usp=sharing
+    </description>
+	<modIconPath IgnoreIfNoMatchingField="True">HautsLogo_Draft0</modIconPath>
+	<modDependencies>
+        <li>
+            <packageId>brrainz.harmony</packageId>
+            <displayName>Harmony</displayName>
+            <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+            <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077</steamWorkshopUrl>
+        </li>
+		<li>
+			<packageId>Ludeon.RimWorld.Royalty</packageId>
+			<displayName>Royalty</displayName>
+		</li>
+		<li>
+			<packageId>Hautarche.HautsFramework</packageId>
+			<displayName>Hauts Framework</displayName>
+			<!--<steamWorkshopUrl></steamWorkshopUrl>-->
+			<downloadUrl>https://drive.google.com/drive/u/2/folders/1NHDZpL4TDIqgiq2ofa1f-1dXN8VUVG5u?fbclid=IwZXh0bgNhZW0CMTEAAR1UzkYW6Fj1VbcShQ0xB6JOt-WUbze81UWVjyXZFtyAqLKEoqVJUCWGqHo_aem_0-eVh1myTUvt2VXpuvK-ZQ</downloadUrl>
+		</li>
+	</modDependencies>
+	<incompatibleWith>
+	  <li>VanillaExpanded.VPsycastsE</li>
+	</incompatibleWith>
+	<loadAfter>
+		<li>Edern.CombatPsycasts</li>
+	</loadAfter>
+</ModMetaData>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+<!--Initialization-->
+<HVPAA_Initialize>[Hauts' Intelligent Psycasters: Allies and Adversaries] active.</HVPAA_Initialize>
+<!--Mod settings-->
+<HVPAA_SettingPAI>NPC psycast attempt interval</HVPAA_SettingPAI>
+<HVPAA_TooltipAttemptInterval>The frequency with which non-player-controlled psycasters periodically attempt to use a psycast.\n\nIf a psycaster is in combat when this occurs, their psycasting frequency will temporarily quadruple.\n\nSome factions have special, visually distinct psycasters which ignore this setting (e.g. the Empire's court psycasters).</HVPAA_TooltipAttemptInterval>
+<HVPAA_SettingMCPL>Psycast choices per attempt</HVPAA_SettingMCPL>
+<HVPAA_TooltipChoices>When a non-player-controlled pawn attempts to psycast, it first ranks all psycasts in its repertoire by their broad, simplified applicability to the current situation. It will only actually consider casting the X "most applicable" psycasts, where X is the value of this setting. If X is low, very few calculations will need to be done, but NPC psycasters will have clear "favorite" psycasts, making them predictable. If X is high, the calculations per attempt may be higher, but NPC psycasters will display a wider variety of abilities.</HVPAA_TooltipChoices>
+<HVPAA_SettingSellcastB>Sellcast known psycasts multiplier</HVPAA_SettingSellcastB>
+<HVPAA_TooltipSellcastB>Increases the base number of psycasts known by sellcasts.\n\nOnly affects sellcasts that have yet to appear - does not affect sellcasts that have already been encountered.</HVPAA_TooltipSellcastB>
+<HVPAA_SettingShow>Show NPC caster levels</HVPAA_SettingShow>
+<HVPAA_TooltipShow>If enabled, any non-player-controlled psycaster will be labeled with a tag showing its psylink level (and in parentheses, the sum level of all its psycasts). I recommend keeping this on so that you can identify any psycasters in a raid at a glance.\n\nAfter toggling this on or off, expect a bit of an in-game delay before the labels appear or vanish.</HVPAA_TooltipShow>
+<HVPAA_SettingNotifs>Red letter notifications for Most Dangerous psycasts</HVPAA_SettingNotifs>
+<HVPAA_TooltipNotifs>If enabled, you will receive a red letter notification when an NPC controlled psycaster uses one of the Most Dangerous psycasts (e.g. Neuroquake). Single-target Most Dangerous psycasts only cause a red letter if used on a player-owned target.\n\nI heavily recommend keeping this on.</HVPAA_TooltipNotifs>
+<HVPAA_SettingPowerLimits>AI is nerfed/stupid when using Very Dangerous psycasts</HVPAA_SettingPowerLimits>
+<HVPAA_TooltipPowerLimits>If enabled, psycasts that can instantly kill or are otherwise very unfair are either 1) much less likely to be used by NPC psycasters, 2) likelier to pick a suboptimal target, and/or 3) take longer to cast.\n\nDepending on what mods you use, turning this off can be very dangerous - don't say I didn't warn you!</HVPAA_TooltipPowerLimits>
+<HVPAA_SettingNicerPsycasters>"Nicer" psycasters</HVPAA_SettingNicerPsycasters>
+<HVPAA_TooltipNicerPsycasters>If enabled, most neutral psycasters will use their psycasts as if you (and anyone else they are neutral to) are allied to them. Most NPC psycasters will also more strongly favor “defense” and “healing” psycasts over “damage” or “debuff” psycasts.</HVPAA_TooltipNicerPsycasters>
+<HVPAA_SettingPCF>Non-player psycaster commonality factor</HVPAA_SettingPCF>
+<HVPAA_TooltipPCF>Multiplies the number of random casters you will encounter. Also scales the likelihood of encountering spec casters as inhabitants of world sites or as raiders, as well as the number of such spec casters.\n\n&lt;color=#33d733&gt;WARNING:&lt;/color&gt; obviously, the more non-player psycasters there are on the map, the worse performance will get. Cranking this up all the way will make nearly half of all tribal raiders psycasters, at which point any sufficiently large raid will cause stuttering. Consider adjusting other mod settings to reduce the amount of calculations done by each psycaster.</HVPAA_TooltipPCF>
+<HVPAA_UsabilityHeader>Enable AI use of the following psycasts:</HVPAA_UsabilityHeader>
+<HVPAA_HPrefix>Hostile</HVPAA_HPrefix>
+<HVPAA_NHPrefix>Non-hostile</HVPAA_NHPrefix>
+<!--Float menus-->
+<HVPAA_SellcastLabel>You may hire a mercenary psycaster on a temporary basis. Price scales with both the duration of the contract, as well as with the desired psylink level.</HVPAA_SellcastLabel>
+<HVPAA_SellcastLabelF>You may hire a mercenary spellcaster on a temporary basis. Price scales with both the duration of the contract, as well as with the desired attunement level.</HVPAA_SellcastLabelF>
+<HVPAA_SellcastDurationLabel>Contract duration</HVPAA_SellcastDurationLabel>
+<HVPAA_SellcastDurationText>Set the length of time for which this sellcast will aid your people. The price of the contract scales with this duration.</HVPAA_SellcastDurationText>
+<HVPAA_SellcastPsylinkLabel>Psylink level</HVPAA_SellcastPsylinkLabel>
+<HVPAA_SellcastPsylinkText>Set the psylink level of the sellcast you want to recruit.</HVPAA_SellcastPsylinkText>
+<HVPAA_SellcastPsylinkLabelF>Attunement level</HVPAA_SellcastPsylinkLabelF>
+<HVPAA_SellcastPsylinkTextF>Set the magical attunement level of the sellcast you want to recruit.</HVPAA_SellcastPsylinkTextF>
+<HVPAA_SellcastDiscountLabel>Allow self-determination (60% discount)</HVPAA_SellcastDiscountLabel>
+<HVPAA_SellcastDiscountText>You can attain a 60% discount in exchange for allowing the sellcast some independence. If you opt into this, the sellcast will not do skilled labor and you will not be able to directly control them; they will only respond to indirect controls, such as those found in the Schedule and Assign tabs.</HVPAA_SellcastDiscountText>
+<HVPAA_GoodwillCost>Costs {0}/{1} goodwill</HVPAA_GoodwillCost>
+<HVPAA_FloatMenuSellcast>Hire a sellcast</HVPAA_FloatMenuSellcast>
+<HVPAA_SellcastConfirm>You have hired {0} for {1} days.</HVPAA_SellcastConfirm>
+<!--<HVPAA_SellcastPsycastsLabel>Desired psycasts (max 2)</HVPAA_SellcastPsycastsLabel>
+<HVPAA_SellcastPsycastsText>Select up to 2 psycasts for the sellcast to have. The price of the contract scales with the sum level of selected psycasts.</HVPAA_SellcastPsycastsText>
+<HVPAA_SellcastPsycastsLabelF>Desired spells (max 2)</HVPAA_SellcastPsycastsLabelF>
+<HVPAA_SellcastPsycastsTextF>Select up to 2 spells for the sellcast to have. The price of the contract scales with the sum level of selected spells.</HVPAA_SellcastPsycastsTextF>
+<HVPAA_NoSelectedPsycast>-</HVPAA_NoSelectedPsycast>
+Psycast letters-->
+<HVPAA_NQ_label>Incoming neuroquake</HVPAA_NQ_label>
+<HVPAA_NQ_text>A psycaster is about to unleash a neuroquake! After casting for 12 seconds, every creature in range but outside of the safe, inner, circle will be driven violently insane. Move out of range, get into the safe zone, or disable the psycaster.</HVPAA_NQ_text>
+<HVPAA_NQ_labelF>Incoming mindquake</HVPAA_NQ_labelF>
+<HVPAA_NQ_textF>A magician is casting a mindquake! After casting for 12 seconds, every creature in range but outside of the safe, inner, circle will be driven violently insane. Move out of range, get into the safe zone, or disable the spellcaster.</HVPAA_NQ_textF>
+<HVPAA_Evict_label>Eviction skip</HVPAA_Evict_label>
+<HVPAA_Evict_text>A psycaster is attempting to use eviction skip on one of your own! After casting for 12 seconds, the target will be teleported somewhere far away, possibly kililng them and certainly removing them from the immediate surroundings.</HVPAA_Evict_text>
+<HVPAA_Evict_labelF>Banishment!</HVPAA_Evict_labelF>
+<HVPAA_Evict_textF>A spellcaster is attempting to use banishment on one of your own! After casting for 12 seconds, the target will be teleported somewhere far away, possibly kililng them and certainly removing them from the immediate surroundings.</HVPAA_Evict_textF>
+<HVPAA_BExploder_label>Brain explosion</HVPAA_BExploder_label>
+<HVPAA_BExploder_text>A psycaster is attempting to use brain exploder on one of your own! After casting for 12 seconds, the target's brain will be overloaded with psychic energy, causing it to violently explode.</HVPAA_BExploder_text>
+<HVPAA_BExploder_labelF>Brain explosion</HVPAA_BExploder_labelF>
+<HVPAA_BExploder_textF>A spellcaster is attempting to use brain exploder on one of your own! After casting for 12 seconds, the target's head will rupture in a deadly corona of arcane energy.</HVPAA_BExploder_textF>
+<HVPAA_Vader_label>Psychic choke</HVPAA_Vader_label>
+<HVPAA_Vader_text>A psycaster is attempting to use psychic choke on one of your own! After casting for 10 seconds, the target will rapidly begin to suffocate, leading to death within another 10 seconds.</HVPAA_Vader_text>
+<HVPAA_Vader_labelF>Arcane choke</HVPAA_Vader_labelF>
+<HVPAA_Vader_textF>A spellcaster is attempting to use arcane choke on one of your own! After casting for 10 seconds, the target will rapidly begin to suffocate, leading to death within another 10 seconds.</HVPAA_Vader_textF>
+<HVPAA_Dart_label>Psychic falling star</HVPAA_Dart_label>
+<HVPAA_Dart_text>A psycaster is calling down a large object from space somewhere nearby! Get clear before it lands.</HVPAA_Dart_text>
+<HVPAA_Dart_labelF>Summoned falling star</HVPAA_Dart_labelF>
+<HVPAA_Dart_textF>A spellcaster is calling down a crushing mass from the heavens! Get clear before it lands.</HVPAA_Dart_textF>
+<HVPAA_Feedback_label>Psychic feedback</HVPAA_Feedback_label>
+<HVPAA_Feedback_text>A psycaster is attempting to feedback one of your psycasters! After casting for 4 seconds, the target's brain will explode, resulting in both the death of the target and damage to their surroundings.</HVPAA_Feedback_text>
+<HVPAA_Feedback_labelF>Mystic feedback</HVPAA_Feedback_labelF>
+<HVPAA_Feedback_textF>A spellcaster is attempting to feedback one of your own magic-users! After casting for 4 seconds, the target's head will explode, resulting in both the death of the target and damage to their surroundings.</HVPAA_Feedback_textF>
+<HVPAA_FSF_FS_label>Firestorm</HVPAA_FSF_FS_label>
+<HVPAA_FSF_FS_text>A psycaster is about to unleash a firestorm! After casting for 12 seconds, a massive wave of fire will emanate out from the caster, reaching an area far wider than even the explosion of an antigrain warhead. Move out of range, get into the safe zone, or disable the psycaster.</HVPAA_FSF_FS_text>
+<HVPAA_FSF_FS_textF>A magician is conjuring a firestorm! After casting for 12 seconds, a massive wave of fire will emanate out from the caster, searing a monstrously wide area. Move out of range, get into the safe zone, or disable the spellcaster.</HVPAA_FSF_FS_textF>
+<!--motes-->
+<HVPAA_NPC_mote>Level {0} ({1})</HVPAA_NPC_mote>
+<!--errors-->
+<HVPAA_NoGoodSellcast>Attempted to generate a sellcast for {0}, but they lack any good candidates to be psycasters.</HVPAA_NoGoodSellcast>
+</LanguageData>

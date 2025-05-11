@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Ideology</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--see Trait_Patches for what nice/evil means. Supremacist and Raider are each only "half evil" so that Kind raiders can still exhibit nice behavior. After all, you're already much likelier to see Evil psycasters, and most psycasters are raiders-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="Guilty"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="Raider"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="Supremacist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Anomaly</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/MemeDef[defName="Inhuman"]</xpath>
+								<value>
+									<li Class="HVPAA.CasterPersonality">
+										<niceOrEvil>-1</niceOrEvil>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<!--Darkness adherents do not cast psycasts that generate light-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="Darkness"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<noLight>true</noLight><!--and through the crowd, I was/crying out, and/in your place there were a thousand other faces - I was/disappearing in plain sight/heaven help me/I need to make it right-->
+						</li>
+					</value>
+				</li>
+				<!--adherents of Animal Personhood, Nature Primacy, and Rancher do not like making manhunters, but Human Primacists are more than fine with it-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AnimalPersonhood"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>2</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="NaturePrimacy"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="Rancher"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="HumanPrimacy"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>-1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Alpha Memes</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--Sadism adherents... act sadistically. Whoa, no way!-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AM_Sadist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<!--BD and Deforestation vs animals-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AM_BiologicalDefilers"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>-1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AM_Deforestation"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>-0.5</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<!--Cowboys love animals-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AM_Cowboys"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>[AP] Hunting Meme</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--hunting mean to animals-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AP_HuntingMeme"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>-1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>[AP] Plaguemonger Meme</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--plaguemongs won't cast disease-defeating psycasts-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="PlaguemongerMeme"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<proDisease>true</proDisease>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>[AP] Slaveholding</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--slaveholding is evil-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AP_Slaveholding_Meme"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Political Compass - Mort's Ideologies</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--liberty, equality, these principles align with niceness; their opposites do not necessarily align with an 'evil' caster personality, though-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="MI_GovernmentLiberty"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="MI_WealthEquality"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Slaughtering Meme</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--might be ever so slightly evil-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="SM_slaughtering"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Ideology Expanded - Memes and Structures</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--hiddem widdat nice evil shit-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_Egalitarian"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_Healthcare"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_Emancipation"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_Bushido"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_Nationalist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_ViolentConversion"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<!--Fire Worshippers do not like casting waterskip-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_FireWorship"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<noFlames>true</noFlames>
+						</li>
+					</value>
+				</li>
+				<!--Holy Diseasers do not cast disease-defeating psycasts-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_HolyDiseases"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<proDisease>true</proDisease>
+						</li>
+					</value>
+				</li>
+				<!--Pacifists are... pacifist. WhOoOaA ok I'll stop mocking the hypothetical reader-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="VME_Pacifist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<pacifist>true</pacifist>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

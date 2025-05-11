@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!--Shattered Empire-->
+  <PawnKindDef ParentName="ImperialFighterBase">
+    <defName>HVPAA_PersonaTemplar</defName>
+    <label>persona templar</label>
+    <royalTitleChance>0.1</royalTitleChance>
+    <maxGenerationAge>50</maxGenerationAge>
+    <apparelMoney>7000~10000</apparelMoney>
+	<weaponMoney>3000~6000</weaponMoney>
+    <techHediffsMoney>1000~5000</techHediffsMoney>
+    <techHediffsMaxAmount>6</techHediffsMaxAmount>
+    <allowRoyalRoomRequirements>False</allowRoyalRoomRequirements>
+    <titleSelectOne>
+      <li>Freeholder</li>
+      <li>Yeoman</li>
+    </titleSelectOne>
+    <combatPower>300</combatPower>
+    <weaponTags>
+      <li>Bladelink</li>
+    </weaponTags>
+    <apparelColor>(250,250,250)</apparelColor>
+    <apparelRequired>
+      <li>Apparel_ArmorHelmetCataphract</li>
+      <li>Apparel_ArmorCataphract</li>
+      <li>Apparel_ShieldBelt</li>
+    </apparelRequired>
+    <specificApparelRequirements Inherit="False">
+      <li>
+        <bodyPartGroup>Torso</bodyPartGroup>
+        <apparelLayer>OnSkin</apparelLayer>
+        <stuff>Synthread</stuff>
+      </li>
+      <li>
+        <bodyPartGroup>Legs</bodyPartGroup>
+        <apparelLayer>OnSkin</apparelLayer>
+        <stuff>Synthread</stuff>
+      </li>
+    </specificApparelRequirements>
+    <techHediffsTags>
+      <li>Advanced</li>
+      <li>ImplantEmpireCommon</li>
+    </techHediffsTags>
+    <techHediffsDisallowTags>
+      <li>PainCauser</li>
+    </techHediffsDisallowTags>
+    <techHediffsRequired>
+      <li>ArmorskinGland</li>
+    </techHediffsRequired>
+    <skills>
+      <li>
+        <skill>Melee</skill>
+        <range>8~14</range>
+      </li>
+    </skills>
+    <disallowedTraits>
+      <li>Wimp</li>
+      <li>Nudist</li>
+      <li>BodyPurist</li>
+	  <li MayRequire="Hautarche.HautsTraits">HVT_Sniper</li>
+    </disallowedTraits>
+    <requiredWorkTags>
+      <li>Violent</li>
+    </requiredWorkTags>
+    <initialWillRange>8~10</initialWillRange>
+    <initialResistanceRange>40~75</initialResistanceRange>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet>
+      <xenotypeChances>
+        <Neanderthal MayRequire="Ludeon.RimWorld.Biotech">0.03</Neanderthal>
+        <!--<Genie MayRequire="Ludeon.RimWorld.Biotech">0.03</Genie>-->
+      </xenotypeChances>
+    </xenotypeSet>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0.35</domesticChance><!--the psycaster commonality setting can't bring this above 90%-->
+		<pointCost>10</pointCost>
+		<domesticCount>1~2</domesticCount>
+		<minPsylinkLevel>1~2</minPsylinkLevel>
+		<bonusPsycasts>0</bonusPsycasts>
+		<raidChance>0.2</raidChance>
+		<raidCount>1~2</raidCount>
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
+  <PawnKindDef ParentName="ImperialFighterBase">
+    <defName>HVPAA_Archotemplar</defName>
+    <label>archotemplar</label>
+    <royalTitleChance>0.125</royalTitleChance>
+    <maxGenerationAge>62</maxGenerationAge>
+    <apparelMoney>9000~13000</apparelMoney>
+	<weaponMoney>3000~9000</weaponMoney>
+    <techHediffsMoney>1000~7000</techHediffsMoney>
+    <techHediffsMaxAmount>6</techHediffsMaxAmount>
+    <allowRoyalRoomRequirements>False</allowRoyalRoomRequirements>
+    <titleSelectOne>
+      <li>Freeholder</li>
+      <li>Yeoman</li>
+    </titleSelectOne>
+    <combatPower>550</combatPower>
+    <weaponTags>
+      <li>Bladelink</li>
+    </weaponTags>
+    <apparelColor>(125,100,100)</apparelColor>
+    <apparelRequired>
+      <li>Apparel_ArmorHelmetCataphractPrestige</li>
+      <li>Apparel_ArmorCataphractPrestige</li>
+      <li>Apparel_ShieldBelt</li>
+    </apparelRequired>
+    <specificApparelRequirements Inherit="False">
+      <li>
+        <bodyPartGroup>Torso</bodyPartGroup>
+        <apparelLayer>OnSkin</apparelLayer>
+        <stuff>Hyperweave</stuff>
+      </li>
+      <li>
+        <bodyPartGroup>Legs</bodyPartGroup>
+        <apparelLayer>OnSkin</apparelLayer>
+        <stuff>Hyperweave</stuff>
+      </li>
+    </specificApparelRequirements>
+    <techHediffsTags>
+      <li>Advanced</li>
+      <li>ImplantEmpireCommon</li>
+    </techHediffsTags>
+    <techHediffsDisallowTags>
+      <li>PainCauser</li>
+    </techHediffsDisallowTags>
+    <techHediffsRequired>
+      <li>StoneskinGland</li>
+    </techHediffsRequired>
+    <skills>
+      <li>
+        <skill>Melee</skill>
+        <range>10~18</range>
+      </li>
+    </skills>
+    <disallowedTraits>
+      <li>Wimp</li>
+      <li>Nudist</li>
+      <li>BodyPurist</li>
+	  <li MayRequire="Hautarche.HautsTraits">HVT_Sniper</li>
+    </disallowedTraits>
+    <requiredWorkTags>
+      <li>Violent</li>
+    </requiredWorkTags>
+    <initialWillRange>10~12</initialWillRange>
+    <initialResistanceRange>80~120</initialResistanceRange>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet>
+      <xenotypeChances>
+        <Neanderthal MayRequire="Ludeon.RimWorld.Biotech">0.03</Neanderthal>
+        <!--<Genie MayRequire="Ludeon.RimWorld.Biotech">0.03</Genie>-->
+      </xenotypeChances>
+    </xenotypeSet>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0.075</domesticChance>
+		<pointCost>25</pointCost>
+		<domesticCount>1</domesticCount>
+		<minPsylinkLevel>3~4</minPsylinkLevel>
+		<bonusPsycasts>1</bonusPsycasts>
+		<raidChance>0.05</raidChance>
+		<raidCount>1</raidCount>
+	  </li>
+	  <li Class="HVPAA.StrikeSquaddie" />
+	</modExtensions>
+  </PawnKindDef>
+  <PawnKindDef>
+    <defName>HVPAA_CourtPsycaster</defName>
+    <label>court psycaster</label>
+    <race>Human</race>
+    <defaultFactionType>Empire</defaultFactionType>
+    <maxGenerationAge>90</maxGenerationAge>
+    <backstoryCryptosleepCommonality>0.08</backstoryCryptosleepCommonality>
+    <backstoryFiltersOverride>
+      <li>
+        <categories>
+          <li>ImperialRoyal</li>
+        </categories>
+      </li>
+    </backstoryFiltersOverride>
+    <royalTitleChance>0</royalTitleChance>
+    <isFighter>false</isFighter>
+    <chemicalAddictionChance>0.1</chemicalAddictionChance>
+    <invNutrition>2.55</invNutrition>
+    <itemQuality>Good</itemQuality>
+    <inventoryOptions>
+     <skipChance>0.70</skipChance>
+     <subOptionsTakeAll>
+       <li>
+         <thingDef>GoJuice</thingDef>
+         <countRange>1~5</countRange>
+       </li>
+     </subOptionsTakeAll>
+   </inventoryOptions>
+    <combatPower>200</combatPower>
+    <weaponMoney>99999</weaponMoney>
+    <weaponTags Inherit="False">
+      <li>EltexStaff</li>
+    </weaponTags>
+    <requiredWorkTags>
+      <li>Violent</li>
+    </requiredWorkTags>
+    <apparelRequired>
+      <li>Apparel_EltexSkullcap</li>
+	  <li>Apparel_PsyfocusRobe</li>
+	  <li>Apparel_PsyfocusVest</li>
+      <li>Apparel_ShieldBelt</li>
+    </apparelRequired>
+    <apparelMoney>1000~2222</apparelMoney>
+    <apparelTags>
+      <li>IndustrialBasic</li>
+    </apparelTags>
+    <apparelDisallowTags>
+      <li>Western</li>
+    </apparelDisallowTags>
+    <apparelColor>(70,124,145)</apparelColor>
+    <specificApparelRequirements>
+      <li>
+        <bodyPartGroup>Torso</bodyPartGroup>
+        <apparelLayer>OnSkin</apparelLayer>
+        <stuff>Hyperweave</stuff>
+      </li>
+      <li>
+        <bodyPartGroup>Legs</bodyPartGroup>
+        <stuff>Hyperweave</stuff>
+      </li>
+    </specificApparelRequirements>
+    <techHediffsChance>0.15</techHediffsChance>
+    <techHediffsMoney>1000~4000</techHediffsMoney>
+    <techHediffsTags>
+      <li>Advanced</li>
+      <li>ImplantEmpireCommon</li>
+	  <li>ImplantEmpireRoyal</li>
+    </techHediffsTags>
+    <skills>
+      <li>
+        <skill>Melee</skill>
+        <range>6~20</range>
+      </li>
+    </skills>
+    <initialWillRange>10~12</initialWillRange>
+    <initialResistanceRange>90~110</initialResistanceRange>
+    <xenotypeSet>
+      <xenotypeChances>
+        <Genie MayRequire="Ludeon.RimWorld.Biotech">0.05</Genie>
+      </xenotypeChances>
+    </xenotypeSet>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <disallowedTraits>
+      <li>Nudist</li>
+    </disallowedTraits>
+    <humanPregnancyChance>0</humanPregnancyChance>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0.25</domesticChance>
+		<pointCost>20</pointCost>
+		<domesticCount>2</domesticCount>
+		<minPsylinkLevel>4~6</minPsylinkLevel>
+		<bonusPsycasts>3</bonusPsycasts>
+		<combatCastIntervalOverride>90</combatCastIntervalOverride><!--they're valuable for their psycasting, so they should psycast rapidly and frequently in combat. It also helps them survive longer since they aren't armored well for melee combat, and this usually slows down the rate at which they approach foes-->
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
+  
+  <!--Default-->
+  <PawnKindDef ParentName="JanissaryBase">
+    <defName>HVPAA_RoguePsycaster</defName>
+    <label>rogue psycaster</label>
+    <minTitleRequired Inherit="False"/>
+    <defaultFactionType>Ancients</defaultFactionType>
+    <combatPower>220</combatPower>
+    <apparelColor>(55,55,55)</apparelColor>
+    <specificApparelRequirements>
+      <li>
+        <bodyPartGroup>Torso</bodyPartGroup>
+        <alternateTagChoices>
+          <li>
+            <tag>Psychic</tag>
+            <chance>0.15</chance>
+          </li>
+        </alternateTagChoices>
+      </li>
+    </specificApparelRequirements>
+    <apparelRequired Inherit="False">
+      <li>Apparel_EltexSkullcap</li>
+      <li>Apparel_ArmorRecon</li>
+    </apparelRequired>
+    <techHediffsTags>
+      <li>ImplantEmpireCommon</li>
+    </techHediffsTags>
+    <skills>
+      <li>
+        <skill>Shooting</skill>
+        <range>6~10</range>
+      </li>
+    </skills>
+    <initialWillRange>4~6</initialWillRange>
+    <initialResistanceRange>18~27</initialResistanceRange>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet>
+      <xenotypeChances>
+        <Neanderthal MayRequire="Ludeon.RimWorld.Biotech">0.03</Neanderthal>
+        <Genie MayRequire="Ludeon.RimWorld.Biotech">0.03</Genie>
+      </xenotypeChances>
+    </xenotypeSet>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0.075</domesticChance>
+		<pointCost>10</pointCost>
+		<domesticCount>1</domesticCount>
+		<minPsylinkLevel>1~4</minPsylinkLevel>
+		<bonusPsycasts>1</bonusPsycasts>
+		<raidChance>0.25</raidChance>
+		<raidCount>1</raidCount>
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
+  
+  <!--other-mod exclusive-->
+    <!--Anima Bionics Forked-->
+  <PawnKindDef ParentName="TribalChiefBase" MayRequire="Seti.Victor.AnimaBodies">
+    <defName>HVPAA_AnimaSpeaker</defName>
+    <combatPower>300</combatPower>
+    <itemQuality>Good</itemQuality>
+    <factionLeader>false</factionLeader>
+    <canBeSapper>false</canBeSapper>
+    <apparelColor>(173,208,195)</apparelColor>
+    <apparelMoney>450~1100</apparelMoney>
+    <specificApparelRequirements>
+      <li>
+        <bodyPartGroup>FullHead</bodyPartGroup>
+        <alternateTagChoices>
+          <li>
+            <tag>AnimaMask</tag>
+            <chance>0.25</chance>
+          </li>
+          <li>
+            <tag>AnimaVeil</tag>
+            <chance>0.25</chance>
+          </li>
+        </alternateTagChoices>
+      </li>
+    </specificApparelRequirements>
+    <apparelRequired Inherit="False">
+      <li>Apparel_AnimaTribal</li>
+      <li>Apparel_PlateArmor</li>
+    </apparelRequired>
+    <techHediffsMoney>2000~6500</techHediffsMoney>
+    <techHediffsMaxAmount>6</techHediffsMaxAmount>
+    <techHediffsTags>
+      <li>AnimaBionics</li>
+    </techHediffsTags>
+	<techHediffsChance>0.9</techHediffsChance>
+    <skills>
+      <li>
+        <skill>Melee</skill>
+        <range>8~14</range>
+      </li>
+    </skills>
+    <disallowedTraits>
+      <li>Wimp</li>
+	  <li MayRequire="Ludeon.RimWorld.Biotech">Delicate</li>
+	  <li MayRequire="Hautarche.HautsTraits">HVT_Sniper</li>
+    </disallowedTraits>
+    <weaponMoney>99999</weaponMoney>
+    <weaponTags Inherit="False">
+      <li>MeleeWeapon_AnimaStaff</li>
+    </weaponTags>
+    <xenotypeSet Inherit="False">
+      <xenotypeChances>
+        <ST_PlantPerson MayRequire="Starei.PlantPeople">0.1</ST_PlantPerson>
+        <VRE_Animakin MayRequire="vanillaracesexpanded.phytokin">0.03</VRE_Animakin>
+        <VRE_Poluxkin MayRequire="vanillaracesexpanded.phytokin">0.03</VRE_Poluxkin>
+        <VRE_Gauranlenkin MayRequire="vanillaracesexpanded.phytokin,Ludeon.RimWorld.Ideology">0.03</VRE_Gauranlenkin>
+      </xenotypeChances>
+    </xenotypeSet>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0.75</domesticChance>
+		<pointCost>25</pointCost>
+		<domesticCount>1~2</domesticCount>
+		<minPsylinkLevel>5~6</minPsylinkLevel>
+		<raidChance>0.4</raidChance>
+		<raidCount>1</raidCount>
+		<combatCastIntervalOverride>90</combatCastIntervalOverride>
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
+	<!--VFE Empire's Deserters-->
+  <PawnKindDef ParentName="JanissaryBase" MayRequire="OskarPotocki.VFE.Empire">
+    <defName>HVPAA_Heterodox</defName>
+    <label>heterodox</label>
+    <minTitleRequired Inherit="False"/>
+    <defaultFactionType>VFEE_Deserters</defaultFactionType>
+    <combatPower>350</combatPower>
+    <apparelColor>(55,85,55)</apparelColor>
+    <apparelRequired Inherit="False">
+      <li>Apparel_ArmorHelmetReconPrestige</li>
+      <li>VFEE_Apparel_ArmorDeserter</li>
+    </apparelRequired>
+    <techHediffsMoney>2000~6500</techHediffsMoney>
+    <techHediffsMaxAmount>6</techHediffsMaxAmount>
+    <techHediffsTags>
+      <li>Advanced</li>
+      <li>ImplantEmpireCommon</li>
+	  <li>ImplantEmpireRoyal</li>
+    </techHediffsTags>
+	<forceWeaponQuality>Excellent</forceWeaponQuality>
+    <skills>
+      <li>
+        <skill>Shooting</skill>
+        <range>8~20</range>
+      </li>
+    </skills>
+    <initialWillRange>10~12</initialWillRange>
+    <initialResistanceRange>80~100</initialResistanceRange>
+    <useFactionXenotypes>false</useFactionXenotypes>
+    <xenotypeSet>
+      <xenotypeChances>
+        <Neanderthal MayRequire="Ludeon.RimWorld.Biotech">0.03</Neanderthal>
+        <Genie MayRequire="Ludeon.RimWorld.Biotech">0.03</Genie>
+      </xenotypeChances>
+    </xenotypeSet>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0.075</domesticChance>
+		<pointCost>30</pointCost>
+		<domesticCount>1</domesticCount>
+		<minPsylinkLevel>5~6</minPsylinkLevel>
+		<bonusPsycasts>2</bonusPsycasts>
+		<raidChance>0.25</raidChance>
+		<raidCount>1</raidCount>
+		<combatCastIntervalOverride>120</combatCastIntervalOverride>
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
+  
+</Defs>

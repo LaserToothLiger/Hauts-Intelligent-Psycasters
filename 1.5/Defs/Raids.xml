@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <RaidStrategyDef ParentName="ImmediateAttack">
+    <defName>HVPAA_TemplarStrikeSquad</defName>
+    <workerClass>HVPAA.RaidStrategyWorker_TemplarStrikeSquad</workerClass>
+    <selectionWeightPerPointsCurve>
+      <points>
+        <li>(0, 0)</li>
+      </points>
+    </selectionWeightPerPointsCurve>
+    <selectionWeightCurvesPerFaction>
+      <li>
+        <faction>Empire</faction>
+        <selectionWeightPerPointsCurve>
+          <points>
+            <li>(1500, 0)</li>
+            <li>(3500, 0.2)</li>
+          </points>
+        </selectionWeightPerPointsCurve>
+      </li>
+    </selectionWeightCurvesPerFaction>
+    <pointsFactorCurve>
+      <points>
+        <li>0, 1</li>
+      </points>
+    </pointsFactorCurve>
+    <arriveModes>
+      <li>CenterDrop</li>
+      <li>RandomDrop</li>
+      <li>EmergeFromWater</li>
+    </arriveModes>
+    <letterLabelEnemy>Templar strike squad</letterLabelEnemy>
+    <arrivalTextEnemy>They are attacking immediately.\n\nThe Imperial templar are psycasters and wield persona weapons.</arrivalTextEnemy>
+    <letterLabelFriendly>Friendlies</letterLabelFriendly>
+    <arrivalTextFriendly>They are attacking immediately.\n\nThe Imperial templar are psycasters and wield persona weapons.</arrivalTextFriendly>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters"/>
+	</modExtensions>
+  </RaidStrategyDef>
+  
+</Defs>
