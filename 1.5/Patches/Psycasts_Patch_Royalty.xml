@@ -2115,4 +2115,49 @@ Level 1 psycasts-->
 			</operations>
 		</match>
 	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Torsion Psycast</li><!--I cast MEND BUTTCRACK-->
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="TP_CBT"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_CBT">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>TP_Torsion</avoidTargetsWithHediff>
+							<alsoCantHave>Sterilized</alsoCantHave>
+							<mfds><li>Morbid</li></mfds>
+							<painOffset>0.4</painOffset><!--magnitude of the initial effect-->
+							<excludeRaces><!--this is a little crude, but I'm not making another bespoke csharp assembly just for one psycast.-->
+								<li>Megascarab</li>
+								<li>Spelopede</li>
+								<li>Megaspider</li>
+								<li>Cassowary</li>
+								<li>Duck</li>
+								<li>Goose</li>
+								<li>Emu</li>
+								<li>Tortoise</li>
+								<li>Turkey</li>
+								<li>Ostrich</li>
+								<li>Iguana</li>
+								<li>Cobra</li>
+								<li>Chicken</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Basic</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Woodmaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Berrymaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Medicinemaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Gaumaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Carrier</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Clawer</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Barkskin</li>
+							</excludeRaces>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
 </Patch>
