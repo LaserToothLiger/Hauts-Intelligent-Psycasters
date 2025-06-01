@@ -1395,6 +1395,15 @@ namespace HVPAA
         }
         public float percent;
     }
+    public class SensitizeScalar : DefModExtension
+    {
+        public SensitizeScalar()
+        {
+
+        }
+        public bool meta;
+        public bool utility;
+    }
     //faction stuff
     public class FactionPsycasterRuleDef : Def
     {

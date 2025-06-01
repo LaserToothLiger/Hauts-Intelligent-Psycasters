@@ -515,6 +515,17 @@ Level 1 psycasts-->
 					</value>
 				</li>
 				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Sensitize"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Sensitize">
+							<defense>true</defense>
+							<utility>true</utility>
+							<avoidTargetsWithHediff>HVP_SensitizeBuff</avoidTargetsWithHediff>
+							<dontCastIfSufferingFrom>HVP_SensitizeNerf</dontCastIfSufferingFrom>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_SkillTransfer"]</xpath>
 					<value>
 						<li Class="HVPAA_HOP.UseCaseTags_SkillTransfer">
@@ -653,6 +664,7 @@ Level 1 psycasts-->
 						</li>
 					</value>
 				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_DropPodCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"><utility>true</utility></li></value></li>
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_Flare"]</xpath>
 					<value>
@@ -796,6 +808,7 @@ Level 1 psycasts-->
 						</li>
 					</value>
 				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_FortuneCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"><utility>true</utility></li></value></li>
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_HiveCall"]</xpath>
 					<value>
@@ -810,6 +823,7 @@ Level 1 psycasts-->
 						</li>
 					</value>
 				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_HiveCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"><utility>true</utility></li></value></li>
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_RejuvenationSkip"]</xpath>
 					<value>
