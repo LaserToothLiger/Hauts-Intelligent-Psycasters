@@ -1401,8 +1401,6 @@ namespace HVPAA
         {
 
         }
-        public bool meta;
-        public bool utility;
     }
     //faction stuff
     public class FactionPsycasterRuleDef : Def
@@ -4859,6 +4857,63 @@ namespace HVPAA
             return 0f;
         }
         public float ignoreAllPawnsFasterThan;
+    }
+    public class UseCaseTags_SinkholeSkip : UseCaseTags
+    {
+        public override IntVec3 FindBestPositionTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<IntVec3, float> positionTargets, float range = -999)
+        {
+            positionTargets = new Dictionary<IntVec3, float>();
+            if (this.avoidMakingTooMuchOfThing != null)
+            {
+                for (int j = 0; j <= 100; j++)
+                {
+                    CellFinder.TryFindRandomCellNear(psycast.pawn.Position, psycast.pawn.Map, (int)this.Range(psycast), null, out IntVec3 spot);
+                    if (spot.InBounds(psycast.pawn.Map) && GenSight.LineOfSight(psycast.pawn.Position, spot, psycast.pawn.Map) && !spot.Filled(psycast.pawn.Map) && spot.GetEdifice(psycast.pawn.Map) == null && (this.avoidMakingTooMuchOfThing.terrainAffordanceNeeded == null || spot.GetTerrain(psycast.pawn.Map).affordances.Contains(this.avoidMakingTooMuchOfThing.terrainAffordanceNeeded)))
+                    {
+                        if (this.TooMuchThingNearby(psycast, spot, this.aoe))
+                        {
+                            return IntVec3.Invalid;
+                        }
+                        Zone zone = psycast.pawn.Map.zoneManager.ZoneAt(spot);
+                        if (zone != null && zone is Zone_Growing && !psycast.pawn.Faction.HostileTo(Faction.OfPlayerSilentFail))
+                        {
+                            continue;
+                        }
+                        bool goNext = false;
+                        foreach (IntVec3 c in GenAdj.OccupiedRect(spot, this.avoidMakingTooMuchOfThing.defaultPlacingRot, this.avoidMakingTooMuchOfThing.Size).ExpandedBy(1))
+                        {
+                            List<Thing> list = psycast.pawn.Map.thingGrid.ThingsListAt(c);
+                            for (int i = 0; i < list.Count; i++)
+                            {
+                                Thing thing2 = list[i];
+                                if ((thing2 is Pawn p && intPsycasts.allies.Contains(p)) || (thing2.def.category == ThingCategory.Building && thing2.def.building.isTrap) || ((thing2.def.IsBlueprint || thing2.def.IsFrame) && thing2.def.entityDefToBuild is ThingDef && ((ThingDef)thing2.def.entityDefToBuild).building.isTrap))
+                                {
+                                    goNext = true;
+                                }
+                            }
+                        }
+                        if (goNext)
+                        {
+                            continue;
+                        } else {
+                            return spot;
+                        }
+                    }
+                }
+            }
+            return IntVec3.Invalid;
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            if (intPsycasts.foes.Count > 0 || Rand.Chance(this.spontaneousCastChance))
+            {
+                IntVec3 spot = this.FindBestPositionTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<IntVec3, float> positionTargets, this.Range(psycast.ability));
+                psycast.lti = spot;
+                return 10f * Math.Min(10f, (intPsycasts.foes.Count + 1f));
+            }
+            return 0f;
+        }
+        public float spontaneousCastChance;
     }
     public class UseCaseTags_XavierAttack : UseCaseTags
     {

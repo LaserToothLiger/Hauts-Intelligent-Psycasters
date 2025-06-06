@@ -63,12 +63,20 @@ Psycast letters-->
 <HVPAA_Dart_labelF>Summoned falling star</HVPAA_Dart_labelF>
 <HVPAA_Dart_textF>A spellcaster is calling down a crushing mass from the heavens! Get clear before it lands.</HVPAA_Dart_textF>
 <HVPAA_Feedback_label>Psychic feedback</HVPAA_Feedback_label>
-<HVPAA_Feedback_text>A psycaster is attempting to feedback one of your psycasters! After casting for 4 seconds, the target's brain will explode, resulting in both the death of the target and damage to their surroundings.</HVPAA_Feedback_text>
+<HVPAA_Feedback_text>A psycaster is about to unleash a mind-burning attack! After casting for 4 seconds, the target's brain will be damaged. If the target has any neural heat, this will cause an explosion as well.</HVPAA_Feedback_text>
 <HVPAA_Feedback_labelF>Mystic feedback</HVPAA_Feedback_labelF>
-<HVPAA_Feedback_textF>A spellcaster is attempting to feedback one of your own magic-users! After casting for 4 seconds, the target's head will explode, resulting in both the death of the target and damage to their surroundings.</HVPAA_Feedback_textF>
+<HVPAA_Feedback_textF>A spellcaster is about to unleash a mind-burning attack! After casting for 4 seconds, the target's brain will be damaged. If the target has any arcane load, this will cause an explosion as well.</HVPAA_Feedback_textF>
 <HVPAA_FSF_FS_label>Firestorm</HVPAA_FSF_FS_label>
 <HVPAA_FSF_FS_text>A psycaster is about to unleash a firestorm! After casting for 12 seconds, a massive wave of fire will emanate out from the caster, reaching an area far wider than even the explosion of an antigrain warhead. Move out of range, get into the safe zone, or disable the psycaster.</HVPAA_FSF_FS_text>
 <HVPAA_FSF_FS_textF>A magician is conjuring a firestorm! After casting for 12 seconds, a massive wave of fire will emanate out from the caster, searing a monstrously wide area. Move out of range, get into the safe zone, or disable the spellcaster.</HVPAA_FSF_FS_textF>
+<HVPAA_Annihilation_label>Psychic annihilation</HVPAA_Annihilation_label>
+<HVPAA_Annihilation_text>A psycaster is about to unleash annihilation! After casting for 8 seconds, the targeted 3x3 area will be permanently removed from existence, to the point that it will be impossible to move into that area at any time afterward. Evacuate the area or disable the psycaster.</HVPAA_Annihilation_text>
+<HVPAA_Annihilation_labelF>Astral annihilation</HVPAA_Annihilation_labelF>
+<HVPAA_Annihilation_textF>A magician is about to unleash annihilation! After casting for 8 seconds, the targeted 3x3 area will be permanently removed from existence, to the point that it will be impossible to move into that area at any time afterward. Evacuate the area or disable the spellcaster.</HVPAA_Annihilation_textF>
+<HVPAA_Enslavement_label>Psychic enslavement</HVPAA_Enslavement_label>
+<HVPAA_Enslavement_text>A psycaster is about to enslave one of your people! After casting for 9 seconds, the victim will become bound to the caster's faction.\n\nNote that the victim can be restored to their prior faction simply by imprisoning and then releasing them.</HVPAA_Enslavement_text>
+<HVPAA_Enslavement_labelF>Mystic enslavement</HVPAA_Enslavement_labelF>
+<HVPAA_Enslavement_textF>A spellcaster is about to enslave one of your people! After casting for 9 seconds, the victim will become bound to the caster's faction.\n\nNote that the victim can be restored to their prior faction simply by imprisoning and then releasing them.</HVPAA_Enslavement_textF>
 <!--motes-->
 <HVPAA_NPC_mote>Level {0} ({1})</HVPAA_NPC_mote>
 <!--errors-->
