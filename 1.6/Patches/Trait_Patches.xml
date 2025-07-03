@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch><!--an overabundance of evil traits predisposes one to casting Damage/Debuff psycasts and AGAINST Healing psycasts, and enables the use of Damage/Defense psycasts while fleeing but disables the use of Healing psycasts while fleeing.
+an overabundance of nice traits predisposes one AGAINST casting Damage psycasts, and to out-of-combat Healing psycasts
+niceness is a positive value, evil is negative.
+Let's start with the EVILS, from least to greatest.-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="DislikesMen"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>-0.5</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="DislikesWomen"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>-0.5</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Abrasive"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>-1</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Jealous"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>-1</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Psychopath"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>-1</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Bloodlust"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>-2</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<!--ain't much NICEty on the Rim-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Kind"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<niceOrEvil>1</niceOrEvil>
+			</li>
+		</value>
+	</Operation>
+	<!--Pyromaniacs love fire-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Pyromaniac"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<yesFlames>true</yesFlames>
+			</li>
+		</value>
+	</Operation>
+	<!--Masochists don't like alleviating pain-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/TraitDef[defName="Masochist"]</xpath>
+		<value>
+			<li Class="HVPAA.CasterPersonality">
+				<proPain>true</proPain>
+			</li>
+		</value>
+	</Operation>
+	<!--Anomaly has one NICE trait, and it is (borat voice) VERY NICE-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Anomaly</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="Joyous"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<!--DN Bundle of Traits actually has a couple traits that are neither NICE nor EVIL yet influence psycast choice anyways.
+		Pacifists do not cast psycasts that require one to be capable of violence, even though the trait does not actually prohibit the use of violence.
+		Pyrophobes do not cast 'flame' psycasts. If you only have non-modded psycasts, this only prevents them from using Flashstorm.-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>[DN] Bundle Of Traits</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="BOT_Pacifist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<pacifist>true</pacifist>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="BOT_Pyrophobia"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<noFlames>true</noFlames>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<!--Gwen's GMT has 1 nice, 2 evil-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Gwen's Gone Mental Traits</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="GWT_Misotherist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="GWT_Spiteful"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="GWT_Benevolent"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="GWT_Malchemist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<proDisease>true</proDisease>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<!--HAT has 4 nice, 7 evil-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Hauts' Added Traits</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Agrizoophobe"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>-1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Judgemental"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_RepressedRage"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Sadist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-2</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Vicious"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-2</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Champion"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_PeoplePleaser"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Tranquil"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="HVT_Skulker"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<noLight>true</noLight>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Anomaly</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/TraitDef[defName="HVT_Corruptible"]</xpath>
+								<value>
+									<li Class="HVPAA.CasterPersonality">
+										<niceOrEvil>-0.5</niceOrEvil>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Biotech</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/TraitDef[defName="HVT_GenePurist"]</xpath>
+								<value>
+									<li Class="HVPAA.CasterPersonality">
+										<niceOrEvil>-0.5</niceOrEvil>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/TraitDef[defName="HVT_Caretaker"]</xpath>
+								<value>
+									<li Class="HVPAA.CasterPersonality">
+										<niceOrEvil>0.5</niceOrEvil>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Ideology</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/TraitDef[defName="HVT_Intolerant"]</xpath>
+								<value>
+									<li Class="HVPAA.CasterPersonality">
+										<niceOrEvil>-0.5</niceOrEvil>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>[LC] Consolidated Traits</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="RCT_AnimalLover"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="RCT_AnimalHater"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>-1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<!--VTE has 3 nice and 2 evil-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Traits Expanded</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_MadSurgeon"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_Vengeful"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-1</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_CatPerson"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_DogPerson"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_Menagerist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_AnimalLover"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>0.5</niceOrEvil>
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="VTE_AnimalHater"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>-0.5</niceOrEvil>
+							<niceToAnimals>-1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HVPAA_MeleePsycasts", "HVPAA_MeleePsycasts.csproj", "{CABDA2FE-7725-4962-A578-96D656672BF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CABDA2FE-7725-4962-A578-96D656672BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CABDA2FE-7725-4962-A578-96D656672BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CABDA2FE-7725-4962-A578-96D656672BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CABDA2FE-7725-4962-A578-96D656672BF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {892C2DF6-1C76-4F9D-A8D3-CB506B4E0480}
+	EndGlobalSection
+EndGlobal

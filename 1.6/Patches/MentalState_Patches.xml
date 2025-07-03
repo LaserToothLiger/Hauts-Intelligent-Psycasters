@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch><!--enables psycasts to be cast by fleeing pawns-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/MentalStateDef[defName="PanicFlee"]</xpath>
+		<value>
+			<li Class="HVPAA.PsycastPermissiveMentalState"><id>3</id></li>
+		</value>
+	</Operation>
+</Patch>

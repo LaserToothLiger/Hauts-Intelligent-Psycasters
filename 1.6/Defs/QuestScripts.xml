@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <QuestScriptDef>
+    <defName>HVPAA_HiredSellcasterQuest</defName>
+    <autoAccept>true</autoAccept>
+    <defaultChallengeRating>1</defaultChallengeRating>
+    <isRootSpecial>true</isRootSpecial>
+    <questNameRules>
+      <rulesStrings>
+        <li>questName->[sellcast_definite] hired</li>
+      </rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+		<li>questDescription(discounted==0)->[sellcast_nameFull] has joined your colony for [days] days.[safetyWarning]</li>
+		<li>questDescription(discounted==1)->[sellcast_nameFull] has joined your colony for [days] days. However, since you hired [sellcast_objective] at a discount, [sellcast_pronoun] will not do skilled labor and cannot be directly controlled.[safetyWarning]</li>
+		
+		<li>safetyWarning->\n\nOnce this contract expires, [sellcast_pronoun] will be teleported away. You must keep [sellcast_objective] alive, or else [sellcastFaction_name] will turn hostile.</li>
+      </rulesStrings>
+    </questDescriptionRules>
+	<questContentRules>
+	  <rulesStrings>
+        <li>lodgersLeavingLetterLabel->[sellcast_definite] leaving</li>
+        <li>lodgersLeavingLetterText->The sellcast contract for [sellcast_definite] has finished. [sellcast_pronoun] will now return to [sellcast_possessive] people.</li>
+	  </rulesStrings>
+	</questContentRules>
+    <root Class="QuestNode_Sequence">
+      <nodes>
+		<li Class="QuestNode_AddToList">
+		  <name>lodgers</name>
+		  <value>$sellcast</value>
+		</li>
+        <li Class="QuestNode_SetAllApparelLocked">
+          <pawns>$lodgers</pawns>
+        </li>
+		<li Class="QuestNode_Equal">
+          <value1>$discounted</value1>
+          <value2>1</value2>
+		  <node Class="QuestNode_WorkDisabled">
+		    <pawns>$lodgers</pawns>
+			<disabledWorkTags>
+			  <li>ManualSkilled</li>
+			</disabledWorkTags>
+		  </node>
+        </li>
+		<li Class="QuestNode_ExtraFaction">
+          <factionOf>$sellcast</factionOf>
+          <pawns>$lodgers</pawns>
+          <factionType>HomeFaction</factionType>
+          <inSignalsRemovePawn>
+            <li>lodgers.RanWild</li>
+            <li>lodgers.BecameMutant</li>
+          </inSignalsRemovePawn>
+        </li>
+		<li Class="HVPAA.QuestNode_Sellcast_Etc">
+          <faction>$sellcastFaction</faction>
+          <pawns>$lodgers</pawns>
+		  <days>$days</days>
+        </li>
+        <li Class="QuestNode_Signal">
+          <inSignal>lodgers.Destroyed</inSignal>
+          <node Class="QuestNode_Sequence">
+            <nodes>
+              <li Class="QuestNode_Letter">
+                <label TKey="LetterLabelGuestDied">Sellcast died: {SUBJECT_definite}</label>
+                <text TKey="LetterTextGuestDied">[sellcast_nameFull], whom you hired as a sellcast, has died.</text>
+              </li>
+              <li Class="HVPAA.QuestNode_EndSellcast">
+                <outcome>Fail</outcome>
+                <goodwillChangeAmount>-200</goodwillChangeAmount>
+                <goodwillChangeFactionOf>$sellcastFaction</goodwillChangeFactionOf>
+                <goodwillChangeReason>QuestPawnLost</goodwillChangeReason>
+              </li>
+            </nodes>
+          </node>
+        </li>
+		<li Class="HVPAA.QuestNode_SkipOutOnCleanup">
+          <pawns>$lodgers</pawns>
+          <sendStandardLetter>false</sendStandardLetter>
+          <inSignalRemovePawn>lodgers.RanWild</inSignalRemovePawn>
+        </li>
+      </nodes>
+    </root>
+  </QuestScriptDef>
+
+</Defs>

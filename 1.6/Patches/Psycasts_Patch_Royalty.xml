@@ -21,6 +21,7 @@ Level 1 psycasts-->
 				<painkiller>true</painkiller>
 				<avoidTargetsWithHediff>PsychicAnesthesia</avoidTargetsWithHediff>
 				<mfds><li>Minimal</li></mfds>
+				<healingMulti>2</healingMulti><!--healing use is potent enough it should be weighted higher even out of combat-->
 			</li>
 		</value>
 	</Operation>
@@ -55,6 +56,7 @@ Level 1 psycasts-->
 			<li Class="HVPAA.UseCaseTags_WordOfTrust">
 				<utility>true</utility>
 				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
 				<mfds><li>Dignified</li></mfds>
 			</li>
 		</value>
@@ -126,6 +128,7 @@ Level 1 psycasts-->
 			<li Class="HVPAA.UseCaseTags_WordOfJoy">
 				<healing>true</healing>
 				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
 				<avoidTargetsWithHediff>Joyfuzz</avoidTargetsWithHediff>
 				<brainEfficiencyOffset>-0.4</brainEfficiencyOffset><!--twice as big as the brain part efficiency offset inflicted by WoJ because I don't want 'casters to decaffeinate their allies just for being sad-->
 				<mfds><li>Dignified</li></mfds>
@@ -169,10 +172,12 @@ Level 1 psycasts-->
 			<li Class="HVPAA.UseCaseTags_WordOfLove">
 				<utility>true</utility>
 				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
 				<avoidTargetsWithHediff>PsychicLove</avoidTargetsWithHediff>
 				<mfds><li>Dignified</li></mfds>
 				<minAge>16</minAge>
 				<mustMatchOrientation>true</mustMatchOrientation>
+				<prisonerRelationOffset>25</prisonerRelationOffset>
 			</li>
 		</value>
 	</Operation>
@@ -211,6 +216,7 @@ Level 1 psycasts-->
 				<healing>true</healing>
 				<utility>true</utility>
 				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
 				<mfds><li>Dignified</li></mfds>
 				<usableWhileAsleep>true</usableWhileAsleep><!--potentially a time-sensitive life-saver-->
 			</li>
@@ -311,6 +317,7 @@ Level 1 psycasts-->
 			<li Class="HVPAA.UseCaseTags_WordOfInspiration">
 				<utility>true</utility>
 				<aoe>20</aoe>
+				<requiresLoS>false</requiresLoS>
 				<mfds><li>Dignified</li></mfds>
 			</li>
 		</value>
@@ -334,6 +341,7 @@ Level 1 psycasts-->
 				<debuff>true</debuff>
 				<aoe>7.9</aoe>
 				<maxBodySize>3.5</maxBodySize>
+				<scoreOffset>-1</scoreOffset><!--net foe minus ally applicability must exceed this to be eligible for casting. Don't make this a positive value, or the AI will become very trigger-happy with MC Skip. More than it already is, I mean-->
 			</li>
 		</value>
 	</Operation>
@@ -356,10 +364,11 @@ Level 1 psycasts-->
 				<utility>true</utility>
 				<usableWhileFleeing>true</usableWhileFleeing>
 				<aoe>60</aoe>
+				<requiresLoS>false</requiresLoS>
 				<rallyRadius>5</rallyRadius><!--helps nearby allied pawns decide whether they have enough time to get into the safe zone; is a little smaller than the actual safe zone radius since the calculation doesn't take obstacles or non-linear paths into account-->
 				<maxRallyTicks>750</maxRallyTicks>
 				<minEvil>2.5</minEvil><!--a psycaster that is this evil or less can't cast Neuroquake.-->
-				<chancePerEvil>0.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
+				<chancePerEvil>10.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
 				<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
 				<letterLabel>HVPAA_NQ_label</letterLabel>
 				<letterText>HVPAA_NQ_text</letterText>
@@ -415,6 +424,7 @@ Level 1 psycasts-->
 							  <li MayRequire="Ludeon.RimWorld.Biotech">MechEnergyUsageFactor</li>
 							</relevantFallRateStats><!--allies that have to go to sleep or recharge more frequently are a priority-->
 							<baseFractionTransferred>0.5</baseFractionTransferred><!--mirror from actual psycast-->
+							<donorIsUnusableBelow>0.2</donorIsUnusableBelow><!--won't take energy from someone who is at this value or below-->
 							<donorToRecipientRange>29.9</donorToRecipientRange><!--ditto-->
 							<missingEnergyThresholdForUtility>0.8</missingEnergyThresholdForUtility><!--you must be missing at least this much energy in order for Utility usage to consider you a valid recipient-->
 						</li>
@@ -478,9 +488,11 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_WordOfWarning">
 							<utility>true</utility>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>HVP_AndSoForewarned</avoidTargetsWithHediff>
 							<mfds><li>Dignified</li></mfds>
 							<flatApplicability>5</flatApplicability><!--the applicability of the best target is this fixed value-->
+							<nonHumanMarketValueCutoff>1500</nonHumanMarketValueCutoff><!--non-humanlikes below this market value can never be targeted-->
 						</li>
 					</value>
 				</li>
@@ -552,6 +564,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_WordOfConte">
 							<utility>true</utility>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>HVP_ContemplateThis</avoidTargetsWithHediff>
 							<brainEfficiencyFactor>0.6</brainEfficiencyFactor><!--slightly more severe than the actual 0.7x because safety never hurt anyone-->
 							<mfds><li>Dignified</li></mfds>
@@ -760,6 +773,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_WordOfSafety">
 							<healing>true</healing>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>HVP_GetToSafety</avoidTargetsWithHediff>
 							<alsoAvoid>HVP_Intervened</alsoAvoid>
 							<mfds><li>Dignified</li></mfds>
@@ -774,6 +788,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_WordOfSterility">
 							<healing>true</healing>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<mfds><li>Dignified</li></mfds>
 							<antiDisease>true</antiDisease>
 							<usableWhileAsleep>true</usableWhileAsleep>
@@ -1167,6 +1182,7 @@ Level 1 psycasts-->
 							<usableWhileAsleep>true</usableWhileAsleep>
 							<scalesOffPsysens>true</scalesOffPsysens>
 							<aoe>20</aoe><!--since it has the same range as a Word psycast, we do the same check-->
+							<requiresLoS>false</requiresLoS>
 						</li>
 					</value>
 				</li>
@@ -1196,6 +1212,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_Sleepy.UseCaseTags_ThisIsHowWeHeal">
 							<healing>true</healing>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>SLP_Psycast_HealingBoost</avoidTargetsWithHediff>
 							<usableWhileAsleep>true</usableWhileAsleep>
 						</li>
@@ -1207,6 +1224,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_Sleepy.UseCaseTags_Immunize">
 							<healing>true</healing>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>SLP_Psycast_ImmunityBoost</avoidTargetsWithHediff>
 							<antiDisease>true</antiDisease>
 							<usableWhileAsleep>true</usableWhileAsleep>
@@ -1219,6 +1237,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_Sleepy.UseCaseTags_WordOfCalm">
 							<healing>true</healing>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>SLP_Calm</avoidTargetsWithHediff>
 							<mfds><li>Dignified</li></mfds>
 						</li>
@@ -1230,10 +1249,12 @@ Level 1 psycasts-->
 						<li Class="HVPAA.UseCaseTags_WordOfLove">
 							<utility>true</utility>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<avoidTargetsWithHediff>SLP_PsychicFriendship</avoidTargetsWithHediff>
 							<mfds><li>Dignified</li></mfds>
 							<minAge>3</minAge>
 							<mustMatchOrientation>false</mustMatchOrientation>
+							<prisonerRelationOffset>25</prisonerRelationOffset>
 						</li>
 					</value>
 				</li>
@@ -1243,6 +1264,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_Sleepy.UseCaseTags_WordOfVigor">
 							<healing>true</healing>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<mfds><li>Dignified</li></mfds>
 							<restCutoff>0.1</restCutoff><!--how low your rest bar needs to be for the AI to consider you for Vigoration. I can't imagine spending 35% psyfocus to alleviate 50% rest need for anything other than an emergency. If you disagree, raise this value-->
 						</li>
@@ -1257,6 +1279,7 @@ Level 1 psycasts-->
 							<avoidTargetsWithHediff>SLP_ComfortShield</avoidTargetsWithHediff>
 							<usableWhileAsleep>true</usableWhileAsleep>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 						</li>
 					</value>
 				</li>
@@ -1286,6 +1309,7 @@ Level 1 psycasts-->
 							<usableWhileFleeing>true</usableWhileFleeing>
 							<chanceToUtilityCast>0.04</chanceToUtilityCast><!--it's expensive-->
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 						</li>
 					</value>
 				</li>
@@ -1325,6 +1349,7 @@ Level 1 psycasts-->
 							<usableWhileAsleep>true</usableWhileAsleep>
 							<painOffset>0.2</painOffset>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 						</li>
 					</value>
 				</li>
@@ -1372,6 +1397,7 @@ Level 1 psycasts-->
 							<usableWhileAsleep>true</usableWhileAsleep>
 							<painOffset>0.2</painOffset>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<antiScar>true</antiScar>
 						</li>
 					</value>
@@ -1404,6 +1430,7 @@ Level 1 psycasts-->
 							<painOffset>0.25</painOffset>
 							<consciousnessMalus>-0.15</consciousnessMalus>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<antiScar>true</antiScar>
 						</li>
 					</value>
@@ -1439,6 +1466,7 @@ Level 1 psycasts-->
 									<li Class="HVPAA_Sleepy.UseCaseTags_Energise">
 										<healing>true</healing>
 										<aoe>20</aoe>
+										<requiresLoS>false</requiresLoS>
 										<daysToRunOutOfEnergyCutoff>1</daysToRunOutOfEnergyCutoff>
 									</li>
 								</value>
@@ -1494,6 +1522,7 @@ Level 1 psycasts-->
 										<usableWhileAsleep>true</usableWhileAsleep>
 										<painOffset>0.25</painOffset>
 										<aoe>20</aoe>
+										<requiresLoS>false</requiresLoS>
 										<antiScar>true</antiScar>
 										<mfds><li>Void</li></mfds>
 									</li>
@@ -1510,6 +1539,7 @@ Level 1 psycasts-->
 							<utility>true</utility>
 							<mfds><li>Dignified</li><li>Morbid</li></mfds>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 						</li>
 					</value>
 				</li>
@@ -1533,7 +1563,7 @@ Level 1 psycasts-->
 							<defense>true</defense>
 							<healing>true</healing>
 							<utility>true</utility>
-							<needsLoS>false</needsLoS>
+							<requiresLoS>false</requiresLoS>
 							<usableWhileFleeing>true</usableWhileFleeing>
 							<scoreFactor>0.65</scoreFactor><!--we want this to be marginally less lucrative than Skip (the level 6 to 4 differential means this is 150% as valuable), but it's like 3x as expensive so it should only be used over Skip when doing things Skip can't-->
 							<skipRange>38.9</skipRange><!--mirrors "range" in CompProperties_AbilityTeleport-->
@@ -1918,6 +1948,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_GrantPsycast">
 							<utility>true</utility>
 							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
 							<mfds><li>Dignified</li></mfds>
 							<maxLevel>9</maxLevel>
 						</li>
@@ -2256,6 +2287,7 @@ Level 1 psycasts-->
 							<ticksToFatalBloodLossCutoff>20000</ticksToFatalBloodLossCutoff><!--only targets pawns who have this long to live or less before blood loss gets them, since Stasis is so psyfocus-expensive-->
 							<usableWhileAsleep>true</usableWhileAsleep>
 							<aoe>20</aoe><!--since it has the same range as a Word psycast, we do the same check-->
+							<requiresLoS>false</requiresLoS>
 						</li>
 					</value>
 				</li>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <!--originally, the AI was actually handled as a property of psylinks themselves. But I did testing with some big combos of mods and sometimes they would cause null exceptions that killed the AI comp, and therefore, removed a pawn's psylinks.
+		Now, all psylinks do for HIPAA is add this hediff, which handles the AI. If the AI gets null exception'd to death, it's only this hediff that disappears, and the psylink will restore this hediff w/in the next tenth of an hour.-->
+  <HediffDef ParentName="HVT_TraitHediffBase">
+    <defName>HVPAA_AI</defName>
+	<hediffClass>HediffWithComps</hediffClass>
+    <label>psycasting AI</label>
+    <description>Enables AI use of psycasts.</description>
+    <defaultLabelColor>(1, 1, 1)</defaultLabelColor>
+    <stages>
+      <li>
+		<becomeVisible>false</becomeVisible>
+      </li>
+    </stages>
+	<comps>
+		<li Class="HVPAA.HediffCompProperties_IntPsycasts">
+			<mote>HVPAA_PsycastMarker</mote>
+			<scale>1</scale>
+		</li>
+    </comps>
+  </HediffDef>
+  
+  <!--stuff for multiple non-Royalty DLCs and/or other mods-->
+  <HediffDef ParentName="HVT_TraitHediffBase">
+    <defName>HVPAA_VoidShield</defName>
+	<hediffClass>HautsFramework.Hediff_PreDamageModification</hediffClass>
+    <label>void shield</label>
+    <description>This person's mind is linked with an ambient psychic field from a distant archotech. Its influence protects them from harm, reducing incoming damage by 3.</description>
+    <defaultLabelColor>(1, 1, 1)</defaultLabelColor>
+	<duplicationAllowed>false</duplicationAllowed>
+    <stages>
+      <li>
+      </li>
+    </stages>
+	<comps>
+	  <li Class="HediffCompProperties_DisappearsOnDeath"/>
+	  <li Class="HautsFramework.HediffCompProperties_MoteConditional">
+		<mote>HVPAA_VoidGlory</mote>
+		<scale>1</scale>
+	  </li>
+      <li Class="HediffCompProperties_DisappearsDisableable">
+        <disappearsAfterTicks>300000</disappearsAfterTicks> <!-- 5 days -->
+        <showRemainingTime>true</showRemainingTime>
+      </li>
+	  <li Class="HautsFramework.HediffCompProperties_DamageNegation">
+		<damageMultiplier>1</damageMultiplier>
+		<fleckOnBlock>ExplosionFlash</fleckOnBlock>
+		<throwDustPuffsOnBlock>false</throwDustPuffsOnBlock>
+		<damageAdded>-3</damageAdded>
+		<priority>1600</priority>
+	  </li>
+    </comps>
+  </HediffDef>
+  <HediffDef ParentName="PsycastHediffBase" MayRequire="Mlie.ExtraPsycasts">
+    <defName>HVPAA_MindSoothe</defName>
+    <label>psychic soothe</label>
+    <description>A psychic influence which slows the victim down and will eventually end the current non-aggressive mental break after a delay.</description>
+    <stages>
+      <li>
+        <capMods>
+          <li>
+            <capacity>Moving</capacity>
+            <postFactor>0.6</postFactor>
+          </li>
+        </capMods>
+      </li>
+    </stages>
+    <comps>
+      <li Class="HautsFramework.HediffCompProperties_ExitMentalStateOnRemoval">
+        <anyMentalState>true</anyMentalState>
+        <sendNotification>true</sendNotification>
+		<canRemoveFleeing>false</canRemoveFleeing>
+		<recoveryText>A psychic soothe has lulled [PAWN_nameDef] out of [PAWN_possessive] mental state.</recoveryText>
+		<removeEarlyIfNotInMentalState>true</removeEarlyIfNotInMentalState>
+		<canRemoveAggro>false</canRemoveAggro>
+      </li>
+    </comps>
+  </HediffDef>
+  
+</Defs>

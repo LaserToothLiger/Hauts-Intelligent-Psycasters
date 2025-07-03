@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods><!--these psycasts need psyfocus costs-->
+			<li>Extra Psycasts (Continued)</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_AccelerateHealing"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.01</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Pyrokinesis"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.015</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Precognition"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.02</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SoothingThoughts"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
+					  <Ability_Duration>42</Ability_Duration>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Fortitude"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.03</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Stasis"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.02</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_MindLink"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.15</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_BrainBooster"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.03</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_BodyBooster"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.03</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_PsyLance"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.04</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<!--Soothe Mind also needs a little adjustment to not basically be better, cheaper, easier-to-acquire Word of Serenity-->
+				<li Class="PatchOperationReplace">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SoothingThoughts"]/description</xpath>
+					<value>
+					  <description>Suppress certain nervous pathways in the target's brain, improving their mood, impeding their bodily coordination, and eventually lulling them out of their current mental break.\n\nCannot cause someone to snap out of an aggressive mental break, but will still slow them down.</description>
+					</value>
+				</li>
+				<li Class="PatchOperationRemove">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SoothingThoughts"]/comps/li[@Class="ExtraPsycasts.CompProperties_ExtraPsycasts_ApplyMentalState"]</xpath>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SoothingThoughts"]/statBases/Ability_EntropyGain</xpath>
+					<value>
+					  <Ability_EntropyGain>25</Ability_EntropyGain>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SoothingThoughts"]/comps</xpath>
+					<value>
+					  <li Class="CompProperties_AbilityGiveHediff">
+						<compClass>HVPAA_EPC.CompAbilityEffect_SootheMind</compClass>
+						<hediffDef>HVPAA_MindSoothe</hediffDef>
+						<psychic>True</psychic>
+						<applicableToMechs>False</applicableToMechs>
+					  </li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

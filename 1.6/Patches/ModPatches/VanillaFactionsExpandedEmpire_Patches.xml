@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+	<!--Rogue Psycasters use deserter armor, 'cause they're deserters-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Vanilla Factions Expanded - Empire</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationReplace">
+				  <xpath>/Defs/PawnKindDef[defName="HVPAA_RoguePsycaster"]/apparelRequired</xpath>
+				  <value>
+					  <apparelRequired Inherit="False">
+						<li>Apparel_EltexSkullcap</li>
+						<li>VFEE_Apparel_ArmorDeserter</li>
+					  </apparelRequired>
+				  </value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/FactionDef[defName="VFEE_Deserters"]</xpath>
+					<value>
+						<li Class="HVPAA.SpecificPsycasterRules">
+							<fprd>HVPAA_Deserter</fprd>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

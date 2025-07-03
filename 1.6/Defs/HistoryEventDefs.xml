@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <HistoryEventDef>
+    <defName>HVPAA_HiredSellcaster</defName>
+    <label>hired sellcaster</label>
+	<modExtensions>
+	  <li Class="HautsFramework.IgnoresNaturalGoodwill" />
+	</modExtensions>
+  </HistoryEventDef>
+  <HistoryEventDef>
+    <defName>HVPAA_SellcasterCaptured</defName>
+    <label>sellcaster not returned within 24 hours</label>
+  </HistoryEventDef>
+  
+</Defs>

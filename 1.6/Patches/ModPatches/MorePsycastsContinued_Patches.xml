@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch><!--these psycasts need psyfocus costs, and some of them should be castable even by pacifists-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>More Psycasts (Continued)</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--pacifistm assist-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_AwakenMechanites" or defName="MorePsycasts_Entomb"]</xpath>
+					<value>
+					  <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_AwakenMechanites"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.05</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_HeartAttack"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.04</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_Entomb"]/statBases</xpath>
+					<value>
+					  <Ability_PsyfocusCost>0.03</Ability_PsyfocusCost>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_Entomb"]</xpath>
+					<value>
+					  <hostile>false</hostile>
+					</value>
+				</li>
+				<!--no AI for the Silence abilities bc I don't get how to determine if someone can cast magic in RWoM, but they should have psyfocus costs nonetheless-->
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>A RimWorld of Magic</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAdd">
+								<xpath>/Defs/AbilityDef[defName="MorePsycasts_Silence"]/statBases</xpath>
+								<value>
+								  <Ability_PsyfocusCost>0.03</Ability_PsyfocusCost>
+								</value>
+							</li>
+							<li Class="PatchOperationAdd">
+								<xpath>/Defs/AbilityDef[defName="MorePsycasts_SilencePulse"]/statBases</xpath>
+								<value>
+								  <Ability_PsyfocusCost>0.045</Ability_PsyfocusCost>
+								</value>
+							</li>
+							<li Class="PatchOperationAdd">
+								<xpath>/Defs/AbilityDef[defName="MorePsycasts_Silence" or defName="MorePsycasts_SilencePulse"]</xpath>
+								<value>
+								  <casterMustBeCapableOfViolence>false</casterMustBeCapableOfViolence>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

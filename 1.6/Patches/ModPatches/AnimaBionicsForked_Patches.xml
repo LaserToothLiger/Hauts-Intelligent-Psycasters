@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+	<!--Rogue Psycasters use deserter armor, 'cause they're deserters-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Anima Bionics - Forked</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/ThingDef[@Name="AnimaPart"]/techHediffsTags</xpath>
+				  <value>
+					  <li>AnimaBionics</li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/ThingDef[@Name="AnimaImplant"]/techHediffsTags</xpath>
+				  <value>
+					  <li>AnimaBionics</li>
+				  </value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

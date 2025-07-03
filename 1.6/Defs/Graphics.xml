@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <!--NPC psycaster level indicator-->
+  <ThingDef ParentName="MoteBase" >
+    <defName>HVPAA_PsycastMarker</defName>
+    <thingClass>HVPAA.MoteNPCasterText</thingClass>
+    <altitudeLayer>MetaOverlays</altitudeLayer>
+    <graphicData>
+      <texPath>Things/Mote/Transparent</texPath>
+      <drawSize>1</drawSize>
+      <color>(255, 225, 0)</color>
+    </graphicData>
+    <drawGUIOverlay>true</drawGUIOverlay>
+    <mote>
+      <attachedDrawOffset>(-0.7, 0, 0.7)</attachedDrawOffset>
+      <fadeInTime>0.01</fadeInTime>
+      <fadeOutTime>0.01</fadeOutTime>
+      <solidTime>10</solidTime>
+      <needsMaintenance>True</needsMaintenance>
+    </mote>
+  </ThingDef>
+  <!--sellcasts-->
+  <ThingDef ParentName="MoteBase" >
+    <defName>HVPAA_SellcastMarker</defName>
+    <thingClass>MoteAttached</thingClass>
+    <altitudeLayer>MetaOverlays</altitudeLayer>
+    <graphicData>
+      <texPath>Things/Item/Special/PsylinkNeuroformer</texPath>
+      <shaderType>TransparentPostLight</shaderType>
+      <drawSize>0.8</drawSize>
+      <color>(255, 225, 0)</color>
+    </graphicData>
+    <mote>
+      <attachedDrawOffset>(0.7, 0, 0.7)</attachedDrawOffset>
+      <fadeInTime>0.15</fadeInTime>
+      <fadeOutTime>0.15</fadeOutTime>
+      <solidTime>1</solidTime>
+      <needsMaintenance>True</needsMaintenance>
+    </mote>
+  </ThingDef>
+  <!--evil psycaster shield-->
+  <ThingDef ParentName="MoteGlowDistorted">
+    <defName>HVPAA_VoidGlory</defName>
+    <thingClass>MoteThrownAttached</thingClass>
+    <altitudeLayer>Projectile</altitudeLayer>
+    <mote>
+      <fadeInTime>0.3</fadeInTime>
+      <fadeOutTime>0.1</fadeOutTime>
+      <solidTime>9999</solidTime>
+      <needsMaintenance>true</needsMaintenance>
+    </mote>
+    <graphicData>
+      <graphicClass>Graphic_Single</graphicClass>
+      <texPath>Things/Mote/SolarPinhole</texPath>
+      <shaderType>MoteGlowDistorted</shaderType>
+      <color>(255, 0, 75)</color>
+      <drawSize>4</drawSize>
+      <shaderParameters>
+        <_DistortionTex>/Other/Ripples</_DistortionTex>
+        <_distortionIntensity>0.05</_distortionIntensity>
+        <_DistortionScale>0.4</_DistortionScale>
+        <_distortionScrollSpeed>(0.07, 0.07, 0.0)</_distortionScrollSpeed>
+      </shaderParameters>
+    </graphicData>
+  </ThingDef>
+  
+</Defs>

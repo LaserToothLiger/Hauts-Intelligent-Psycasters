@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!--if a faction does not have any of the rulesets detailed below, it falls back to this ruleset-->
+  <HVPAA.FactionPsycasterRuleDef>
+    <defName>HVPAA_Default</defName>
+	<bonusCastChance><!--read from top to bottom, this is the chance that a psycaster has an additional level 1 psycast, an added lvl 2, lvl 3, etc... if a value is not represented here (e.g. there is no 6th element in this particular list so level 6 psycasts
+						aren't represented), then it is 0.1 by default. If a chance check is passed, it can recur (up to 3x, for up to 4 known psycasts at each level). Most factions have an empty list, so 10% chance for additional casts of each level.-->
+	  <li>0.1</li>
+	  <li>0.1</li>
+	  <li>0.1</li>
+	  <li>0.1</li>
+	  <li>0.1</li>
+	  <li>0.1</li>
+	</bonusCastChance>
+	<!--Random Casters-->
+	<randCastersPerCapita>0.0025</randCastersPerCapita><!--(capped at 75%) percentage of people in this faction that randomly have psylinks-->
+	<randCasterHediffs><!--random psycasters of this faction can have these health conditions; the 'value' of each pair is the chance that occurs-->
+	</randCasterHediffs>
+	<maxRandCasterHediffs>1</maxRandCasterHediffs>
+	<randCasterItems><!--random psycasters of this faction can have things from this list; the 'value' of each pair is the chance that occurs. If it's an item that can stack, it gets generated in a stack of 1~3 -->
+	</randCasterItems>
+	<maxRandCasterItems>1</maxRandCasterItems>
+	<randCasterEquipment><!--random psycasters of this faction can have weapons and/or apparel from this list, replacing whatever they would've had normally. However, it will usually avoid replacing apparel that confers necessary toxic resistance/temperature limits; if the pawn is violence-capable, it will also generally avoid replacing decent armor-->
+	</randCasterEquipment>
+	<maxRandCasterEquipment>1</maxRandCasterEquipment>
+	<avgRandCasterLevel>2</avgRandCasterLevel><!--fairly self-explanatory, "random casters" (including sellcasts) obey this rule, but "spec casters" don't
+	Speaking of Spec Casters...-->
+	<maxDomesticPower>20</maxDomesticPower><!--determines the maximum net power of spec casters that can be found in any given settlement of this faction. Not every settlement will have spec casters, though.-->
+	<domesticSpecCasters><!--these are the kinds of spec casters that can show up in this faction's settlements. Their point costs, detailed in their own PawnKindDef, are subtracted from the maxDomesticPower value-->
+	  <li>HVPAA_RoguePsycaster</li>
+	</domesticSpecCasters>
+	<specChanceInRaids>0.05</specChanceInRaids><!--(psycaster commonality mod setting can't bring this above 50%) determines the chance a raid CAN have spec casters, but the chance any given spec caster is present in a raid depends on its PawnKindDef's own chance to spawn in raids...-->
+	<specPointsPerRaidPoint>0.0035</specPointsPerRaidPoint><!--...and whether the raid even has enough points to afford that kind of spec caster in the first place. Unlike a settlement, the number of spec points a raid has is fluid, scaling w/ its raid points-->
+	<raidSpecCasters><!--these are the spec casters that can show up in this faction's raids-->
+	  <li>HVPAA_RoguePsycaster</li>
+	</raidSpecCasters>
+	<!--Sellcasts-->
+	<offersSellcasts>false</offersSellcasts>
+  </HVPAA.FactionPsycasterRuleDef>
+  
+  <!--rulesets that can be used for multiple different factions: tribal, other pre-industrial, and ultratech respectively. If a faction has a more specific ruleset (such as those shown below) then that ruleset overrides any of these-->
+  <HVPAA.FactionPsycasterRuleDef><!--for factions w/ tribal backstories-->
+    <defName>HVPAA_TribalAnima</defName>
+    <randCastersPerCapita>0.03</randCastersPerCapita>
+	<randCasterHediffs>
+	</randCasterHediffs>
+	<maxRandCasterHediffs>1</maxRandCasterHediffs>
+	<randCasterItems>
+	  <li><key>PsychiteTea</key><value>0.45</value></li>
+	</randCasterItems>
+	<maxRandCasterItems>1</maxRandCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+	<maxRandCasterEquipment>1</maxRandCasterEquipment>
+	<maxDomesticPower>60</maxDomesticPower>
+	<domesticSpecCasters></domesticSpecCasters>
+	<specChanceInRaids>0.8</specChanceInRaids>
+	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
+	<raidSpecCasters></raidSpecCasters>
+	<offersSellcasts>true</offersSellcasts>
+	<maxSellcastPsylinkLevel>6</maxSellcastPsylinkLevel><!--limits the highest level sellcast you can attain from this faction. 6 is the default if not specified-->
+  </HVPAA.FactionPsycasterRuleDef>
+  <HVPAA.FactionPsycasterRuleDef><!--for other pre-industrial factions-->
+    <defName>HVPAA_GenericPreIndustrial</defName>
+    <randCastersPerCapita>0.02</randCastersPerCapita>
+	<randCasterHediffs></randCasterHediffs>
+	<randCasterItems>
+	  <li><key>PsychiteTea</key><value>0.25</value></li>
+	</randCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+	<maxDomesticPower>35</maxDomesticPower>
+	<domesticSpecCasters></domesticSpecCasters>
+	<specChanceInRaids>0.5</specChanceInRaids>
+	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
+	<raidSpecCasters></raidSpecCasters>
+	<offersSellcasts>true</offersSellcasts>
+	<maxSellcastPsylinkLevel>5</maxSellcastPsylinkLevel>
+  </HVPAA.FactionPsycasterRuleDef>
+  <HVPAA.FactionPsycasterRuleDef>
+    <defName>HVPAA_GenericUltra</defName>
+    <bonusCastChance>
+	  <li>0.35</li>
+	  <li>0.3</li>
+	  <li>0.24</li>
+	  <li>0.18</li>
+	  <li>0.12</li>
+	</bonusCastChance>
+	<randCastersPerCapita>0.02</randCastersPerCapita>
+	<randCasterHediffs></randCasterHediffs>
+	<randCasterItems>
+	  <li><key>GoJuice</key><value>0.1</value></li>
+	</randCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+	<maxRandCasterHediffs>2</maxRandCasterHediffs>
+	<avgRandCasterLevel>3</avgRandCasterLevel><!--ultratech factions have LOTS of spare psylinks-->
+	<maxDomesticPower>40</maxDomesticPower>
+	<domesticSpecCasters></domesticSpecCasters>
+	<specChanceInRaids>0.2</specChanceInRaids>
+	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
+	<raidSpecCasters></raidSpecCasters>
+	<offersSellcasts>true</offersSellcasts>
+	<maxSellcastPsylinkLevel>4</maxSellcastPsylinkLevel>
+  </HVPAA.FactionPsycasterRuleDef>
+  
+  <!--rulesets specific to particular factions-->
+  <HVPAA.FactionPsycasterRuleDef>
+    <defName>HVPAA_ShatteredEmpire</defName>
+    <bonusCastChance>
+	  <li>0.5</li>
+	  <li>0.4</li>
+	  <li>0.3</li>
+	  <li>0.25</li>
+	  <li>0.2</li>
+	  <li>0.15</li>
+	</bonusCastChance>
+	<respectsTitleMinPsylevel>false</respectsTitleMinPsylevel><!--this is true by default for every faction. if true, any pawn from this faction with a title that grants a min psylink level will have a psylink of at least that level.-->
+	<randCastersPerCapita>0</randCastersPerCapita>
+	<randCasterHediffs></randCasterHediffs>
+	<maxRandCasterHediffs>3</maxRandCasterHediffs>
+	<randCasterItems>
+	  <li><key>GoJuice</key><value>0.1</value></li>
+	</randCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+	<maxDomesticPower>40</maxDomesticPower>
+	<domesticSpecCasters>
+	  <li>HVPAA_PersonaTemplar</li>
+	  <li>HVPAA_Archotemplar</li>
+	  <li>HVPAA_CourtPsycaster</li>
+	</domesticSpecCasters>
+	<specChanceInRaids>0.2</specChanceInRaids>
+	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
+	<raidSpecCasters>
+	  <li>HVPAA_PersonaTemplar</li>
+	  <li>HVPAA_Archotemplar</li>
+	</raidSpecCasters>
+	<offersSellcasts>true</offersSellcasts>
+	<maxSellcastPsylinkLevel>6</maxSellcastPsylinkLevel>
+  </HVPAA.FactionPsycasterRuleDef>
+  <HVPAA.FactionPsycasterRuleDef>
+    <defName>HVPAA_Ancients</defName>
+    <bonusCastChance><!--higher than default bc the Ancients would likely have preserved more powerful casters than the average-->
+	  <li>0.2</li>
+	  <li>0.18</li>
+	  <li>0.16</li>
+	  <li>0.14</li>
+	  <li>0.12</li>
+	</bonusCastChance>
+	<randCastersPerCapita>0.02</randCastersPerCapita>
+	<avgRandCasterLevel>3</avgRandCasterLevel>
+	<randCasterHediffs></randCasterHediffs>
+	<randCasterItems>
+	  <li><key>GoJuice</key><value>0.45</value></li>
+	</randCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+  </HVPAA.FactionPsycasterRuleDef>
+  <HVPAA.FactionPsycasterRuleDef MayRequire="Ludeon.RimWorld.Anomaly">
+    <defName>HVPAA_Cultists</defName>
+    <randCastersPerCapita>0.01</randCastersPerCapita>
+	<maxDomesticPower>40</maxDomesticPower>
+	<domesticSpecCasters>
+	  <li>HVPAA_Voidcaster</li>
+	  <li>HVPAA_Transgressor</li>
+	  <li MayRequire="quad.forsakens">HVPAA_ForsakenGorgon</li>
+	  <li MayRequire="sarg.alphagenes">HVPAA_ForsakenGorgon</li>
+	</domesticSpecCasters>
+	<specChanceInRaids>0.25</specChanceInRaids>
+	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
+	<raidSpecCasters>
+	  <li>HVPAA_Voidcaster</li>
+	  <li>HVPAA_Transgressor</li>
+	  <li MayRequire="quad.forsakens">HVPAA_ForsakenGorgon</li>
+	  <li MayRequire="sarg.alphagenes">HVPAA_ForsakenGorgon</li>
+	</raidSpecCasters>
+  </HVPAA.FactionPsycasterRuleDef>
+  
+  <!--rulesets for particular modded factions:
+		Forsakens-->
+  <HVPAA.FactionPsycasterRuleDef MayRequireAnyOf="quad.forsakens,sarg.alphagenes">
+    <defName>HVPAA_Forsakens</defName>
+	<bonusCastChance>
+	  <li>0.2</li>
+	  <li>0.18</li>
+	  <li>0.16</li>
+	  <li>0.14</li>
+	  <li>0.12</li>
+	  <li>0.1</li>
+	</bonusCastChance>
+	<randCastersPerCapita>0.02</randCastersPerCapita>
+	<randCasterHediffs></randCasterHediffs>
+	<maxRandCasterHediffs>2</maxRandCasterHediffs>
+	<randCasterItems>
+	  <li><key>GoJuice</key><value>0.1</value></li>
+	</randCasterItems>
+	<maxRandCasterItems>1</maxRandCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+	<maxRandCasterEquipment>1</maxRandCasterEquipment>
+	<avgRandCasterLevel>3</avgRandCasterLevel>
+	<maxDomesticPower>40</maxDomesticPower>
+	<domesticSpecCasters>
+	  <li>HVPAA_ForsakenGorgon</li>
+	</domesticSpecCasters>
+	<specChanceInRaids>0.1</specChanceInRaids>
+	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
+	<raidSpecCasters>
+	  <li>HVPAA_ForsakenGorgon</li>
+	</raidSpecCasters>
+  </HVPAA.FactionPsycasterRuleDef>
+	<!--VFE Deserters-->
+  <HVPAA.FactionPsycasterRuleDef MayRequire="OskarPotocki.VFE.Empire">
+    <defName>HVPAA_Deserter</defName>
+	<bonusCastChance>
+	  <li>0.2</li>
+	  <li>0.18</li>
+	  <li>0.16</li>
+	  <li>0.14</li>
+	  <li>0.12</li>
+	  <li>0.1</li>
+	</bonusCastChance>
+	<randCastersPerCapita>0.02</randCastersPerCapita>
+	<randCasterHediffs></randCasterHediffs>
+	<maxRandCasterHediffs>2</maxRandCasterHediffs>
+	<randCasterItems>
+	  <li><key>GoJuice</key><value>0.45</value></li>
+	</randCasterItems>
+	<maxRandCasterItems>1</maxRandCasterItems>
+	<randCasterEquipment></randCasterEquipment>
+	<maxRandCasterEquipment>2</maxRandCasterEquipment>
+	<avgRandCasterLevel>3</avgRandCasterLevel>
+	<maxDomesticPower>40</maxDomesticPower>
+	<domesticSpecCasters>
+	  <li>HVPAA_RoguePsycaster</li>
+	  <li>HVPAA_Heterodox</li>
+	</domesticSpecCasters>
+	<specChanceInRaids>0.2</specChanceInRaids>
+	<specPointsPerRaidPoint>0.0125</specPointsPerRaidPoint>
+	<raidSpecCasters>
+	  <li>HVPAA_RoguePsycaster</li>
+	  <li>HVPAA_Heterodox</li>
+	</raidSpecCasters>
+  </HVPAA.FactionPsycasterRuleDef>
+</Defs>

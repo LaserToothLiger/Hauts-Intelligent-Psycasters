@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <TraitDef>
+	<defName>HVPAA_SellcastTrait</defName>
+	<commonality>0</commonality>
+	<degreeDatas>
+	  <li>
+		<degree>0</degree>
+		<label>self-directed</label>
+		<description>Though {PAWN_nameDef} is under mercenary contract, its terms allow {PAWN_objective} some degree of autonomy. {PAWN_pronoun} is thus not responsive to direct commands.</description>
+	  </li>
+	</degreeDatas>
+	<modExtensions>
+		<li Class="HautsFramework.ExciseTraitExemption" />
+	</modExtensions>
+  </TraitDef>
+  
+</Defs>
