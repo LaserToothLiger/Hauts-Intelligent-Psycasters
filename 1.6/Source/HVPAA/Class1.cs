@@ -409,7 +409,7 @@ namespace HVPAA
                     //Log.Error(this.Pawn.Name.ToStringShort + "can cast, situation " + situationCase);
                     //redetermines the niceness or evilness, pacifism, meditation focus types, etc. of the caster
                     this.ResetAllParameters();
-                    Log.Warning("Parameters as follows: " + this.continuousTimeSpawned + " cts\n" + this.niceToEvil + " niceness\n" + this.niceToAnimals + " animal affinity\n" + this.pacifist + " pacifist\n" + this.fireUser + " fireuser\n" + this.pyro + " pyro\n" + this.lightUser + " lightuser\n" + this.cureUser + " cureuser\n" + this.painkiller + " painkiller\n" + this.scarHealer + " scarhealer\n");
+                    //Log.Warning("Parameters as follows: " + this.continuousTimeSpawned + " cts\n" + this.niceToEvil + " niceness\n" + this.niceToAnimals + " animal affinity\n" + this.pacifist + " pacifist\n" + this.fireUser + " fireuser\n" + this.pyro + " pyro\n" + this.lightUser + " lightuser\n" + this.cureUser + " cureuser\n" + this.painkiller + " painkiller\n" + this.scarHealer + " scarhealer\n");
                     /*foreach (MeditationFocusDef mfd in this.mfds)
                     {
                         Log.Warning("med focus type " + mfd.label);
@@ -417,10 +417,10 @@ namespace HVPAA
                     //give me up to 5 psycasts to try out. A psycast can enter this list multiple times if it has multiple use cases
                     List<PotentialPsycast> highestPriorityPsycasts = this.ThreePriorityPsycasts(situationCase);
                     //Log.Message("highest-priority psycasts as follows: ");
-                    foreach (PotentialPsycast pp in highestPriorityPsycasts)
+                    /*foreach (PotentialPsycast pp in highestPriorityPsycasts)
                     {
                         Log.Message(pp.ability.def.label + ">> " + pp.score);
-                    }
+                    }*/
                     //figure out the 'applicability' of each psycast to the current situation
                     bool immediatelyPsycastAgain = false;
                     if (highestPriorityPsycasts.Count > 0)
@@ -536,7 +536,7 @@ namespace HVPAA
                             this.timer /= 2;
                         }
                     }
-                    Log.Error("time to next cast: " + (this.timer / 60));
+                    //Log.Error("time to next cast: " + (this.timer / 60));
                 }
             }
         }
@@ -4458,7 +4458,7 @@ namespace HVPAA
                     }
                     if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
                     {
-                        psycast.lti = bestTarget;
+                        psycast.lti = bestTarget.Position;
                         return ((Rand.Value * 0.4f) + 0.8f) * pawnTargets.Count * this.scoreFactor;
                     }
                 }

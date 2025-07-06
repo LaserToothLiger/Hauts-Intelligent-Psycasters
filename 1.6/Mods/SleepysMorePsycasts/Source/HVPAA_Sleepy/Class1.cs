@@ -12,7 +12,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.Noise;
-using VFECore;
+using VEF;
 
 namespace HVPAA_Sleepy
 {
@@ -557,7 +557,7 @@ namespace HVPAA_Sleepy
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -653,7 +653,7 @@ namespace HVPAA_Sleepy
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -749,7 +749,7 @@ namespace HVPAA_Sleepy
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            if (p.Position != null && useCase == 4)
+            if (p.Spawned && useCase == 4)
             {
                 if (!p.Position.UsesOutdoorTemperature(p.Map))
                 {
@@ -945,23 +945,31 @@ namespace HVPAA_Sleepy
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
             Hediff hediff;
+            float iNeedHealing = 0f;
             BodyPartRecord bodyPartRecord;
             if (p.health.capacities.GetLevel(PawnCapacityDefOf.Consciousness) <= this.consciousnessMalus || !HealthUtility.TryGetWorstHealthCondition(p, out hediff, out bodyPartRecord, null))
             {
                 return 0f;
             }
-            float iNeedHealing = Math.Max(0f, hediff.Severity + hediff.BleedRate);
-            if (hediff.def.everCurableByItem && !hediff.FullyImmune())
+            if (hediff != null)
             {
-                if (hediff.IsLethal && hediff.Severity / hediff.def.lethalSeverity >= 0.8f)
+                iNeedHealing = Math.Max(0f, hediff.Severity + hediff.BleedRate);
+                if (hediff.def.everCurableByItem && !hediff.FullyImmune())
                 {
-                    return 100f;
+                    if (hediff.IsLethal && hediff.Severity / hediff.def.lethalSeverity >= 0.8f)
+                    {
+                        return 100f;
+                    }
+                    iNeedHealing *= (1f + hediff.Severity);
                 }
-                iNeedHealing *= (1f + hediff.Severity);
+                if (hediff.Part != null && hediff.Part == p.health.hediffSet.GetBrain())
+                {
+                    return 50f;
+                }
             }
-            if (hediff.Part != null && hediff.Part == p.health.hediffSet.GetBrain())
+            if (bodyPartRecord != null)
             {
-                return 50f;
+                return 30f;
             }
             if (!p.Downed && iNeedHealing <= 100f)
             {
@@ -1108,7 +1116,7 @@ namespace HVPAA_Sleepy
         public override float ApplicabilityScoreDefense(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
             Thing turret = this.FindBestThingTarget(intPsycasts, psycast.ability, niceToEvil, 2, out Dictionary<Thing, float> thingTargets);
-            if (turret != null && turret.PositionHeld != null)
+            if (turret != null && turret.Spawned)
             {
                 psycast.lti = turret.PositionHeld;
                 return 25f;
@@ -1138,7 +1146,7 @@ namespace HVPAA_Sleepy
         }
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.needs.energy == null || p.needs.energy.CurLevel*p.GetStatValue(StatDefOf.MechEnergyUsageFactor)*this.BaseFallPerDay(p) > this.daysToRunOutOfEnergyCutoff || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !p.Map.reachability.CanReach(psycast.pawn.Position, p.Position, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false, false, false));
+            return p.needs.energy == null || p.needs.energy.CurLevelPercentage*p.GetStatValue(StatDefOf.MechEnergyUsageFactor)*this.BaseFallPerDay(p) > this.daysToRunOutOfEnergyCutoff || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !p.Map.reachability.CanReach(psycast.pawn.Position, p.Position, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false, false, false));
         }
         private float BaseFallPerDay (Pawn pawn)
         {
@@ -1216,7 +1224,7 @@ namespace HVPAA_Sleepy
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)

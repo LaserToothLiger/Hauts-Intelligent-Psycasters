@@ -36,7 +36,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="HautsFramework">
-      <HintPath>..\..\..\..\..\..\Hauts Framework\1.5\Assemblies\HautsFramework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Hauts Framework\1.6\Assemblies\HautsFramework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HVPAA">
@@ -55,8 +55,8 @@
       <HintPath>..\..\..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="VFECore">
-      <HintPath>..\..\..\..\..\..\..\..\..\..\..\..\Users\ianti\OneDrive\Pictures\modstuff\VanillaExpandedFramework-main\1.5\Assemblies\VFECore.dll</HintPath>
+    <Reference Include="VEF">
+      <HintPath>..\..\..\..\..\..\..\..\..\..\..\..\Users\ianti\OneDrive\Pictures\modstuff\VanillaExpandedFramework-main\1.6\Assemblies\VEF.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

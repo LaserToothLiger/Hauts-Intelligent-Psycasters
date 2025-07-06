@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.AI;
-using VFECore;
+using VEF;
 
 namespace HVPAA_FSF
 {
@@ -42,9 +42,9 @@ namespace HVPAA_FSF
                 List<Tool> list2 = pet.Primary.def.tools;
                 if (!melee)
                 {
-                    app = pet.Primary.MarketValue * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) * p.GetStatValue(StatDefOf.AimingDelayFactor) * p.GetStatValue(StatDefOf.RangedCooldownFactor) / (100f * p.GetStatValue(VFEDefOf.VEF_RangeAttackSpeedFactor));
+                    app = pet.Primary.MarketValue * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) * p.GetStatValue(StatDefOf.AimingDelayFactor) * p.GetStatValue(StatDefOf.RangedCooldownFactor) / (100f * p.GetStatValue(VEFDefOf.VEF_RangeAttackSpeedFactor));
                 }
-                else
+                else if (list != null && list2 != null)
                 {
                     app = (from x in VerbUtility.GetAllVerbProperties(list, list2)
                            where x.verbProps.IsMeleeAttack
@@ -195,7 +195,7 @@ namespace HVPAA_FSF
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -393,7 +393,7 @@ namespace HVPAA_FSF
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -648,7 +648,7 @@ namespace HVPAA_FSF
             {
                 if (p.Faction == null)
                 {
-                    if (p.IsNonMutantAnimal)
+                    if (p.IsAnimal)
                     {
                         num = 0.2f;
                         num *= bpt.def.building.trapPeacefulWildAnimalsSpringChanceFactor;

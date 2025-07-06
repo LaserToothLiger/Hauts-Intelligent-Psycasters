@@ -109,7 +109,7 @@ namespace HVPAA_MeleePsycasts
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)

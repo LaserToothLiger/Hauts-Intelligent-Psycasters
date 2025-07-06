@@ -36,7 +36,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="HautsFramework">
-      <HintPath>..\..\..\..\..\..\Hauts Framework\1.5\Assemblies\HautsFramework.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Hauts Framework\1.6\Assemblies\HautsFramework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HVPAA">

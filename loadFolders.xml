@@ -20,13 +20,12 @@
 		<li IfModActive="Ludeon.RimWorld.Anomaly">1.6/Mods/Anomaly</li>
 		<li IfModActive="Hautarche.HautsPsycasts">1.6/Mods/Hauts_Psycasts</li>
 		<!--<li IfModActive="Edern.CombatPsycasts">1.5/Mods/CombatPsycasts</li>
-		<li IfModActive="quad.forsakens">1.5/Mods/ForsakensBiotechEdition</li>
-		<li IfModActive="sarg.alphagenes" IfModNotActive="quad.forsakens">1.5/Mods/ForsakensBiotechEdition</li>
-		<li IfModActive="Mlie.MorePsycasts">1.5/Mods/MorePsycastsContinued</li>
-		<li IfModActive="Mlie.ExtraPsycasts">1.5/Mods/ExtraPsycastsContinued</li>
-		<li IfModActive="sleepy068.morepsycasts">1.5/Mods/SleepysMorePsycasts</li>
-		<li IfModActive="metalocif.coolerpsycasts">1.5/Mods/CoolerPsycasts</li>
-		<li IfModActive="Mlie.MeleePsycasts">1.5/Mods/MeleePsycasts</li>
-		<li IfModActive="FrozenSnowFox.MorePsycastPowers">1.5/Mods/FSF_Psycasts</li>-->
+		<li IfModActive="metalocif.coolerpsycasts">1.5/Mods/CoolerPsycasts</li>-->
+		<li IfModActive="sarg.alphagenes" IfModNotActive="quad.forsakens">1.6/Mods/ForsakensBiotechEdition</li>
+		<li IfModActive="Mlie.MorePsycasts">1.6/Mods/MorePsycastsContinued</li>
+		<li IfModActive="Mlie.ExtraPsycasts">1.6/Mods/ExtraPsycastsContinued</li>
+		<li IfModActive="sleepy068.morepsycasts">1.6/Mods/SleepysMorePsycasts</li>
+		<li IfModActive="Mlie.MeleePsycasts">1.6/Mods/MeleePsycasts</li>
+		<li IfModActive="FrozenSnowFox.MorePsycastPowers">1.6/Mods/FSF_Psycasts</li>
 	</v1.6>
 </loadFolders>
