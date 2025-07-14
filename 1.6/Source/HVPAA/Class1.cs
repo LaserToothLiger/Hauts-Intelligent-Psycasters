@@ -52,7 +52,16 @@ namespace HVPAA
                            postfix: new HarmonyMethod(patchType, nameof(HVPAA_PawnGroup_ResolvePostfix)));
             harmony.Patch(AccessTools.Method(typeof(PawnGroupMakerUtility), nameof(PawnGroupMakerUtility.GeneratePawns)),
                            postfix: new HarmonyMethod(patchType, nameof(HVPAA_PGMU_GeneratePawnsPostfix)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.Notify_DamageTaken)),
+                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_Notify_DamageTakenPrefix)));
             Log.Message("HVPAA_Initialize".Translate().CapitalizeFirst());
+        }
+        internal static object GetInstanceField(Type type, object instance, string fieldName)
+        {
+            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+                | BindingFlags.Static;
+            FieldInfo field = type.GetField(fieldName, bindFlags);
+            return field.GetValue(instance);
         }
         public static IEnumerable<FloatMenuOption> HVPAA_GetOptionsForPostfix(IEnumerable<FloatMenuOption> __result, Pawn clickedPawn, FloatMenuContext context)
         {
@@ -311,6 +320,18 @@ namespace HVPAA
                 }
             }
         }
+        public static bool HVPAA_Notify_DamageTakenPrefix(Pawn_JobTracker __instance)
+        {
+            if (__instance.curJob != null && __instance.curJob.ability != null)
+            {
+                Pawn pawn = GetInstanceField(typeof(Pawn_JobTracker), __instance, "pawn") as Pawn;
+                if (pawn.health.hediffSet.HasHediff(HVPAADefOf.HVPAA_AI))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
     [DefOf]
     public static class HVPAADefOf
@@ -454,9 +475,7 @@ namespace HVPAA
                                             job.verbToUse = psyToCast.ability.verb;
                                             job.globalTarget = psyToCast.gti;
                                             job.ability = psyToCast.ability;
-                                            job.playerForced = true;
                                             this.Pawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                                            job.playerForced = true;
                                             this.PostCast(psyToCast, situationCase);
                                             metaWasCast = true;
                                         }
