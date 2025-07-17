@@ -47,6 +47,10 @@ namespace HVPAA_CombatPsycasts
     {
         public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
         {
+            if (psycast.pawn.psychicEntropy.WouldOverflowEntropy((psycast.def.EntropyGain*2f)+1f))
+            {
+                return 0f;
+            }
             if (psycast.pawn.CurJob != null && (situationCase > 2 || (psycast.pawn.CurJob.jobGiver != null && psycast.pawn.CurJob.jobGiver is JobGiver_AISapper)))
             {
                 this.wallBlast = true;
@@ -222,6 +226,18 @@ namespace HVPAA_CombatPsycasts
     {
         public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
         {
+            Pawn pawn = psycast.pawn;
+            if (pawn.apparel != null)
+            {
+                List<Apparel> wornApparel = pawn.apparel.WornApparel;
+                for (int i = 0; i < wornApparel.Count; i++)
+                {
+                    if (wornApparel[i].TryGetComp<CompShield>() != null)
+                    {
+                        return 0f;
+                    }
+                }
+            }
             return (Rand.Chance(chanceToCast) || !HVPAA_Mod.settings.powerLimiting) ? base.PriorityScoreDamage(psycast, situationCase, pacifist, niceToEvil, usableFoci) : 0f;
         }
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)

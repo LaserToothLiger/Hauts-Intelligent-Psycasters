@@ -19,8 +19,8 @@
 		<li>1.6</li>
 		<li IfModActive="Ludeon.RimWorld.Anomaly">1.6/Mods/Anomaly</li>
 		<li IfModActive="Hautarche.HautsPsycasts">1.6/Mods/Hauts_Psycasts</li>
-		<!--<li IfModActive="Edern.CombatPsycasts">1.5/Mods/CombatPsycasts</li>
-		<li IfModActive="metalocif.coolerpsycasts">1.5/Mods/CoolerPsycasts</li>-->
+		<li IfModActive="Edern.CombatPsycasts">1.6/Mods/CombatPsycasts</li>
+		<!--<li IfModActive="metalocif.coolerpsycasts">1.5/Mods/CoolerPsycasts</li>-->
 		<li IfModActive="sarg.alphagenes" IfModNotActive="quad.forsakens">1.6/Mods/ForsakensBiotechEdition</li>
 		<li IfModActive="Mlie.MorePsycasts">1.6/Mods/MorePsycastsContinued</li>
 		<li IfModActive="Mlie.ExtraPsycasts">1.6/Mods/ExtraPsycastsContinued</li>
