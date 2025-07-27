@@ -6,4 +6,49 @@
 			<li Class="HVPAA.PsycastPermissiveMentalState"><id>3</id></li>
 		</value>
 	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Biotech</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MentalStateDef[defName="PanicFleeFire"]</xpath>
+					<value>
+						<li Class="HVPAA.PsycastPermissiveMentalState"><id>3</id></li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Odyssey</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MentalStateDef[defName="Terror"]</xpath>
+					<value>
+						<li Class="HVPAA.PsycastPermissiveMentalState"><id>3</id></li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Hauts' Added Traits</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MentalStateDef[defName="HVT_PanicFleeAnimals"]</xpath>
+					<value>
+						<li Class="HVPAA.PsycastPermissiveMentalState"><id>3</id></li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
 </Patch>

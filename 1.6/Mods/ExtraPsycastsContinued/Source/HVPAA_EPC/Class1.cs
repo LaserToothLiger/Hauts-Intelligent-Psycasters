@@ -176,7 +176,7 @@ namespace HVPAA_EPC
             for (int i = 0; i < num; i++)
             {
                 tryNewPosition = psycast.pawn.Position + GenRadial.RadialPattern[i];
-                if (tryNewPosition.IsValid && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && FireUtility.NumFiresAt(tryNewPosition,psycast.pawn.Map) == 0)
+                if (tryNewPosition.IsValid && !possibleTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && FireUtility.NumFiresAt(tryNewPosition,psycast.pawn.Map) == 0)
                 {
                     tryNewScore = 0f;
                     HVPAAUtility.LightningApplicability(this, intPsycasts, psycast, tryNewPosition, niceToEvil, 1.5f, ref tryNewScore);

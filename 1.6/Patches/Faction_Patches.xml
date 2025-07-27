@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Patch><!--these factions have bespoke psycaster generation rules-->
+<Patch>
+
+	<!--part of an attempt to improve performance in cases where many psycasters were on the map at the same time. it ended up leading to a lot of missing value errors as targets were killed off or disappeared-->
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/HautsFramework.Hauts_FactionCompDef[defName="Hauts_FCHolder"]/comps</xpath>
+		<value>
+			<li Class="HVPAA.HautsFactionCompProperties_AlliesAndAdversaries" />
+		</value>
+	</Operation>
+	<!--these factions have bespoke psycaster generation rules-->
 	<Operation Class="PatchOperationAddModExtension">
 		<xpath>/Defs/FactionDef[defName="Empire"]</xpath>
 		<value>

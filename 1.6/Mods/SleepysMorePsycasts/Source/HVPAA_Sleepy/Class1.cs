@@ -33,7 +33,7 @@ namespace HVPAA_Sleepy
             for (int i = 0; i < num; i++)
             {
                 tryNewPosition = psycast.pawn.Position + GenRadial.RadialPattern[i];
-                if (tryNewPosition.IsValid && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && FireUtility.NumFiresAt(tryNewPosition, psycast.pawn.Map) == 0)
+                if (tryNewPosition.IsValid && !possibleTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && FireUtility.NumFiresAt(tryNewPosition, psycast.pawn.Map) == 0)
                 {
                     tryNewScore = 0f;
                     foreach (Thing thing in tryNewPosition.GetThingList(intPsycasts.Pawn.Map))
@@ -1438,7 +1438,7 @@ namespace HVPAA_Sleepy
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = 1f - this.minFertilizableCells;
                     foreach (IntVec3 iv3 in GenRadial.RadialCellsAround(tryNewPosition,0f,this.aoe))

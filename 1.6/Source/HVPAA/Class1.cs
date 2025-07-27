@@ -389,6 +389,43 @@ namespace HVPAA
             }
         }
     }
+
+    public class HautsFactionCompProperties_AlliesAndAdversaries : HautsFactionCompProperties
+    {
+        public HautsFactionCompProperties_AlliesAndAdversaries()
+        {
+            this.compClass = typeof(HautsFactionComp_AlliesAndAdversaries);
+        }
+    }
+    public class HautsFactionComp_AlliesAndAdversaries : HautsFactionComp
+    {
+        public HautsFactionCompProperties_AlliesAndAdversaries Props
+        {
+            get
+            {
+                return (HautsFactionCompProperties_AlliesAndAdversaries)this.props;
+            }
+        }
+        public override void CompPostTick()
+        {
+            base.CompPostTick();
+            if (Find.TickManager.TicksGame % 60 == 0)
+            {
+                this.mapsCovered.Clear();
+            }
+        }
+        public Dictionary<Map,MapAlliesAndAdversaries> mapsCovered = new Dictionary<Map, MapAlliesAndAdversaries>();
+    }
+    public class MapAlliesAndAdversaries
+    {
+        public MapAlliesAndAdversaries ()
+        {
+            this.allies = new List<Pawn>();
+            this.foes = new List<Pawn>();
+        }
+        public List<Pawn> allies = new List<Pawn>();
+        public List<Pawn> foes = new List<Pawn>();
+    }
     public class HediffCompProperties_IntPsycasts : HediffCompProperties_MoteConditional
     {
         public HediffCompProperties_IntPsycasts()
@@ -446,6 +483,20 @@ namespace HVPAA
                     bool immediatelyPsycastAgain = false;
                     if (highestPriorityPsycasts.Count > 0)
                     {
+                        for (int i = this.allies.Count - 1; i >= 0; i--)
+                        {
+                            if (this.allies[i] == null || !this.allies[i].Spawned)
+                            {
+                                this.allies.RemoveAt(i);
+                            }
+                        }
+                        for (int i = this.foes.Count - 1; i >= 0; i--)
+                        {
+                            if (this.foes[i] == null || !this.foes[i].Spawned)
+                            {
+                                this.foes.RemoveAt(i);
+                            }
+                        }
                         List<Psycast> metas = this.MetaCasts();
                         bool metaWasCast = false;
                         if (!metas.NullOrEmpty())
@@ -720,16 +771,38 @@ namespace HVPAA
             }
             this.allies.Clear();
             this.foes.Clear();
-            foreach (Pawn p in (List<Pawn>)this.Pawn.Map.mapPawns.AllPawnsSpawned)
+            if (this.Pawn.Spawned)
             {
-                if (HVPAAUtility.IsEnemy(this.Pawn, p))
+                if (this.Pawn.Faction != null)
                 {
-                    this.foes.Add(p);
+                    WorldComponent_HautsFactionComps WCFC = (WorldComponent_HautsFactionComps)Find.World.GetComponent(typeof(WorldComponent_HautsFactionComps));
+                    Hauts_FactionCompHolder fch = WCFC.FindCompsFor(this.Pawn.Faction);
+                    if (fch != null)
+                    {
+                        HautsFactionComp_AlliesAndAdversaries aaa = fch.TryGetComp<HautsFactionComp_AlliesAndAdversaries>();
+                        if (aaa != null)
+                        {
+                            if (aaa.mapsCovered == null)
+                            {
+                                aaa.mapsCovered = new Dictionary<Map,MapAlliesAndAdversaries>();
+                            }
+                            if (aaa.mapsCovered.TryGetValue(this.Pawn.Map, out MapAlliesAndAdversaries maaa))
+                            {
+                                this.allies = maaa.allies;
+                                this.foes = maaa.foes;
+                            } else {
+                                MapAlliesAndAdversaries maaa2 = new MapAlliesAndAdversaries();
+                                HVPAAUtility.SetAlliesAndAdversaries(this.Pawn,maaa2.allies,maaa2.foes,this.niceToAnimals,this.niceToEvil);
+                                aaa.mapsCovered.Add(this.Pawn.Map, maaa2);
+                                this.allies = maaa2.allies;
+                                this.foes = maaa2.foes;
+                            }
+                        }
+                    }
+                } else {
+                    HVPAAUtility.SetAlliesAndAdversaries(this.Pawn, this.allies, this.foes, this.niceToAnimals, this.niceToEvil);
                 }
-                else if (HVPAAUtility.IsAlly(this.niceToAnimals <= 0, this.Pawn, p, this.niceToEvil))
-                {
-                    this.allies.Add(p);
-                }
+                //HVPAAUtility.SetAlliesAndAdversaries(this.Pawn, this.allies, this.foes, this.niceToAnimals, this.niceToEvil);
             }
             float limit = 1f;
             foreach (Hediff h in this.Pawn.health.hediffSet.hediffs)
@@ -2558,7 +2631,7 @@ namespace HVPAA
                             adjacentFires *= 5f;
                         }
                     }
-                    if (adjacentFires > 0)
+                    if (adjacentFires > 0 && !possibleTargets.ContainsKey(intVec))
                     {
                         possibleTargets.Add(intVec, adjacentFires);
                     }
@@ -3532,7 +3605,7 @@ namespace HVPAA
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = -15f;
                     HVPAAUtility.LightningApplicability(this, intPsycasts, psycast, tryNewPosition, niceToEvil, this.aoe, ref tryNewScore);
@@ -4144,7 +4217,7 @@ namespace HVPAA
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = -10f;
                     foreach (Pawn p2 in GenRadial.RadialDistinctThingsAround(psycast.pawn.Position, psycast.pawn.Map, this.aoe, true).OfType<Pawn>().Distinct<Pawn>())
@@ -4336,7 +4409,7 @@ namespace HVPAA
                         int x = Math.Min(p.Position.x, foe.Position.x) + (int)(Rand.Value * Math.Abs(p.Position.x - foe.Position.x));
                         int z = Math.Min(p.Position.z, foe.Position.z) + (int)(Rand.Value * Math.Abs(p.Position.z - foe.Position.z));
                         IntVec3 randPosBetween = new IntVec3(x, p.Position.y, z);
-                        if (randPosBetween.IsValid && GenSight.LineOfSight(psycast.pawn.Position, randPosBetween, psycast.pawn.Map) && randPosBetween.DistanceTo(intPsycasts.Pawn.Position) <= this.Range(psycast) && !positionTargets.Keys.Contains(randPosBetween))
+                        if (randPosBetween.IsValid && !positionTargets.ContainsKey(randPosBetween) && GenSight.LineOfSight(psycast.pawn.Position, randPosBetween, psycast.pawn.Map) && randPosBetween.DistanceTo(intPsycasts.Pawn.Position) <= this.Range(psycast) && !positionTargets.Keys.Contains(randPosBetween))
                         {
                             bool nearbySkipshield = false;
                             foreach (Thing t2 in GenRadial.RadialDistinctThingsAround(randPosBetween, psycast.pawn.Map, 3f, true))
@@ -4611,7 +4684,7 @@ namespace HVPAA
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = 1f;
                     foreach (IntVec3 iv3 in GenRadial.RadialCellsAround(tryNewPosition, 0f, this.aoe))
@@ -4864,7 +4937,7 @@ namespace HVPAA
             for (int i = 0; i < num; i++)
             {
                 tryNewPosition = psycast.pawn.Position + GenRadial.RadialPattern[i];
-                if (tryNewPosition.IsValid && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0))
+                if (tryNewPosition.IsValid && !possibleTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0))
                 {
                     tryNewScore = 0f;
                     HVPAAUtility.LightningApplicability(this, intPsycasts, psycast, tryNewPosition, niceToEvil, this.aoe, ref tryNewScore);
@@ -5270,6 +5343,20 @@ namespace HVPAA
                 }
             }
             return false;
+        }
+        public static void SetAlliesAndAdversaries(Pawn caster, List<Pawn> allies, List<Pawn> foes, float niceToAnimals, float niceToEvil)
+        {
+            foreach (Pawn p in (List<Pawn>)caster.Map.mapPawns.AllPawnsSpawned)
+            {
+                if (HVPAAUtility.IsEnemy(caster, p))
+                {
+                    foes.Add(p);
+                }
+                else if (HVPAAUtility.IsAlly(niceToAnimals <= 0, caster, p, niceToEvil))
+                {
+                    allies.Add(p);
+                }
+            }
         }
         public static bool IsEnemy(Pawn caster, Pawn p)
         {

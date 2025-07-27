@@ -12,7 +12,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI.Group;
 using Verse.Noise;
-using VFECore;
+using VEF;
 using static HarmonyLib.Code;
 using static UnityEngine.GraphicsBuffer;
 
@@ -301,7 +301,7 @@ namespace HVPAA_CoolerPsycasts
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = 0f;
                     foreach (IntVec3 iv3 in GenRadial.RadialCellsAround(tryNewPosition, 0f, this.aoe))
@@ -519,7 +519,7 @@ namespace HVPAA_CoolerPsycasts
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -568,11 +568,11 @@ namespace HVPAA_CoolerPsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return p.CurrentEffectiveVerb.EffectiveRange* p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
+            return p.CurrentEffectiveVerb.EffectiveRange* p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return p.CurrentEffectiveVerb.EffectiveRange* p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
+            return p.CurrentEffectiveVerb.EffectiveRange* p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
         }
         public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -615,7 +615,7 @@ namespace HVPAA_CoolerPsycasts
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -845,7 +845,7 @@ namespace HVPAA_CoolerPsycasts
             {
                 return p.GetStatValue(StatDefOf.MeleeDPS);
             }
-            return 2f*p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
+            return 2f*p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
         }
         public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -1031,7 +1031,7 @@ namespace HVPAA_CoolerPsycasts
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
             bool isRanged = p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon;
-            float howMuchBetterIsPsybladeThanAvg = ((1 + this.avgArmorPen) * this.avgDamage * this.qualityMultiplier / this.avgWeaponCooldown) - (isRanged ? (2f * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown))) : p.GetStatValue(StatDefOf.MeleeDPS));
+            float howMuchBetterIsPsybladeThanAvg = ((1 + this.avgArmorPen) * this.avgDamage * this.qualityMultiplier / this.avgWeaponCooldown) - (isRanged ? (2f * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown))) : p.GetStatValue(StatDefOf.MeleeDPS));
             if (howMuchBetterIsPsybladeThanAvg <= 0f)
             {
                 return 0f;
@@ -1123,7 +1123,7 @@ namespace HVPAA_CoolerPsycasts
                 }
             }
             bool isRanged = p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon;
-            float howMuchBetterIsPsybladeThanAvg = ((1 + this.avgArmorPen) * this.avgDamage * qualityMultiplier / this.avgWeaponCooldown) - (isRanged ? (p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown))) : p.GetStatValue(StatDefOf.MeleeDPS));
+            float howMuchBetterIsPsybladeThanAvg = ((1 + this.avgArmorPen) * this.avgDamage * qualityMultiplier / this.avgWeaponCooldown) - (isRanged ? (p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown))) : p.GetStatValue(StatDefOf.MeleeDPS));
             if (howMuchBetterIsPsybladeThanAvg <= 0f)
             {
                 return 0f;
@@ -1249,7 +1249,7 @@ namespace HVPAA_CoolerPsycasts
             }
             if (p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
             {
-                return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
+                return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
             }
             return p.GetStatValue(StatDefOf.MeleeDPS);
         }
@@ -1257,7 +1257,7 @@ namespace HVPAA_CoolerPsycasts
         {
             if (p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
             {
-                return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VFEDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
+                return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
             }
             return p.GetStatValue(StatDefOf.MeleeDPS);
         }
@@ -1499,7 +1499,7 @@ namespace HVPAA_CoolerPsycasts
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = 0f;
                     List<IntVec3> AoECells = GenRadial.RadialCellsAround(tryNewPosition, this.aoe, true).ToList<IntVec3>();
@@ -1702,7 +1702,7 @@ namespace HVPAA_CoolerPsycasts
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
@@ -1794,7 +1794,7 @@ namespace HVPAA_CoolerPsycasts
                     {
                         bestTargetPos = bestTarget.Position;
                         CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1 != null)
+                        if (randAoE1.IsValid)
                         {
                             float pTargetHits = 0f;
                             foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)

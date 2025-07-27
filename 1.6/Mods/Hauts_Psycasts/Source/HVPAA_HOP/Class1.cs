@@ -799,7 +799,7 @@ namespace HVPAA_HOP
             for (int i = 0; i < num; i++)
             {
                 tryNewPosition = psycast.pawn.Position + GenRadial.RadialPattern[i];
-                if (tryNewPosition.IsValid && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && !psycast.pawn.Map.roofGrid.Roofed(tryNewPosition))
+                if (tryNewPosition.IsValid && !possibleTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && !psycast.pawn.Map.roofGrid.Roofed(tryNewPosition))
                 {
                     tryNewScore = 0f;
                     HVPAAUtility.LightningApplicability(this, intPsycasts, psycast, tryNewPosition, niceToEvil, 1.5f, ref tryNewScore);
@@ -1442,7 +1442,7 @@ namespace HVPAA_HOP
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = 0f;
                     foreach (Thing thing in GenRadial.RadialDistinctThingsAround(tryNewPosition, intPsycasts.Pawn.Map, aoe, true))
@@ -1507,7 +1507,7 @@ namespace HVPAA_HOP
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = -1f;
                     foreach (Thing thing in GenRadial.RadialDistinctThingsAround(tryNewPosition, intPsycasts.Pawn.Map, aoe, true))
@@ -1779,7 +1779,7 @@ namespace HVPAA_HOP
             {
                 foreach (Fire fire in GenRadial.RadialDistinctThingsAround(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, this.Range(psycast), true).OfType<Fire>().Distinct<Fire>())
                 {
-                    if (!fire.Position.Filled(psycast.pawn.Map))
+                    if (!fire.Position.Filled(psycast.pawn.Map) && !possibleTargets.ContainsKey(fire.PositionHeld))
                     {
                         float adjacentFires = 0f;
                         foreach (Thing thing in GenRadial.RadialDistinctThingsAround(fire.PositionHeld, psycast.pawn.Map, this.aoe, true))
@@ -2223,7 +2223,7 @@ namespace HVPAA_HOP
                         break;
                     }
                 }
-                if (tryNewPosition.IsValid)
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
                 {
                     tryNewScore = -this.minScoreToCast;
                     if (intPsycasts.Pawn.Faction != null)
