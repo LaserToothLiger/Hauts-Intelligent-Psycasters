@@ -389,7 +389,6 @@ namespace HVPAA
             }
         }
     }
-
     public class HautsFactionCompProperties_AlliesAndAdversaries : HautsFactionCompProperties
     {
         public HautsFactionCompProperties_AlliesAndAdversaries()
@@ -409,7 +408,7 @@ namespace HVPAA
         public override void CompPostTick()
         {
             base.CompPostTick();
-            if (Find.TickManager.TicksGame % 60 == 0)
+            if (Find.TickManager.TicksGame % 250 == 0)
             {
                 this.mapsCovered.Clear();
             }
@@ -664,7 +663,7 @@ namespace HVPAA
         public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
         {
             base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
-            if (HautsUtility.IsntCastingAbility(this.Pawn))
+            if (HautsUtility.IsntCastingAbility(this.Pawn) && Rand.Chance(0.5f))
             {
                 this.timer = Math.Min(240, this.timer);
             }
@@ -2577,7 +2576,7 @@ namespace HVPAA
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return !p.IsBurning() || (!p.Downed && !p.stances.stunner.Stunned && p.GetStatValue(StatDefOf.MoveSpeed) >= 1f);
+            return !p.Downed && !p.stances.stunner.Stunned && p.GetStatValue(StatDefOf.MoveSpeed) >= 1f;
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
@@ -2593,51 +2592,54 @@ namespace HVPAA
         {
             positionTargets = new Dictionary<IntVec3, float>();
             Dictionary<IntVec3, float> possibleTargets = new Dictionary<IntVec3, float>();
-            int num = GenRadial.NumCellsInRadius(this.Range(psycast));
-            for (int i = 0; i < num; i++)
+            Faction f = psycast.pawn.Faction;
+            foreach (Fire fire in GenRadial.RadialDistinctThingsAround(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, this.Range(psycast), true).OfType<Fire>().Distinct<Fire>())
             {
-                IntVec3 intVec = psycast.pawn.Position + GenRadial.RadialPattern[i];
-                if (intVec.IsValid && GenSight.LineOfSight(psycast.pawn.Position, intVec, psycast.pawn.Map, true, null, 0, 0) && !intVec.Filled(psycast.pawn.Map))
+                IntVec3 pos = fire.Position;
+                if (pos.Filled(psycast.pawn.Map) || !GenSight.LineOfSight(psycast.pawn.Position, pos, psycast.pawn.Map, true, null, 0, 0))
                 {
-                    float adjacentFires = 0f;
-                    foreach (Thing thing in GenRadial.RadialDistinctThingsAround(intVec, psycast.pawn.Map, 1.42f, true))
+                    bool goNext = true;
+                    for (int i = 0; i < 8; i++)
                     {
-                        if (thing is Fire)
+                        IntVec3 intVec = pos + GenRadial.RadialPattern[i];
+                        if (!intVec.Filled(psycast.pawn.Map) && GenSight.LineOfSight(psycast.pawn.Position, intVec, psycast.pawn.Map, true, null, 0, 0))
                         {
-                            adjacentFires += 1f;
-                        }
-                        else if (thing.HasAttachment(ThingDefOf.Fire))
-                        {
-                            if (thing is Pawn p && HVPAAUtility.IsAlly(intPsycasts.niceToAnimals <= 0, psycast.pawn, p, niceToEvil) && this.OtherAllyDisqualifiers(psycast, p, useCase))
-                            {
-                                continue;
-                            }
-                            CompExplosive cexp = thing.TryGetComp<CompExplosive>();
-                            if (cexp != null && cexp.Props.startWickOnDamageTaken != null && cexp.Props.startWickOnDamageTaken.Contains(DamageDefOf.Flame))
-                            {
-                                adjacentFires += cexp.Props.damageAmountBase < 0f ? cexp.Props.explosiveDamageType.defaultDamage : cexp.Props.damageAmountBase;
-                            }
-                            if (thing.Faction != null && psycast.pawn.Faction != null && (thing.Faction == psycast.pawn.Faction || (niceToEvil > 0f && thing.Faction.RelationKindWith(psycast.pawn.Faction) == FactionRelationKind.Ally)))
-                            {
-                                adjacentFires += 2f * thing.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, thing);
-                            }
-                            else
-                            {
-                                adjacentFires += 1f;
-                            }
-                        }
-                        if (!intVec.UsesOutdoorTemperature(psycast.pawn.Map))
-                        {
-                            adjacentFires *= 5f;
+                            pos = intVec;
+                            goNext = false;
+                            break;
                         }
                     }
-                    if (adjacentFires > 0 && !possibleTargets.ContainsKey(intVec))
+                    if (goNext)
                     {
-                        possibleTargets.Add(intVec, adjacentFires);
+                        continue;
                     }
                 }
+                if (!possibleTargets.ContainsKey(pos))
+                {
+                    int numFires = 0;
+                    for (int i = 0; i < 8; i++)
+                    {
+                        IntVec3 intVec = pos + GenRadial.RadialPattern[i];
+                        List<Thing> ctl = intVec.GetThingList(psycast.pawn.Map);
+                        if (ctl != null)
+                        {
+                            foreach (Thing t in ctl)
+                            {
+                                if (t is Fire || t.IsBurning())
+                                {
+                                    numFires++;
+                                }
+                                if ((t is Pawn p && intPsycasts.foes.Contains(p)) || (f != null && ((t.Faction != null && f.HostileTo(t.Faction)) || (t is Plant p2 && HVPAAUtility.IsPlantInHostileFactionGrowZone(p2, f)))))
+                                {
+                                    numFires--;
+                                }
+                            }
+                        }
+                    }
+                    possibleTargets.Add(pos,numFires);
+                }
             }
-            if (possibleTargets != null && possibleTargets.Count > 0)
+            if (!possibleTargets.NullOrEmpty())
             {
                 float highestValue = 0f;
                 foreach (KeyValuePair<IntVec3, float> kvp in possibleTargets)
@@ -5530,6 +5532,15 @@ namespace HVPAA
         public static bool SkipImmune(Pawn p, float maxBodySize)
         {
             return p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.kindDef.skipResistant || p.BodySize > maxBodySize || p.kindDef.isBoss;
+        }
+        public static bool IsPlantInHostileFactionGrowZone(Plant plant, Faction f)
+        {
+            Zone zone = plant.Map.zoneManager.ZoneAt(plant.Position);
+            if (zone != null && zone is Zone_Growing && f.HostileTo(Faction.OfPlayerSilentFail))
+            {
+                return true;
+            }
+            return false;
         }
         //psycaster spawning
         public static float PsycasterCommonality
