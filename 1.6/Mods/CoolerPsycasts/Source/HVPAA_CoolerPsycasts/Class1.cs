@@ -1550,7 +1550,7 @@ namespace HVPAA_CoolerPsycasts
     {
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || p.RaceProps.IsMechanoid;
+            return p.Downed || !p.RaceProps.IsFlesh;
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {

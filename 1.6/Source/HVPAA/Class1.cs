@@ -2772,11 +2772,11 @@ namespace HVPAA
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return 4f * p.GetStatValue(StatDefOf.PsychicSensitivity) * (p.CurJob != null && p.CurJob.verbToUse != null ? 1.25f : 1f) * (p.RaceProps.IsMechanoid ? 0.4f : 1f) * (this.Digesting(p) ? 100f : 1f);
+            return 4f * p.GetStatValue(StatDefOf.PsychicSensitivity) * (p.CurJob != null && p.CurJob.verbToUse != null ? 1.25f : 1f) * (!p.RaceProps.IsFlesh ? 0.4f : 1f) * (this.Digesting(p) ? 100f : 1f);
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return this.allyMultiplier * p.GetStatValue(StatDefOf.PsychicSensitivity) * (p.CurJob != null && p.CurJob.verbToUse != null ? 1.25f : 1f) * (p.RaceProps.IsMechanoid ? 0.4f : 1f) * (this.Digesting(p) ? 2.5f : 1f);
+            return this.allyMultiplier * p.GetStatValue(StatDefOf.PsychicSensitivity) * (p.CurJob != null && p.CurJob.verbToUse != null ? 1.25f : 1f) * (!p.RaceProps.IsFlesh ? 0.4f : 1f) * (this.Digesting(p) ? 2.5f : 1f);
         }
         public bool Digesting(Pawn p)
         {
@@ -4671,7 +4671,7 @@ namespace HVPAA
         }
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.RaceProps.IsMechanoid || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !p.Map.reachability.CanReach(psycast.pawn.Position, p.Position, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false, false, false));
+            return !p.RaceProps.IsFlesh || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !p.Map.reachability.CanReach(psycast.pawn.Position, p.Position, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false, false, false));
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {

@@ -18,7 +18,7 @@ namespace HVPAA_MorePsycasts
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || !p.RaceProps.Humanlike || p.RaceProps.IsMechanoid || p.skills == null || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.Faction == null || p.Faction != psycast.pawn.Faction;
+            return p.Downed || !p.RaceProps.Humanlike || !p.RaceProps.IsFlesh || p.skills == null || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.Faction == null || p.Faction != psycast.pawn.Faction;
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
@@ -66,7 +66,7 @@ namespace HVPAA_MorePsycasts
     {
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || p.RaceProps.IsMechanoid || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
+            return p.Downed || !p.RaceProps.IsFlesh || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
