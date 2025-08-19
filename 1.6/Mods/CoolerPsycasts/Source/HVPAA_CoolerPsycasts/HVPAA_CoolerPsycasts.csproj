@@ -40,7 +40,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="CoolPsycasts">
-      <HintPath>..\..\..\..\..\..\..\..\..\workshop\content\294100\3285538682\1.5\Assemblies\CoolPsycasts.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\..\workshop\content\294100\3285538682\1.6\Assemblies\CoolPsycasts.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HautsFramework">

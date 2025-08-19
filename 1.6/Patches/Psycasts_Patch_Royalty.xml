@@ -1622,39 +1622,8 @@ Level 1 psycasts-->
 							<mfds><li>Dignified</li><li>Natural</li></mfds>
 							<aoe>2.3</aoe>
 							<plant>Plant_Rose</plant>
-							<chanceToUtilityCast>0.25</chanceToUtilityCast><!--not terribly important; wasting 1.5% psyfocus every attempt will stack up quickly-->
+							<chanceToUtilityCast>0.2</chanceToUtilityCast><!--not terribly important; wasting 1.5% psyfocus every attempt will stack up quickly-->
 							<minBeautyForLikelierCasting>0.1</minBeautyForLikelierCasting><!--will cast regardless of factionality or map's faction if below this much Beauty need, but must still pass the chance check first-->
-						</li>
-					</value>
-				</li>
-				<li Class="PatchOperationAddModExtension">
-					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_VanometricCharge"]</xpath>
-					<value>
-						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_VC">
-							<damage>true</damage>
-							<healing>true</healing>
-							<utility>true</utility>
-							<damageType>ElectricalBurn</damageType><!--inflexible property mirror; damage type is hardcoded-->
-							<keepMechEnergyAbove>0.3</keepMechEnergyAbove><!--as in 30%-->
-							<keepBatteryEnergyAbove>200</keepBatteryEnergyAbove>
-						</li>
-					</value>
-				</li>
-				<li Class="PatchOperationAddModExtension">
-					<xpath>/Defs/SkillDef[defName="Shooting"]</xpath>
-					<value>
-						<li Class="HVPAA_CoolerPsycasts.CombatRelevantSkill">
-							<toTarget>CoolPsycasts_SkillDrain_Shooting_Down</toTarget>
-							<toCaster>CoolPsycasts_SkillDrain_Shooting_Up</toCaster>
-						</li>
-					</value>
-				</li>
-				<li Class="PatchOperationAddModExtension">
-					<xpath>/Defs/SkillDef[defName="Melee"]</xpath>
-					<value>
-						<li Class="HVPAA_CoolerPsycasts.CombatRelevantSkill">
-							<toTarget>CoolPsycasts_SkillDrain_Melee_Down</toTarget>
-							<toCaster>CoolPsycasts_SkillDrain_Melee_Up</toCaster>
 						</li>
 					</value>
 				</li>
@@ -1664,6 +1633,37 @@ Level 1 psycasts-->
 					</mods>
 					<match Class="PatchOperationSequence">
 						<operations>
+							<li Class="PatchOperationAddModExtension"><!--although it doesn't strictly require Anomaly, Vanometric Charge's damage type DOES, so unless you want psycasters to short-circuit themselves trying to use this offensively we have to lock its AI behind Anomaly-->
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_VanometricCharge"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_VC">
+										<damage>true</damage>
+										<healing>true</healing>
+										<utility>true</utility>
+										<damageType>ElectricalBurn</damageType><!--inflexible property mirror; damage type is hardcoded-->
+										<keepMechEnergyAbove>0.3</keepMechEnergyAbove><!--as in 30%-->
+										<keepBatteryEnergyAbove>200</keepBatteryEnergyAbove>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/SkillDef[defName="Shooting"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.CombatRelevantSkill">
+										<toTarget>CoolPsycasts_SkillDrain_Shooting_Down</toTarget>
+										<toCaster>CoolPsycasts_SkillDrain_Shooting_Up</toCaster>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/SkillDef[defName="Melee"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.CombatRelevantSkill">
+										<toTarget>CoolPsycasts_SkillDrain_Melee_Down</toTarget>
+										<toCaster>CoolPsycasts_SkillDrain_Melee_Up</toCaster>
+									</li>
+								</value>
+							</li>
 							<li Class="PatchOperationAddModExtension">
 								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_SkillDrain"]</xpath>
 								<value>
@@ -1978,6 +1978,7 @@ Level 1 psycasts-->
 								<value>
 									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Jskip">
 										<defense>true</defense>
+										<disabledAtPercentEntropy>0.6</disabledAtPercentEntropy><!--don't cast if already beyond this proportion of ur neural heat bar-->
 										<avoidTargetsWithHediff>CoolPsycasts_JitterskipHD</avoidTargetsWithHediff>
 										<usableWhileFleeing>true</usableWhileFleeing>
 										<aoe>45</aoe><!--scans for foes in this radius-->
@@ -2005,21 +2006,20 @@ Level 1 psycasts-->
 									</li>
 								</value>
 							</li>
-							<!--skiprifle works for the most part, but its psyfocus drain never stops even once the rifle is dropped or otherwise destroyed. therefore it is almost entirely self-sabotaging for AI psycasters to use
 							<li Class="PatchOperationAddModExtension">
 								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skiprifle"]</xpath>
 								<value>
 									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Skiprifle">
-										<damage>true</damage>
+										<defense>true</defense>
 										<avoidMakingTooMuchOfThing>CoolPsycasts_Skiprifle</avoidMakingTooMuchOfThing>
-										<avgDamage>20</avgDamage>assume one in three bullets misses, or is overkill, or gets interrupted by closure to melee combat, or similar
-										<avgWeaponCooldown>2.5</avgWeaponCooldown>this also includes the ticks between burst shots
+										<avgDamage>20</avgDamage><!--assume one in three bullets misses, or is overkill, or gets interrupted by closure to melee combat, or similar-->
+										<avgWeaponCooldown>2.5</avgWeaponCooldown><!--this also includes the ticks between burst shots-->
 										<avgArmorPen>2.35</avgArmorPen>
-										<aoe>3</aoe>any foe pawns w/in this range, don't make a skiprifle
-										<disallowingTraits><li>Brawler</li></disallowingTraits>why would a brawler want to make a portal gun
+										<aoe>3</aoe><!--any foe pawns w/in this range, don't make a skiprifle-->
+										<disallowingTraits><li>Brawler</li></disallowingTraits><!--why would a brawler want to receive a portal gun-->
 									</li>
 								</value>
-							</li>-->
+							</li>
 							<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skipblade"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
 							<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skiprifle"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
 						</operations>

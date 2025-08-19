@@ -472,7 +472,8 @@ namespace HVPAA
                         Log.Warning("med focus type " + mfd.label);
                     }*/
                     //give me up to 5 psycasts to try out. A psycast can enter this list multiple times if it has multiple use cases
-                    List<PotentialPsycast> highestPriorityPsycasts = this.ThreePriorityPsycasts(situationCase);
+                    this.highestPriorityPsycasts = new List<PotentialPsycast>();
+                    this.highestPriorityPsycasts = this.ThreePriorityPsycasts(situationCase);
                     //Log.Message("highest-priority psycasts as follows: ");
                     /*foreach (PotentialPsycast pp in highestPriorityPsycasts)
                     {
@@ -480,7 +481,7 @@ namespace HVPAA
                     }*/
                     //figure out the 'applicability' of each psycast to the current situation
                     bool immediatelyPsycastAgain = false;
-                    if (highestPriorityPsycasts.Count > 0)
+                    if (this.highestPriorityPsycasts.Count > 0)
                     {
                         for (int i = this.allies.Count - 1; i >= 0; i--)
                         {
@@ -507,7 +508,7 @@ namespace HVPAA
                                 if (uct != null)
                                 {
                                     PotentialPsycast psyToCast = new PotentialPsycast(meta, -1f, 0, uct.immediatelyPsycastAgain);
-                                    float metapplicability = uct.MetaApplicability(this, psyToCast, highestPriorityPsycasts, situationCase, this.niceToEvil);
+                                    float metapplicability = uct.MetaApplicability(this, psyToCast, this.highestPriorityPsycasts, situationCase, this.niceToEvil);
                                     if (metapplicability > 0)
                                     {
                                         if (!this.Pawn.Awake())
@@ -535,7 +536,7 @@ namespace HVPAA
                         }
                         if (!metaWasCast)
                         {
-                            foreach (PotentialPsycast potPsy in highestPriorityPsycasts)
+                            foreach (PotentialPsycast potPsy in this.highestPriorityPsycasts)
                             {
                                 UseCaseTags uct = potPsy.ability.def.GetModExtension<UseCaseTags>();
                                 if (uct != null)
@@ -544,10 +545,10 @@ namespace HVPAA
                                 }
                             }
                             //get the psycast with the highest priority * applicability
-                            if (highestPriorityPsycasts.Count > 0)
+                            if (this.highestPriorityPsycasts.Count > 0)
                             {
                                 PotentialPsycast psyToCast = null;
-                                foreach (PotentialPsycast potPsy in highestPriorityPsycasts)
+                                foreach (PotentialPsycast potPsy in this.highestPriorityPsycasts)
                                 {
                                     if (potPsy.score > 0f)
                                     {
@@ -605,6 +606,7 @@ namespace HVPAA
                             this.timer /= 2;
                         }
                     }
+                    this.highestPriorityPsycasts.Clear();
                     //Log.Error("time to next cast: " + (this.timer / 60));
                 }
             }
@@ -1060,6 +1062,7 @@ namespace HVPAA
         public List<MeditationFocusDef> mfds = new List<MeditationFocusDef>();
         public List<Pawn> allies = new List<Pawn>();
         public List<Pawn> foes = new List<Pawn>();
+        public List<PotentialPsycast> highestPriorityPsycasts;
     }
     public class PotentialPsycast
     {

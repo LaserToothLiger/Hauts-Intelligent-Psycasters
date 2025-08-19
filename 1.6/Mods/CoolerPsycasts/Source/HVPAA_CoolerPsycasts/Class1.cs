@@ -28,25 +28,18 @@ namespace HVPAA_CoolerPsycasts
             if (ModsConfig.IdeologyActive)
             {
                 harmony.Patch(AccessTools.Method(typeof(CompAbilityEffect_Enslave), nameof(CompAbilityEffect_Enslave.Apply), new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) }),
-                               prefix: new HarmonyMethod(patchType, nameof(HVPAA_AbilityEnslave_Apply_Prefix)));
+                               postfix: new HarmonyMethod(patchType, nameof(HVPAA_AbilityEnslave_Apply_Postfix)));
             }
-            harmony.Patch(AccessTools.Method(typeof(CompAbilityEffect_GrantPsycast), nameof(CompAbilityEffect_GrantPsycast.Apply), new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) }),
-                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_AbilityGP_Apply_Prefix)));
-            harmony.Patch(AccessTools.Method(typeof(CompAbilityEffect_SkillDrain), nameof(CompAbilityEffect_SkillDrain.Apply), new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) }),
-                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_AbilitySD_Apply_Prefix)));
-            harmony.Patch(AccessTools.Method(typeof(CompAbilityEffect_VanometricCharge), nameof(CompAbilityEffect_VanometricCharge.Apply), new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) }),
-                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_AbilityVC_Apply_Prefix)));
-            harmony.Patch(AccessTools.Method(typeof(CompAbilityEffect_Duplicate), nameof(CompAbilityEffect_Duplicate.Apply), new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) }),
-                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_AbilityDuplicate_Apply_Prefix)));
+            /*harmony.Patch(AccessTools.Method(typeof(CompAbilityEffect_CastAbility), nameof(CompAbilityEffect_CastAbility.Apply), new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo) }),
+                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_AbilityCastAbility_Apply_Prefix)));*/
         }
-        public static bool HVPAA_AbilityEnslave_Apply_Prefix(CompAbilityEffect_Enslave __instance, LocalTargetInfo target)
+        public static void HVPAA_AbilityEnslave_Apply_Postfix(CompAbilityEffect_Enslave __instance, LocalTargetInfo target)
         {
             if (target.Pawn != null)
             {
                 Pawn pawn = __instance.parent.pawn;
                 if (pawn.Faction != null && pawn.Faction != Faction.OfPlayerSilentFail)
                 {
-                    target.Pawn.guest.SetGuestStatus(pawn.Faction, GuestStatus.Slave);
                     Lord lord = pawn.GetLord();
                     if (lord != null)
                     {
@@ -54,95 +47,48 @@ namespace HVPAA_CoolerPsycasts
                     } else {
                         LordMaker.MakeNewLord(pawn.Faction, new LordJob_EscortPawn(pawn), pawn.Map, Gen.YieldSingle<Pawn>(target.Pawn));
                     }
-                    return false;
                 }
             }
-            return true;
         }
-        public static bool HVPAA_AbilityGP_Apply_Prefix(CompAbilityEffect_GrantPsycast __instance, LocalTargetInfo target)
+        public static bool HVPAA_AbilityCastAbility_Apply_Prefix(CompAbilityEffect_CastAbility __instance, LocalTargetInfo target, LocalTargetInfo dest)
         {
-            if (target.Pawn != null)
+            Pawn caster = __instance.parent.pawn;
+            caster.health.hediffSet.TryGetHediff(HVPAADefOf.HVPAA_AI, out Hediff ai);
+            if (ai != null && caster.Spawned)
             {
-                Pawn pawn = __instance.parent.pawn;
-                if (pawn.Faction != null && pawn.Faction != Faction.OfPlayerSilentFail)
+                HediffComp_IntPsycasts hcip = ai.TryGetComp<HediffComp_IntPsycasts>();
+                if (hcip != null)
                 {
-                    List<AbilityDef> validPsycasts = DefDatabase<AbilityDef>.AllDefs.Where(x => x.IsPsycast && x.level >= __instance.Props.minLevel && x.level <= __instance.Props.maxLevel && x.level <= target.Pawn.GetPsylinkLevel() && target.Pawn.abilities.GetAbility(x) == null).ToList();
-                    if (!validPsycasts.NullOrEmpty())
+                    Dictionary<Psycast, float> extendableAbilities = new Dictionary<Psycast, float>();
+                    float myRange = __instance.parent.verb.EffectiveRange;
+                    if (hcip.highestPriorityPsycasts.NullOrEmpty())
                     {
-                        pawn.abilities.GainAbility(validPsycasts.RandomElementByWeight((AbilityDef a) => a.level));
+                        hcip.highestPriorityPsycasts = hcip.ThreePriorityPsycasts(hcip.GetSituation());
                     }
-                    return false;
-                }
-            }
-            return true;
-        }
-        public static bool HVPAA_AbilitySD_Apply_Prefix(CompAbilityEffect_SkillDrain __instance, LocalTargetInfo target)
-        {
-            if (target.Pawn != null)
-            {
-                Pawn pawn = __instance.parent.pawn;
-                if (pawn.Faction != null && pawn.Faction != Faction.OfPlayerSilentFail)
-                {
-                    List<SkillDef> combatRelevantSkills = DefDatabase<SkillDef>.AllDefsListForReading.Where((SkillDef sd) => sd.HasModExtension<CombatRelevantSkill>() && target.Pawn.skills.GetSkill(sd).Level > 0 && !pawn.skills.GetSkill(sd).TotallyDisabled).ToList();
-                    if (!combatRelevantSkills.NullOrEmpty())
+                    foreach (PotentialPsycast pp in hcip.highestPriorityPsycasts)
                     {
-                        SkillDef finalSd = combatRelevantSkills.RandomElementByWeight((SkillDef sd) => (float)target.Pawn.skills.GetSkill(sd).Level / ((float)pawn.skills.GetSkill(sd).Level));
-                        CombatRelevantSkill crs = finalSd.GetModExtension<CombatRelevantSkill>();
-                        if (crs != null)
+                        Psycast a = pp.ability;
+                        float aRange = a.verb.EffectiveRange;
+                        if (a.def != __instance.parent.def && a.def.targetRequired && a.CanApplyOn(target) && aRange > 0f && aRange < myRange && a.FinalPsyfocusCost(target) < caster.psychicEntropy.CurrentPsyfocus)
                         {
-                            int amount = (int)(Mathf.Min(__instance.Props.baseStacks, target.Pawn.skills.GetSkill(finalSd).Level) * target.Pawn.GetStatValue(__instance.Props.scaleWithTargetStat) * pawn.GetStatValue(__instance.Props.scaleWithTargetStat));
-                            while (amount > 0)
+                            if (!a.comps.Any((AbilityComp c) => c is CompAbilityEffect_WithDest) && !caster.psychicEntropy.WouldOverflowEntropy(a.def.EntropyGain))
                             {
-                                target.Pawn.health.AddHediff(crs.toTarget, null);
-                                pawn.health.AddHediff(crs.toCaster, null);
-                                amount--;
+                                UseCaseTags uct = pp.ability.def.GetModExtension<UseCaseTags>();
+                                if (uct != null)
+                                {
+                                    float score = pp.score * uct.ApplicabilityScore(hcip, pp, hcip.niceToEvil);
+                                    float dist = pp.lti.Cell.DistanceTo(caster.Position);
+                                    if (pp.lti.IsValid && dist <= myRange && dist > aRange && score > 0)
+                                    {
+                                        extendableAbilities.Add(a, score);
+                                    }
+                                }
                             }
                         }
                     }
-                    return false;
-                }
-            }
-            return true;
-        }
-        public static bool HVPAA_AbilityVC_Apply_Prefix(CompAbilityEffect_VanometricCharge __instance, LocalTargetInfo target)
-        {
-            if (target.Pawn != null && target.Pawn.RaceProps.IsMechanoid)
-            {
-                Pawn pawn = __instance.parent.pawn;
-                if (pawn.Faction != null && pawn.Faction != Faction.OfPlayerSilentFail)
-                {
-                    if (pawn.HostileTo(target.Pawn))
+                    if (!extendableAbilities.NullOrEmpty())
                     {
-                        target.Pawn.TakeDamage(new DamageInfo(DamageDefOf.ElectricalBurn, __instance.Props.damageAmount, 5, -1, target.Pawn, target.Pawn.health.hediffSet.GetNotMissingParts(BodyPartHeight.Undefined, BodyPartDepth.Undefined, BodyPartTagDefOf.BloodPumpingSource).RandomElement()));
-                    }
-                    else if (target.Pawn.needs.energy != null)
-                    {
-                        target.Pawn.needs.energy.CurLevel += __instance.Props.mechChargeAmount / target.Pawn.BodySize;
-                    }
-                    return false;
-                }
-            }
-            return true;
-        }
-        public static bool HVPAA_AbilityDuplicate_Apply_Prefix(CompAbilityEffect_Duplicate __instance, LocalTargetInfo target)
-        {
-            Pawn pawn = __instance.parent.pawn;
-            if (pawn.Faction != null && pawn.Faction != Faction.OfPlayerSilentFail)
-            {
-                for (int i = 1; i <= __instance.Props.count; i++)
-                {
-                    Pawn copy = Find.PawnDuplicator.Duplicate(pawn);
-                    GenSpawn.Spawn(copy, target.Cell, pawn.Map);
-                    while (true)
-                    {
-                        Ability ability = copy.abilities.abilities.FirstOrDefault((Ability x) => x.def.level != 0);
-                        if (ability is null) { break; }
-                        copy.abilities.abilities.Remove(ability);
-                    }
-                    copy.health.AddHediff(__instance.Props.hediff).Severity = __instance.Props.severity * pawn.GetStatValue(StatDefOf.PsychicSensitivity);
-                    if (copy.psychicEntropy != null)
-                    {
-                        copy.psychicEntropy.TryAddEntropy(pawn.psychicEntropy.EntropyValue);
+                        extendableAbilities.RandomElementByWeight((KeyValuePair<Psycast, float> kvp) => kvp.Value).Key.Activate(target, dest);
                     }
                 }
                 return false;
@@ -1067,88 +1013,98 @@ namespace HVPAA_CoolerPsycasts
     }
     public class UseCaseTags_Skiprifle : UseCaseTags
     {
-        public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        public override float PriorityScoreDefense(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
         {
-            Pawn pawn = psycast.pawn;
-            if (pawn.equipment == null || (pawn.equipment.Primary != null && pawn.equipment.Primary.def == this.avoidMakingTooMuchOfThing))
-            {
-                return 0f;
-            }
-            if (!this.disallowingTraits.NullOrEmpty() && pawn.story != null)
-            {
-                foreach (TraitDef t in this.disallowingTraits)
-                {
-                    if (pawn.story.traits.HasTrait(t))
-                    {
-                        return 0f;
-                    }
-                }
-            }
-            if (pawn.apparel != null)
-            {
-                List<Apparel> wornApparel = pawn.apparel.WornApparel;
-                for (int i = 0; i < wornApparel.Count; i++)
-                {
-                    RimWorld.CompShield cs = wornApparel[i].TryGetComp<RimWorld.CompShield>();
-                    if (cs != null && cs.Props.blocksRangedWeapons)
-                    {
-                        return 0f;
-                    }
-                }
-            }
-            return base.PriorityScoreDamage(psycast, situationCase, pacifist, niceToEvil, usableFoci);
-        }
-        public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn p = intPsycasts.Pawn;
-            psycast.lti = p;
-            float qualityMultiplier = 1f;
-            CompAbilityEffect_CreateWeapon caecw = psycast.ability.CompOfType<CompAbilityEffect_CreateWeapon>();
+            Pawn p = psycast.pawn;
+            this.qualityMultiplier = 1f;
+            CompAbilityEffect_CreateWeapon caecw = psycast.CompOfType<CompAbilityEffect_CreateWeapon>();
             if (caecw != null)
             {
-                float quality = caecw.Props.statToQualityCurve.Evaluate(intPsycasts.Pawn.GetStatValue(StatDefOf.PsychicSensitivity));
+                float quality = caecw.Props.statToQualityCurve.Evaluate(psycast.pawn.GetStatValue(StatDefOf.PsychicSensitivity));
                 switch (quality)
                 {
                     case 0:
-                        qualityMultiplier = 0.9f;
+                        this.qualityMultiplier = 0.8f;
+                        break;
+                    case 1:
+                        this.qualityMultiplier = 0.9f;
+                        break;
+                    case 3:
+                        this.qualityMultiplier = 1.1f;
+                        break;
+                    case 4:
+                        this.qualityMultiplier = 1.2f;
                         break;
                     case 5:
-                        qualityMultiplier = 1.25f;
+                        this.qualityMultiplier = 1.45f;
                         break;
                     case 6:
-                        qualityMultiplier = 1.5f;
+                        this.qualityMultiplier = 1.65f;
                         break;
                     default:
                         break;
                 }
             }
-            bool isRanged = p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon;
-            float howMuchBetterIsPsybladeThanAvg = ((1 + this.avgArmorPen) * this.avgDamage * qualityMultiplier / this.avgWeaponCooldown) - (isRanged ? (p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown))) : p.GetStatValue(StatDefOf.MeleeDPS));
-            if (howMuchBetterIsPsybladeThanAvg <= 0f)
+            return base.PriorityScoreDefense(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+        }
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            if (p.equipment == null || (p.equipment.Primary != null && p.equipment.Primary.def == this.avoidMakingTooMuchOfThing) || p.kindDef.destroyGearOnDrop || p.RaceProps.IsMechanoid || p.RaceProps.IsAnomalyEntity || p.GetStatValue(StatDefOf.PsychicSensitivity) <= 0f)
             {
-                return 0f;
+                return true;
             }
-            float netFoes = 0f;
-            foreach (Pawn p2 in intPsycasts.foes)
+            if (p.story != null && !this.disallowingTraits.NullOrEmpty())
             {
-                float dist = p2.Position.DistanceTo(p.Position);
-                if (dist <= this.aoe)
+                foreach (TraitDef t in this.disallowingTraits)
                 {
-                    return 0f;
-                } else {
-                    netFoes += p2.HealthScale * p2.GetStatValue(StatDefOf.IncomingDamageFactor);
+                    if (p.story.traits.HasTrait(t))
+                    {
+                        return true;
+                    }
                 }
             }
-            if (netFoes > 0f)
+            if (p.apparel != null)
             {
-                netFoes += howMuchBetterIsPsybladeThanAvg;
+                List<Apparel> wornApparel = p.apparel.WornApparel;
+                for (int i = 0; i < wornApparel.Count; i++)
+                {
+                    RimWorld.CompShield cs = wornApparel[i].TryGetComp<RimWorld.CompShield>();
+                    if (cs != null && cs.Props.blocksRangedWeapons)
+                    {
+                        return true;
+                    }
+                }
             }
-            return netFoes;
+            return false;
+        }
+        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            foreach (Pawn p2 in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, this.aoe, true).OfType<Pawn>().Distinct<Pawn>())
+            {
+                if (intPsycasts.foes.Contains(p2))
+                {
+                    return 0f;
+                }
+            }
+            bool isRanged = p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon;
+            float howMuchBetterIsPsyblasterThanAvg = ((1 + this.avgArmorPen) * this.avgDamage * this.qualityMultiplier / this.avgWeaponCooldown) - (isRanged ? (2f * p.CurrentEffectiveVerb.EffectiveRange * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown))) : p.GetStatValue(StatDefOf.MeleeDPS));
+            return howMuchBetterIsPsyblasterThanAvg;
+        }
+        public override float ApplicabilityScoreDefense(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
+            if (pawn != null)
+            {
+                psycast.lti = pawn;
+                return pawnTargets.TryGetValue(pawn);
+            }
+            return 0f;
         }
         public float avgDamage;
         public float avgWeaponCooldown;
         public float avgArmorPen;
         public List<TraitDef> disallowingTraits;
+        public float qualityMultiplier;
     }
     //level 4
     public class UseCaseTags_Awaken : UseCaseTags
@@ -1310,6 +1266,51 @@ namespace HVPAA_CoolerPsycasts
         private bool canHitColonist;
         public float chanceToCastColonist;
     }
+    /*public class UseCaseTags_Extend : UseCaseTags
+    {
+        public override float MetaApplicability(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, List<PotentialPsycast> psycasts, int situationCase, float niceToEvil)
+        {
+            Pawn pawn = psycast.ability.pawn;
+            float entropyGain = psycast.ability.def.EntropyGain;
+            float psyfocusCost = psycast.ability.def.PsyfocusCost;
+            if (pawn.psychicEntropy != null)
+            {
+                float myRange = psycast.ability.verb.EffectiveRange;
+                float bestScore = 0f;
+                foreach (PotentialPsycast potPsy in psycasts)
+                {
+                    Psycast ability = potPsy.ability;
+                    float aRange = ability.verb.EffectiveRange;
+                    if (!ability.def.targetRequired || aRange <= 0f || aRange > myRange || ability.comps.Any((AbilityComp c) => c is CompAbilityEffect_WithDest))
+                    {
+                        continue;
+                    }
+                    if (pawn.psychicEntropy.WouldOverflowEntropy(ability.def.EntropyGain + entropyGain) || ability.def.PsyfocusCost + psyfocusCost > pawn.psychicEntropy.CurrentPsyfocus + 0.0005f)
+                    {
+                        continue;
+                    }
+                    UseCaseTags uct = ability.def.GetModExtension<UseCaseTags>();
+                    if (uct != null)
+                    {
+                        float score = potPsy.score * uct.ApplicabilityScore(intPsycasts, potPsy, niceToEvil);
+                        float dist = potPsy.lti.Cell.DistanceTo(pawn.Position);
+                        if (potPsy.lti.IsValid && dist <= myRange && dist > aRange && score > 0)
+                        {
+                            if (psycast.lti == null || score > bestScore)
+                            {
+                                psycast.lti = potPsy.lti;
+                                bestScore = score;
+                            }
+                        }
+                    }
+                }
+                return bestScore;
+            }
+            return 0f;
+        }
+        public float minCombatPsyfocusCost;
+        public float minUtilityPsyfocusCost;
+    }*/
     public class UseCaseTags_Jskip : UseCaseTags
     {
         public override bool IsValidThing(Pawn caster, Thing p, float niceToEvil, int useCase)
