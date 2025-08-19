@@ -972,7 +972,7 @@ namespace HVPAA_CoolerPsycasts
         }
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.equipment == null || (p.equipment.Primary != null && p.equipment.Primary.def == this.avoidMakingTooMuchOfThing) || p.kindDef.destroyGearOnDrop || p.RaceProps.IsMechanoid || p.RaceProps.IsAnomalyEntity || p.GetStatValue(StatDefOf.PsychicSensitivity) <= 0f;
+            return p.Downed || p.WorkTagIsDisabled(WorkTags.Violent) || p.equipment == null || (p.equipment.Primary != null && p.equipment.Primary.def == this.avoidMakingTooMuchOfThing) || p.kindDef.destroyGearOnDrop || p.RaceProps.IsMechanoid || p.RaceProps.IsAnomalyEntity || p.GetStatValue(StatDefOf.PsychicSensitivity) <= 0f;
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
@@ -1049,7 +1049,7 @@ namespace HVPAA_CoolerPsycasts
         }
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            if (p.equipment == null || (p.equipment.Primary != null && p.equipment.Primary.def == this.avoidMakingTooMuchOfThing) || p.kindDef.destroyGearOnDrop || p.RaceProps.IsMechanoid || p.RaceProps.IsAnomalyEntity || p.GetStatValue(StatDefOf.PsychicSensitivity) <= 0f)
+            if (p.Downed || p.WorkTagIsDisabled(WorkTags.Violent) || p.equipment == null || (p.equipment.Primary != null && p.equipment.Primary.def == this.avoidMakingTooMuchOfThing) || p.kindDef.destroyGearOnDrop || p.RaceProps.IsMechanoid || p.RaceProps.IsAnomalyEntity || p.GetStatValue(StatDefOf.PsychicSensitivity) <= 0f)
             {
                 return true;
             }
