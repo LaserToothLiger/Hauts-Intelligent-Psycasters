@@ -1627,25 +1627,25 @@ Level 1 psycasts-->
 						</li>
 					</value>
 				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_VanometricCharge"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_VC">
+							<damage>true</damage>
+							<healing>true</healing>
+							<utility>true</utility>
+							<damageType>Bomb</damageType><!--inflexible property mirror; damage type is hardcoded-->
+							<keepMechEnergyAbove>0.3</keepMechEnergyAbove><!--as in 30%-->
+							<keepBatteryEnergyAbove>200</keepBatteryEnergyAbove>
+						</li>
+					</value>
+				</li>
 				<li Class="PatchOperationFindMod">
 					<mods>
 						<li>Anomaly</li>
 					</mods>
 					<match Class="PatchOperationSequence">
 						<operations>
-							<li Class="PatchOperationAddModExtension"><!--although it doesn't strictly require Anomaly, Vanometric Charge's damage type DOES, so unless you want psycasters to short-circuit themselves trying to use this offensively we have to lock its AI behind Anomaly-->
-								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_VanometricCharge"]</xpath>
-								<value>
-									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_VC">
-										<damage>true</damage>
-										<healing>true</healing>
-										<utility>true</utility>
-										<damageType>ElectricalBurn</damageType><!--inflexible property mirror; damage type is hardcoded-->
-										<keepMechEnergyAbove>0.3</keepMechEnergyAbove><!--as in 30%-->
-										<keepBatteryEnergyAbove>200</keepBatteryEnergyAbove>
-									</li>
-								</value>
-							</li>
 							<li Class="PatchOperationAddModExtension">
 								<xpath>/Defs/SkillDef[defName="Shooting"]</xpath>
 								<value>
