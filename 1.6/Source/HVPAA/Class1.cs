@@ -5648,21 +5648,17 @@ namespace HVPAA
                 if (avgRandCasterLevel <= 1)
                 {
                     psylinkLevel = Rand.Chance(0.75f) ? 2 : 1;
-                }
-                else
-                {
+                } else {
                     psylinkLevel = avgRandCasterLevel - 1;
                 }
-            }
-            else if (psylinkLevelChance <= 0.8f)
-            {
+            } else if (psylinkLevelChance <= 0.8f) {
                 psylinkLevel = avgRandCasterLevel + 1;
-            }
-            else
-            {
+            } else if (psylinkLevelChance <= 0.99f) {
+                psylinkLevel = Math.Max(1, (int)Math.Ceiling(Rand.Value * 6f));
+            } else {
                 psylinkLevel = Math.Max(1, (int)Math.Ceiling(Rand.Value * HediffDefOf.PsychicAmplifier.maxSeverity));
             }
-            return psylinkLevel;
+            return (int)Math.Min(psylinkLevel, HediffDefOf.PsychicAmplifier.maxSeverity);
         }
         public static void GiveRandCastHediffs(Pawn pawn, Dictionary<HediffDef, float> randCastHediffs, int maxRandCasterHediffs)
         {
