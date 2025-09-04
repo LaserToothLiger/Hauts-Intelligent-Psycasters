@@ -32,7 +32,7 @@ See the full description here: https://docs.google.com/document/d/1VgFlFlvd3N4Xu
 		<li>
 			<packageId>Hautarche.HautsFramework</packageId>
 			<displayName>Hauts Framework</displayName>
-			<!--<steamWorkshopUrl></steamWorkshopUrl>-->
+			<steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=3422815711</steamWorkshopUrl>
 			<downloadUrl>https://drive.google.com/drive/u/2/folders/1NHDZpL4TDIqgiq2ofa1f-1dXN8VUVG5u?fbclid=IwZXh0bgNhZW0CMTEAAR1UzkYW6Fj1VbcShQ0xB6JOt-WUbze81UWVjyXZFtyAqLKEoqVJUCWGqHo_aem_0-eVh1myTUvt2VXpuvK-ZQ</downloadUrl>
 		</li>
 	</modDependencies>

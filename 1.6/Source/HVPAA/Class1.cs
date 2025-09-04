@@ -5024,13 +5024,16 @@ namespace HVPAA
                         bool goNext = false;
                         foreach (IntVec3 c in GenAdj.OccupiedRect(spot, this.avoidMakingTooMuchOfThing.defaultPlacingRot, this.avoidMakingTooMuchOfThing.Size).ExpandedBy(1))
                         {
-                            List<Thing> list = psycast.pawn.Map.thingGrid.ThingsListAt(c);
-                            for (int i = 0; i < list.Count; i++)
+                            if (c.InBounds(psycast.pawn.Map))
                             {
-                                Thing thing2 = list[i];
-                                if ((thing2 is Pawn p && intPsycasts.allies.Contains(p)) || (thing2.def.category == ThingCategory.Building && thing2.def.building.isTrap) || ((thing2.def.IsBlueprint || thing2.def.IsFrame) && thing2.def.entityDefToBuild is ThingDef && ((ThingDef)thing2.def.entityDefToBuild).building.isTrap))
+                                List<Thing> list = psycast.pawn.Map.thingGrid.ThingsListAt(c);
+                                for (int i = 0; i < list.Count; i++)
                                 {
-                                    goNext = true;
+                                    Thing thing2 = list[i];
+                                    if ((thing2 is Pawn p && intPsycasts.allies.Contains(p)) || (thing2.def.category == ThingCategory.Building && thing2.def.building.isTrap) || ((thing2.def.IsBlueprint || thing2.def.IsFrame) && thing2.def.entityDefToBuild is ThingDef && ((ThingDef)thing2.def.entityDefToBuild).building.isTrap))
+                                    {
+                                        goNext = true;
+                                    }
                                 }
                             }
                         }

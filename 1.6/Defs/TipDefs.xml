@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <TipSetDef>
+    <defName>HVPAA_Tipset</defName>
+    <tips>
+      <li TKey="HVPAA_DisableCasts">Many higher-level psycasts are utterly, unfairly devastating when enemies can use them. You can disable the use of specific psycasts for allied and/or enemy psycasters in the mod settings for Hauts' Intelligent Psycasters.</li>
+      <li TKey="HVPAA_CasterPersonalities">An AI psycaster's traits and ideoligion influence what psycasts it chooses. This may predisposition them towards beneficial psycasts (and even make them treat neutral parties as allies), incline them to violent psycasts, or prevent them from using certain psycasts outright.</li>
+      <li TKey="HVPAA_FactionalCasters">Different factions field different amounts and types of psycasters. For example, anyone from a tribal society may be a psycaster, while the Empire has almost no psycasters outside of its nobility and its heavily armed and armored 'persona templar'.</li>
+      <li TKey="HVPAA_CombatCasting">AI psycasters use their abilities more frequently in combat.</li>
+    </tips>
+  </TipSetDef>
+
+</Defs>
