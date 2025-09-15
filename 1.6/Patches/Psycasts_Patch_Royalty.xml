@@ -9,6 +9,7 @@ Level 1 psycasts-->
 				<avoidTargetsWithHediff>PsychicBurden</avoidTargetsWithHediff>
 				<imposedMovingCap>0.4</imposedMovingCap><!--change this if you change the moving setMax of the debuff inflicted by Burden. It's here in the XML rather than automatically reading it in the code for performance's sake.
 																All this does is help psycasters figure out which victims would be most debilitated by Burden; it does not change how the debuff works in any way.-->
+				<trapPower>1</trapPower><!--relevant to Cooler Psycasts' "Embed Psycast" psycast-->
 			</li>
 		</value>
 	</Operation>
@@ -31,6 +32,7 @@ Level 1 psycasts-->
 			<li Class="HVPAA.UseCaseTags_Stun">
 				<debuff>true</debuff>
 				<mfds><li>Morbid</li></mfds>
+				<trapPower>2</trapPower>
 			</li>
 		</value>
 	</Operation>
@@ -72,6 +74,7 @@ Level 1 psycasts-->
 				<sightReduction>0.5</sightReduction><!--should mirror the sight postFactor that Blinding Pulse inflicts-->
 				<mfds><li>Minimal</li><li>Morbid</li></mfds>
 				<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less Blinding Pulsing friendly fire. does mean you also see slightly less use of it in tight melees-->
+				<trapPower>3</trapPower>
 			</li>
 		</value>
 	</Operation>
@@ -163,6 +166,7 @@ Level 1 psycasts-->
 				<avoidTargetsWithHediff>PsychicVertigo</avoidTargetsWithHediff>
 				<mfds><li>Morbid</li></mfds>
 				<allyMultiplier>6</allyMultiplier><!--makes allies MUCH more important than foes so you see less Vertigo Pulsing friendly fire. does mean you also see slightly less use of it in tight melees-->
+				<trapPower>4</trapPower>
 			</li>
 		</value>
 	</Operation>
@@ -265,6 +269,7 @@ Level 1 psycasts-->
 			<li Class="HVPAA.UseCaseTags_Berserk">
 				<damage>true</damage>
 				<mfds><li>Morbid</li></mfds>
+				<trapPower>4</trapPower>
 			</li>
 		</value>
 	</Operation>
@@ -276,6 +281,8 @@ Level 1 psycasts-->
 				<aoe>13.9</aoe>
 				<mfds><li>Flame</li><li>Natural</li></mfds>
 				<ignoreAllPawnsFasterThan>1.5</ignoreAllPawnsFasterThan><!--since it's possible to walk through a Flashstorm w/o getting hit once, we only care about pawn targets if they move really slow or are downed-->
+				<trapPower>8</trapPower>
+				<trapPlacementWorker>HVPAA.TrapPlacementWorker_NoRoof</trapPlacementWorker><!--can't be used as an embedded psycast in a roofed cell, unless the AI has committed to using Embed Psycast there and has literally no other embeddable psycasts-->
 			</li>
 		</value>
 	</Operation>
@@ -331,6 +338,7 @@ Level 1 psycasts-->
 				<aoe>2.9</aoe>
 				<mfds><li>Morbid</li></mfds>
 				<allyMultiplier>2.5</allyMultiplier>
+				<trapPower>6</trapPower>
 			</li>
 		</value>
 	</Operation>
@@ -353,6 +361,7 @@ Level 1 psycasts-->
 				<aoe>27.9</aoe>
 				<mfds><li>Morbid</li><li>Natural</li></mfds>
 				<animalRightsViolation>true</animalRightsViolation>
+				<trapPower>4</trapPower>
 			</li>
 		</value>
 	</Operation>
@@ -368,7 +377,7 @@ Level 1 psycasts-->
 				<rallyRadius>5</rallyRadius><!--helps nearby allied pawns decide whether they have enough time to get into the safe zone; is a little smaller than the actual safe zone radius since the calculation doesn't take obstacles or non-linear paths into account-->
 				<maxRallyTicks>750</maxRallyTicks>
 				<minEvil>2.5</minEvil><!--a psycaster that is this evil or less can't cast Neuroquake.-->
-				<chancePerEvil>10.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
+				<chancePerEvil>0.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
 				<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
 				<letterLabel>HVPAA_NQ_label</letterLabel>
 				<letterText>HVPAA_NQ_text</letterText>
@@ -405,6 +414,7 @@ Level 1 psycasts-->
 							<mfds><li>Morbid</li></mfds>
 							<consciousnessMalus>0.1</consciousnessMalus><!--the effect on mechanoids-->
 							<painOffset>0.2</painOffset><!--magnitude of the effect on flesh and bloods-->
+							<trapPower>1</trapPower>
 						</li>
 					</value>
 				</li>
@@ -522,6 +532,7 @@ Level 1 psycasts-->
 							<dontUseIfHave>
 							  <li>HVP_HiddenParalysisMaintainer</li>
 							  <li>HVP_HiddenBoostMaintainer</li>
+							  <li MayRequire="metalocif.coolerpsycasts">HVP_HiddenTornadoMaintainer</li>
 							</dontUseIfHave><!--essentially, won't cast another Paralsyis Link while already maintaining at least one other Link (Psyphon Link excepted)-->
 						</li>
 					</value>
@@ -578,6 +589,8 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_Lightning">
 							<damage>true</damage>
 							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<trapPower>5</trapPower>
+							<trapPlacementWorker>HVPAA.TrapPlacementWorker_NoRoof</trapPlacementWorker>
 						</li>
 					</value>
 				</li>
@@ -632,6 +645,7 @@ Level 1 psycasts-->
 							<avoidMakingTooMuchOfThing>HVP_TremorzoneActual</avoidMakingTooMuchOfThing><!--don't count allies who are already in range of one, since they don't stack-->
 							<speedMax>9</speedMax><!--you want to catch faster foes in Tremorzone, but if they're too fast they might be able to escape it easily. So, we stop affording extra applicability to those over this value of move speed-->
 							<tickPeriodicity>100</tickPeriodicity>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -659,7 +673,8 @@ Level 1 psycasts-->
 							<dontUseIfHave>
 							  <li>HVP_HiddenParalysisMaintainer</li>
 							  <li>HVP_HiddenBoostMaintainer</li>
-							</dontUseIfHave><!--essentially, won't cast another Booster Link while already maintaining at least one other Link (Psyphon Link excepted)-->
+							  <li MayRequire="metalocif.coolerpsycasts">HVP_HiddenTornadoMaintainer</li>
+							</dontUseIfHave>
 							<manipCutoff>0.9</manipCutoff><!--same ideas as Focus-->
 							<movingCutoff>0.9</movingCutoff>
 							<chanceToUtilityCast>1</chanceToUtilityCast>
@@ -707,6 +722,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_TurretSkip">
 							<damage>true</damage>
 							<aoe>45.9</aoe>
+							<trapPower>6</trapPower>
 						</li>
 					</value>
 				</li>
@@ -721,6 +737,7 @@ Level 1 psycasts-->
 							<mfds><li>Flame</li></mfds>
 							<minComfyTempMod>180</minComfyTempMod><!--a little lower than the actual effect since it decays fast-->
 							<maxComfyTempMod>-180</maxComfyTempMod>
+							<trapPower>6</trapPower>
 						</li>
 					</value>
 				</li>
@@ -747,6 +764,7 @@ Level 1 psycasts-->
 							<damageType>Hauts_SkipFrag</damageType>
 							<chanceCanTargetPawns>0.2</chanceCanTargetPawns>
 							<chanceCanTargetHarmlessBuildings>0.5</chanceCanTargetHarmlessBuildings>
+							<trapPower>5</trapPower>
 						</li>
 					</value>
 				</li>
@@ -836,6 +854,7 @@ Level 1 psycasts-->
 							<foeBuildingScore>0.1</foeBuildingScore>
 							<foePawnScore>1</foePawnScore>
 							<minScoreToCast>0</minScoreToCast><!--only if the best random point has a [foe score minus ally score] greater than this value can Hive Call be cast-->
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -870,6 +889,7 @@ Level 1 psycasts-->
 							  </points>
 							</consciousnessCurve>
 							<allyMultiplier>2.75</allyMultiplier>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1006,6 +1026,7 @@ Level 1 psycasts-->
 							<mfds><li>Morbid</li></mfds>
 							<painOffset>0.4</painOffset>
 							<consciousnessFactor>0.5</consciousnessFactor>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1016,6 +1037,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA.UseCaseTags_Entomb">
 							<debuff>true</debuff>
 							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1048,6 +1070,7 @@ Level 1 psycasts-->
 							<damage>true</damage>
 							<mfds><li>Flame</li><li>Natural</li></mfds>
 							<ignoreAllPawnsFasterThan>1.5</ignoreAllPawnsFasterThan><!--they'll dodge if they're moving and are faster than this-->
+							<trapPower>1</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1142,6 +1165,7 @@ Level 1 psycasts-->
 							<chanceToCastHumanlike>0.35</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
 							<chanceToCastColonist>0.05</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
 							<additionalCastingTicks>75</additionalCastingTicks><!--adds an additional 1.25 seconds to the cast time-->
+							<trapPower>5</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1296,6 +1320,7 @@ Level 1 psycasts-->
 							<letterLabelF>HVPAA_Dart_labelF</letterLabelF>
 							<letterTextF>HVPAA_Dart_textF</letterTextF>
 							<letterDef>ThreatBig</letterDef>
+							<trapPower>8</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1336,6 +1361,7 @@ Level 1 psycasts-->
 							<mfds><li>Flame</li><li>Natural</li></mfds>
 							<aoe>2.5</aoe>
 							<ignoreAllPawnsFasterThan>5</ignoreAllPawnsFasterThan>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1373,6 +1399,7 @@ Level 1 psycasts-->
 							<avoidTargetsWithHediff>PsychicBurden</avoidTargetsWithHediff>
 							<imposedMovingCap>0.4</imposedMovingCap>
 							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>3</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1384,6 +1411,7 @@ Level 1 psycasts-->
 							<aoe>2.9</aoe>
 							<mfds><li>Morbid</li></mfds>
 							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1590,6 +1618,7 @@ Level 1 psycasts-->
 							<mfds><li>Morbid</li></mfds>
 							<consciousnessMalus>0.2</consciousnessMalus>
 							<chanceToCast>0.1</chanceToCast><!--its long cast time and high psyfocus cost make it not something you want to cast in combat often-->
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1611,6 +1640,7 @@ Level 1 psycasts-->
 							<debuff>true</debuff>
 							<healing>true</healing>
 							<mfds><li>Morbid</li><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1699,6 +1729,7 @@ Level 1 psycasts-->
 							<mfds><li>Minimal</li></mfds>
 							<avoidTargetsWithHediff>CoolPsycasts_DistortionHD</avoidTargetsWithHediff>
 							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1720,6 +1751,7 @@ Level 1 psycasts-->
 							<debuff>true</debuff>
 							<mfds><li>Minimal</li></mfds>
 							<chanceToCast>0.1</chanceToCast><!--it's very powerful, but only lasts 6000 ticks and is quite expensive, so dont' use it all the time-->
+							<trapPower>3</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1803,6 +1835,7 @@ Level 1 psycasts-->
 							<letterLabelF>HVPAA_Feedback_labelF</letterLabelF>
 							<letterTextF>HVPAA_Feedback_textF</letterTextF>
 							<letterDef>ThreatBig</letterDef>
+							<trapPower>5</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1823,10 +1856,46 @@ Level 1 psycasts-->
 							<mfds><li>Minimal</li></mfds>
 							<duration>4</duration>
 							<minArmorToCountAsArmor>0.3</minArmorToCountAsArmor><!--apparel w/ less than this amount of armor is not counted as armor. Heat armor counts for only half its value-->
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
 				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Echo"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Echo">
+							<damage>true</damage>
+							<scanRadius>35</scanRadius><!--this is the radius in which the caster "detects" ally and foe shooters (including ranged pawns and turrets). if foes outnumber allies, the algorithm stops here instead of thinking about casting-->
+							<shooterScanRadius>13</shooterScanRadius><!--this is the radius in which allies can be considered valid targets-->
+							<aoe>3.9</aoe>
+							<avoidMakingTooMuchOfThing>CoolPsycasts_EchoThing</avoidMakingTooMuchOfThing>
+							<otherThingToAvoidBeingNear>BulletShieldPsychic</otherThingToAvoidBeingNear>
+							<otherThingAoE>8</otherThingAoE><!--targets are disqualified if they're in this range of an indestructible skipshield-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Embed"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Embed">
+							<utility>true</utility>
+							<mfds><li>Dignified</li></mfds>
+							<avoidMakingTooMuchOfThing>CoolPsycasts_TrapPsycast</avoidMakingTooMuchOfThing><!--the thingDef spawned-->
+							<thingLimit>10</thingLimit><!--stop making embedded casts if there are already this many in range-->
+							<aoe>24.9</aoe><!--does not correspond to the ability's radius (since it has none), instead this is the range at which to avoid non-hostile buildings and an overdensity of embedded casts...-->
+							<spontaneousCastChance>0.1</spontaneousCastChance><!--can only cast IF there are foes on the map, OR if this chance is beat-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationReplace">
+				  <xpath>Defs/AbilityDef[defName="CoolPsycasts_Embed"]/comps/li[@Class="CoolPsycasts.CompProperties_AbilitySpawnPsycastTrap"]</xpath>
+				  <value>
+					<li Class="HVPAA_CoolerPsycasts.CompProperties_AbilitySpawnPsycastTrap_AIFriendly">
+						<thingDef>CoolPsycasts_TrapPsycast</thingDef>
+					</li>
+				  </value>
+				</li>
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Execute"]</xpath>
 					<value>
@@ -1836,6 +1905,7 @@ Level 1 psycasts-->
 							<aoe>4.9</aoe>
 							<chanceToCastColonist>0.35</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
 							<additionalCastingTicks>75</additionalCastingTicks><!--adds an additional 1.25 seconds to the cast time-->
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1850,6 +1920,7 @@ Level 1 psycasts-->
 							<additionalCastingTicks>90</additionalCastingTicks><!--adds an additional 1.5 seconds to the cast time-->
 							<intactOrganCountsFor>0.2</intactOrganCountsFor><!--each organ of the eligible target that can be skipped adds this much to its applicability-->
 							<bionicCountsFor>0.2</bionicCountsFor><!--ditto, for skippable bionics instead-->
+							<trapPower>5</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1875,6 +1946,7 @@ Level 1 psycasts-->
 										<letterLabelF>HVPAA_Enslavement_labelF</letterLabelF>
 										<letterTextF>HVPAA_Enslavement_textF</letterTextF>
 										<letterDef>ThreatBig</letterDef>
+										<trapPower>6</trapPower>
 									</li>
 								</value>
 							</li>
@@ -1895,6 +1967,7 @@ Level 1 psycasts-->
 							<letterLabelF>HVPAA_Dart_labelF</letterLabelF>
 							<letterTextF>HVPAA_Dart_textF</letterTextF>
 							<letterDef>ThreatBig</letterDef>
+							<trapPower>8</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1917,6 +1990,7 @@ Level 1 psycasts-->
 							<aoe>4.9</aoe>
 							<damageType>CoolPsycasts_GravityPulseDD</damageType>
 							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>6</trapPower>
 						</li>
 					</value>
 				</li>
@@ -1953,6 +2027,112 @@ Level 1 psycasts-->
 							<maxLevel>9</maxLevel>
 						</li>
 					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Hauts' Offbeat Psycasts</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_PsyfocusTransfer"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_PsyfocusTransfer">
+										<debuff>true</debuff>
+										<utility>true</utility>
+										<mfds><li>Dignified</li></mfds>
+										<donorToRecipientRange>19.9</donorToRecipientRange><!--property mirror-->
+										<recipientMaxPsyfocusCutoff>0.81</recipientMaxPsyfocusCutoff><!--cannot donate from an ally to another ally whose psyfocus is above this amount-->
+										<donorMinPsyfocusCutoff>0.25</donorMinPsyfocusCutoff><!--generally not worth it if the victim is so psyfocus-poor they can't even cast level 3 psycasts-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_MarkingPulse"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_MarkingPulse">
+										<debuff>true</debuff>
+										<aoe>3.9</aoe>
+										<avoidTargetsWithHediff>HVP_MarkingDebuff</avoidTargetsWithHediff>
+										<allyMultiplier>1.5</allyMultiplier><!--more severely important not to hit allies, as anyone affected by Marking Pulse loses an entire layer of anti-mortality measures-->
+										<trapPower>3</trapPower>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_SquadronCall"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_SquadronCall">
+										<damage>true</damage>
+										<utility>true</utility>
+										<castChanceWhileNotInImmediateCombat>0.1</castChanceWhileNotInImmediateCombat><!--if there are foes in the map but the caster is not currently in combat, this is the chance squad call can be considered for use-->
+										<trapPower>6</trapPower>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_TornadoLink"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_TornadoLink">
+										<damage>true</damage>
+										<aoe>10</aoe>
+										<mfds><li>Natural</li></mfds>
+										<damageDef>TornadoScratch</damageDef>
+										<disabledAtPercentEntropy>0.3</disabledAtPercentEntropy>
+										<dontUseIfHave>
+										  <li>HVP_HiddenParalysisMaintainer</li>
+										  <li>HVP_HiddenBoostMaintainer</li>
+										</dontUseIfHave>
+										<avoidMakingTooMuchOfThing>HVP_LinkedTornado</avoidMakingTooMuchOfThing><!--can't target positions that would have another linked tornado in the aoe-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_WordOfBlessing"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_WordOfBlessing">
+										<utility>true</utility>
+										<aoe>20</aoe>
+										<requiresLoS>false</requiresLoS>
+										<mfds><li>Dignified</li></mfds>
+										<grantableHediffs>
+											<li>HVP_BlessingSpirit</li>
+											<li>HVP_BlessingIntelligence</li>
+											<li>HVP_BlessingResilience</li>
+											<li>HVP_BlessingLongevity</li>
+											<li>HVP_BlessingCelerity</li>
+											<li>HVP_BlessingDexterity</li>
+											<li>HVP_BlessingAttunement</li>
+											<li>HVP_BlessingCharisma</li>
+											<li>HVP_BlessingStasis</li>
+										</grantableHediffs>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_Voidquake"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Voidquake">
+										<damage>true</damage>
+										<utility>true</utility>
+										<usableWhileFleeing>true</usableWhileFleeing>
+										<requiresLoS>false</requiresLoS>
+										<mfds><li>Morbid</li></mfds>
+										<rallyRadius>13</rallyRadius><!--helps nearby allied pawns decide whether they have enough time to get into the safe zone; is a little smaller than the actual safe zone radius since the calculation doesn't take obstacles or non-linear paths into account-->
+										<maxRallyTicks>750</maxRallyTicks>
+										<minEvil>2.5</minEvil><!--a psycaster that is this evil or less can't cast Neuroquake.-->
+										<chancePerEvil>10.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
+										<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
+										<letterLabel>HVPAA_VQ_label</letterLabel>
+										<letterText>HVPAA_VQ_text</letterText>
+										<letterLabelF>HVPAA_VQ_label</letterLabelF>
+										<letterTextF>HVPAA_VQ_textF</letterTextF>
+										<letterDef>ThreatBig</letterDef>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
 				</li>
 				<li Class="PatchOperationFindMod">
 					<mods>
@@ -2195,6 +2375,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA_FSF.UseCaseTags_Disarm">
 							<debuff>true</debuff>
 							<mfds><li>Minimal</li></mfds>
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2208,6 +2389,7 @@ Level 1 psycasts-->
 							<chanceToCastHumanlike>0.75</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
 							<chanceToCastColonist>0.25</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
 							<additionalCastingTicks>30</additionalCastingTicks><!--adds an additional 0.5 seconds to the cast time-->
+							<trapPower>3</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2238,6 +2420,7 @@ Level 1 psycasts-->
 						<li Class="HVPAA.UseCaseTags_Entomb">
 							<debuff>true</debuff>
 							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2250,6 +2433,7 @@ Level 1 psycasts-->
 							<avoidTargetsWithHediff>FSFFracture</avoidTargetsWithHediff>
 							<mfds><li>Minimal</li><li>Morbid</li></mfds>
 							<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less Fracturing friendly fire. does mean you also see slightly less use of it in tight melees-->
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2274,6 +2458,7 @@ Level 1 psycasts-->
 							<chanceToCastHumanlike>0.35</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
 							<chanceToCastColonist>0.05</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
 							<additionalCastingTicks>75</additionalCastingTicks><!--adds an additional 1.25 seconds to the cast time-->
+							<trapPower>5</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2331,6 +2516,7 @@ Level 1 psycasts-->
 							<mfds><li>Flame</li><li>Natural</li></mfds>
 							<aoe>2.4</aoe>
 							<ignoreAllPawnsFasterThan>5</ignoreAllPawnsFasterThan>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2359,15 +2545,6 @@ Level 1 psycasts-->
 							<allyMultiplier>1.25</allyMultiplier><!--avoiding skipping allies into traps is more important than dropping foes into them-->
 							<aoe>2.4</aoe>
 						</li>
-						<!--<li Class="HVPAA.UseCaseTags_Skip">
-							<damage>true</damage>
-							<debuff>true</debuff>
-							<defense>true</defense>
-							<utility>true</utility>
-							<usableWhileFleeing>true</usableWhileFleeing>
-							<skipRange>27.9</skipRange>
-							<maxBodySize>3.5</maxBodySize>
-						</li>-->
 					</value>
 				</li>
 			</operations>

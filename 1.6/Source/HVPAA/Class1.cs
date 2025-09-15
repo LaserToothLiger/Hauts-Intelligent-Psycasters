@@ -916,6 +916,30 @@ namespace HVPAA
                 return ((Rand.Value * 0.4f) + 0.8f);
             }
         }
+        public bool CanUseThisPsycast(UseCaseTags uct, Psycast a)
+        {
+            if (uct.light && !this.lightUser)
+            {
+                return false;
+            }
+            if (uct.animalRightsViolation && this.niceToAnimals > 0)
+            {
+                return false;
+            }
+            if (uct.antiDisease && !this.cureUser)
+            {
+                return false;
+            }
+            if (uct.painkiller && !this.painkiller)
+            {
+                return false;
+            }
+            if (uct.antiScar && !this.scarHealer)
+            {
+                return false;
+            }
+            return true;
+        }
         public void TryAddToPriorityPsycasts(ref List<PotentialPsycast> priorityPsycasts, UseCaseTags uct, Psycast a, float priority, int useCase)
         {
             float initPriority = priority;
@@ -924,23 +948,7 @@ namespace HVPAA
             {
                 return;
             }
-            if (uct.light && !this.lightUser)
-            {
-                return;
-            }
-            if (uct.animalRightsViolation && this.niceToAnimals > 0)
-            {
-                return;
-            }
-            if (uct.antiDisease && !this.cureUser)
-            {
-                return;
-            }
-            if (uct.painkiller && !this.painkiller)
-            {
-                return;
-            }
-            if (uct.antiScar && !this.scarHealer)
+            if (!this.CanUseThisPsycast(uct,a))
             {
                 return;
             }
@@ -954,9 +962,7 @@ namespace HVPAA
                 if (uct.mfds.Contains(DefDatabase<MeditationFocusDef>.GetNamed("Flame")) && !this.fireUser)
                 {
                     return;
-                }
-                else if (this.mfds != null)
-                {
+                } else if (this.mfds != null) {
                     //otherwise, certain psycasts appeal more to psycasters with certain meditation focus types. Pyromaniacs LOVE shooting fire and Morbids desire the disturbing and gory
                     foreach (MeditationFocusDef mfd in uct.mfds)
                     {
@@ -976,9 +982,7 @@ namespace HVPAA
                 if (priorityPsycasts.Count <= HVPAA_Mod.settings.maxChoicesPerAttempt)
                 {
                     priorityPsycasts.Add(new PotentialPsycast(a, priority, useCase, uct.immediatelyPsycastAgain));
-                }
-                else
-                {
+                } else {
                     PotentialPsycast lowestPriority = priorityPsycasts.First();
                     foreach (PotentialPsycast potentialPsycast in priorityPsycasts)
                     {
@@ -1475,6 +1479,17 @@ namespace HVPAA
         {
             return (psycast.def.verbProperties.AdjustedRange(psycast.verb, psycast.pawn) + this.rangeOffset) * this.rangeMultiplier;
         }
+        public TrapPlacementWorker Worker
+        {
+            get
+            {
+                if (this.workerInt == null)
+                {
+                    this.workerInt = (TrapPlacementWorker)Activator.CreateInstance(this.trapPlacementWorker);
+                }
+                return this.workerInt;
+            }
+        }
         public bool damage;
         public bool defense;
         public bool debuff;
@@ -1510,6 +1525,9 @@ namespace HVPAA
         public int maxRallyTicks;
         public int additionalCastingTicks;
         public float allyMultiplier;
+        public int trapPower;
+        public Type trapPlacementWorker;
+        public TrapPlacementWorker workerInt;
     }
     public class CasterPersonality : DefModExtension
     {
@@ -3633,13 +3651,16 @@ namespace HVPAA
                 }
             }
             IntVec3 bestPosition = IntVec3.Invalid;
-            float value = -1f;
-            foreach (KeyValuePair<IntVec3, float> kvp in positionTargets)
+            if (positionTargets.Count > 0)
             {
-                if (!bestPosition.IsValid || kvp.Value >= value)
+                float value = -1f;
+                foreach (KeyValuePair<IntVec3, float> kvp in positionTargets)
                 {
-                    bestPosition = kvp.Key;
-                    value = kvp.Value;
+                    if (!bestPosition.IsValid || kvp.Value >= value)
+                    {
+                        bestPosition = kvp.Key;
+                        value = kvp.Value;
+                    }
                 }
             }
             return bestPosition;
@@ -4422,13 +4443,13 @@ namespace HVPAA
                 int outgunned = Math.Max(foeShooters.Count - allyShooters.Count, allyMelee.Count);
                 if (allyMelee.Count > 0 && foeShooters.Count > 0 && outgunned > 0)
                 {
-                    foreach (Pawn p in allyMelee)
+                    foreach (Thing ally in allyMelee)
                     {
                         Thing foe = foeShooters.RandomElement();
                         float percent = (Rand.Value + Rand.Value) / 2f;
-                        int x = Math.Min(p.Position.x, foe.Position.x) + (int)(Rand.Value * Math.Abs(p.Position.x - foe.Position.x));
-                        int z = Math.Min(p.Position.z, foe.Position.z) + (int)(Rand.Value * Math.Abs(p.Position.z - foe.Position.z));
-                        IntVec3 randPosBetween = new IntVec3(x, p.Position.y, z);
+                        int x = Math.Min(ally.Position.x, foe.Position.x) + (int)(Rand.Value * Math.Abs(ally.Position.x - foe.Position.x));
+                        int z = Math.Min(ally.Position.z, foe.Position.z) + (int)(Rand.Value * Math.Abs(ally.Position.z - foe.Position.z));
+                        IntVec3 randPosBetween = new IntVec3(x, ally.Position.y, z);
                         if (randPosBetween.IsValid && !positionTargets.ContainsKey(randPosBetween) && GenSight.LineOfSight(psycast.pawn.Position, randPosBetween, psycast.pawn.Map) && randPosBetween.DistanceTo(intPsycasts.Pawn.Position) <= this.Range(psycast) && !positionTargets.Keys.Contains(randPosBetween))
                         {
                             bool nearbySkipshield = false;
@@ -5093,6 +5114,20 @@ namespace HVPAA
         private bool canHitHumanlike;
         private bool canHitColonist;
     }
+    public class TrapPlacementWorker
+    {
+        public virtual bool IsGoodSpot(IntVec3 iv3, Map map)
+        {
+            return true;
+        }
+    }
+    public class TrapPlacementWorker_NoRoof : TrapPlacementWorker
+    {
+        public override bool IsGoodSpot(IntVec3 iv3, Map map)
+        {
+            return !map.roofGrid.Roofed(iv3);
+        }
+    }
     //this wizard war is so fucked
     public class UseCaseTags_CBT : UseCaseTags
     {
@@ -5499,31 +5534,29 @@ namespace HVPAA
         }
         public static float LightningApplicability(UseCaseTags uct, HediffComp_IntPsycasts intPsycasts, Psycast psycast, IntVec3 tryNewPosition, float niceToEvil, float aoe, ref float tryNewScore)
         {
-            if (intPsycasts.Pawn.Faction != null)
+            Faction f = intPsycasts.Pawn.Faction;
+            if (f != null)
             {
-                foreach (Thing thing in GenRadial.RadialDistinctThingsAround(tryNewPosition, intPsycasts.Pawn.Map, aoe, true))
+                Map map = intPsycasts.Pawn.Map;
+                foreach (Thing thing in GenRadial.RadialDistinctThingsAround(tryNewPosition, map, aoe, true))
                 {
                     if (thing is Plant plant)
                     {
                         Zone zone = plant.Map.zoneManager.ZoneAt(plant.Position);
-                        if (zone != null && zone is Zone_Growing && intPsycasts.Pawn.Faction != null && intPsycasts.Pawn.Faction.HostileTo(Faction.OfPlayerSilentFail))
+                        if (zone != null && zone is Zone_Growing && f != Faction.OfPlayerSilentFail && f.HostileTo(Faction.OfPlayerSilentFail))
                         {
                             tryNewScore += plant.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, plant) * plant.MarketValue / 500f;
                         }
                     }
                     else if (thing is Building b && b.Faction != null)
                     {
-                        if (intPsycasts.Pawn.Faction.HostileTo(b.Faction))
+                        if (f != b.Faction && f.HostileTo(b.Faction))
                         {
                             tryNewScore += HVPAAUtility.LightningBuildingScore(b);
-                        }
-                        else if (niceToEvil > 0 || intPsycasts.Pawn.Faction == b.Faction || intPsycasts.Pawn.Faction.RelationKindWith(b.Faction) == FactionRelationKind.Ally)
-                        {
+                        } else if (niceToEvil > 0 || f == b.Faction || f.RelationKindWith(b.Faction) == FactionRelationKind.Ally) {
                             tryNewScore -= HVPAAUtility.LightningBuildingScore(b);
                         }
-                    }
-                    else if (thing is Pawn p)
-                    {
+                    } else if (thing is Pawn p) {
                         if (intPsycasts.allies.Contains(p) && !uct.OtherAllyDisqualifiers(psycast, p, 1))
                         {
                             tryNewScore -= p.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, p) * 1.5f;
@@ -5562,6 +5595,41 @@ namespace HVPAA
                 return true;
             }
             return false;
+        }
+        public static Ability StrongestTrapAbility(List<Ability> trapAbilities, Map map, IntVec3 targetPos, bool weightedRandom = true)
+        {
+            if (weightedRandom)
+            {
+                Dictionary<Ability, int> dai = new Dictionary<Ability, int>();
+                foreach (Ability a in trapAbilities)
+                {
+                    UseCaseTags uct = a.def.GetModExtension<UseCaseTags>();
+                    if (uct != null && uct.trapPower > 0 && (uct.trapPlacementWorker == null || uct.Worker.IsGoodSpot(targetPos, map)))
+                    {
+                        dai.Add(a,uct.trapPower);
+                    }
+                }
+                if (!dai.NullOrEmpty())
+                {
+                    return dai.Keys.RandomElementByWeight((Ability ab) => dai.TryGetValue(ab));
+                }
+            } else {
+                Ability strongestAbility = null;
+                int strongestPower = 0;
+                foreach (Ability a in trapAbilities)
+                {
+                    UseCaseTags uct = a.def.GetModExtension<UseCaseTags>();
+                    if (uct != null && uct.trapPower > strongestPower && (uct.trapPlacementWorker == null || uct.Worker.IsGoodSpot(targetPos, map)))
+                    {
+                        strongestAbility = a;
+                    }
+                }
+                if (strongestAbility != null)
+                {
+                    return strongestAbility;
+                }
+            }
+            return trapAbilities.RandomElement();
         }
         //psycaster spawning
         public static float PsycasterCommonality

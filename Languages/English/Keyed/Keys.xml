@@ -77,6 +77,9 @@ Psycast letters-->
 <HVPAA_Enslavement_text>A psycaster is about to enslave one of your people! After casting for 9 seconds, the victim will become bound to the caster's faction.\n\nNote that the victim can be restored to their prior faction simply by imprisoning and then releasing them.</HVPAA_Enslavement_text>
 <HVPAA_Enslavement_labelF>Mystic enslavement</HVPAA_Enslavement_labelF>
 <HVPAA_Enslavement_textF>A spellcaster is about to enslave one of your people! After casting for 9 seconds, the victim will become bound to the caster's faction.\n\nNote that the victim can be restored to their prior faction simply by imprisoning and then releasing them.</HVPAA_Enslavement_textF>
+<HVPAA_VQ_label>Incoming voidquake</HVPAA_VQ_label>
+<HVPAA_VQ_text>A psycaster is about to unleash a voidquake! After casting for 12 seconds, every living creature outside of the safe, inner, circle will flee the map, while every mechanoid will be permanently impaired, and every unnatural entity will be strengthened. Move out of range, get into the safe zone, or disable the psycaster.</HVPAA_VQ_text>
+<HVPAA_VQ_textF>A magician is casting a voidquake! After casting for 12 seconds, every living creature outside of the safe, inner, circle will flee the map, while every construct will be permanently impaired, and every unnatural entity will be strengthened. Move out of range, get into the safe zone, or disable the spellcaster.</HVPAA_VQ_textF>
 <!--motes-->
 <HVPAA_NPC_mote>Level {0} ({1})</HVPAA_NPC_mote>
 <!--errors-->

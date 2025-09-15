@@ -15,6 +15,8 @@ using Verse.Noise;
 using VEF;
 using static HarmonyLib.Code;
 using static UnityEngine.GraphicsBuffer;
+using VEF.AnimalBehaviours;
+using VEF.Genes;
 
 namespace HVPAA_CoolerPsycasts
 {
@@ -242,7 +244,7 @@ namespace HVPAA_CoolerPsycasts
                 for (int j = 0; j <= 100; j++)
                 {
                     CellFinder.TryFindRandomCellNear(psycast.pawn.Position, psycast.pawn.Map, (int)(this.Range(psycast)), null, out tryNewPosition);
-                    if (tryNewPosition.IsValid && !tryNewPosition.Filled(psycast.pawn.Map) && !positionTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map))
+                    if (tryNewPosition.InBounds(psycast.pawn.Map) && !tryNewPosition.Filled(psycast.pawn.Map) && !positionTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map))
                     {
                         break;
                     }
@@ -1186,6 +1188,267 @@ namespace HVPAA_CoolerPsycasts
         public float minArmorToCountAsArmor;
     }
     //level 5
+    public class UseCaseTags_Echo : UseCaseTags
+    {
+        public override IntVec3 FindBestPositionTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<IntVec3, float> positionTargets, float range = -999)
+        {
+            positionTargets = new Dictionary<IntVec3, float>();
+            IntVec3 bestPosition = IntVec3.Invalid;
+            List<Thing> allyShooters = new List<Thing>();
+            List<Thing> foeShooters = new List<Thing>();
+            foreach (Thing t in GenRadial.RadialDistinctThingsAround(psycast.pawn.Position, psycast.pawn.Map, this.scanRadius, true))
+            {
+                if (t.def.building != null && t.def.building.IsTurret && !t.Position.AnyGas(t.Map, GasType.BlindSmoke))
+                {
+                    CompPowerTrader cpt = t.TryGetComp<CompPowerTrader>();
+                    if (cpt != null && !cpt.PowerOn)
+                    {
+                        continue;
+                    }
+                    if (t.HostileTo(psycast.pawn))
+                    {
+                        foeShooters.Add(t);
+                    } else if (HVPAAUtility.IsAlly(intPsycasts.niceToAnimals <= 0, psycast.pawn, t, niceToEvil)) {
+                        allyShooters.Add(t);
+                    }
+                } else if (t is Pawn p) {
+                    if (intPsycasts.allies.Contains(p))
+                    {
+                        if (p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
+                        {
+                            allyShooters.Add(t);
+                        }
+                    } else if (intPsycasts.foes.Contains(p)) {
+                        if (p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
+                        {
+                            foeShooters.Add(p);
+                        }
+                    }
+                }
+            }
+            float innerScanRadius = Math.Min(this.Range(psycast), this.shooterScanRadius);
+            List<Thing> allyShootersIteratable = allyShooters;
+            for (int k = allyShootersIteratable.Count - 1; k >=0; k--)
+            {
+                Thing t = allyShootersIteratable[k];
+                if (t.Position.DistanceTo(psycast.pawn.Position) > innerScanRadius)
+                {
+                    allyShootersIteratable.Remove(t);
+                }
+            }
+            if (allyShooters.Count > 0 && foeShooters.Count > 0 && foeShooters.Count - allyShooters.Count < 0)
+            {
+                for (int i = 10; i > 0; i--)
+                {
+                    if (allyShootersIteratable.NullOrEmpty())
+                    {
+                        break;
+                    }
+                    Thing ally = allyShootersIteratable.RandomElement();
+                    allyShootersIteratable.Remove(ally);
+                    if (ally is Pawn p && p.pather.MovingNow)
+                    {
+                        i++;
+                        continue;
+                    }
+                    if (!positionTargets.ContainsKey(ally.Position))
+                    {
+                        bool nearbyEcho = false;
+                        foreach (Thing t2 in GenRadial.RadialDistinctThingsAround(ally.Position, psycast.pawn.Map, this.aoe, true))
+                        {
+                            if (t2.def == this.avoidMakingTooMuchOfThing)
+                            {
+                                nearbyEcho = true;
+                                break;
+                            }
+                        }
+                        if (!nearbyEcho)
+                        {
+                            bool nearbySkipshield = false;
+                            foreach (Thing t2 in GenRadial.RadialDistinctThingsAround(ally.Position, psycast.pawn.Map, this.otherThingAoE, true))
+                            {
+                                if (t2.def == this.otherThingToAvoidBeingNear)
+                                {
+                                    nearbySkipshield = true;
+                                    break;
+                                }
+                            }
+                            if (!nearbySkipshield)
+                            {
+                                float totalNearbyShooters = 1f;
+                                foreach (Thing alli in allyShooters)
+                                {
+                                    if (alli.Position.DistanceTo(ally.Position) <= this.aoe)
+                                    {
+                                        totalNearbyShooters += 1f;
+                                    }
+                                }
+                                positionTargets.Add(ally.Position, totalNearbyShooters);
+                            }
+                        }
+                    }
+
+                }
+                if (positionTargets.Count > 0)
+                {
+                    bestPosition = positionTargets.Keys.RandomElement();
+                }
+            }
+            return bestPosition;
+        }
+        public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            IntVec3 position = this.FindBestPositionTarget(intPsycasts, psycast.ability, niceToEvil, 1, out Dictionary<IntVec3, float> positionTargets);
+            if (position.IsValid)
+            {
+                psycast.lti = position;
+                return positionTargets.TryGetValue(position) * (intPsycasts.Pawn.equipment != null && intPsycasts.Pawn.equipment.Primary != null && intPsycasts.Pawn.equipment.Primary.def.IsRangedWeapon ? 1.5f : 1f);
+            }
+            return 0f;
+        }
+        public ThingDef otherThingToAvoidBeingNear;
+        public float scanRadius;
+        public float shooterScanRadius;
+        public float otherThingAoE;
+    }
+    public class UseCaseTags_Embed : UseCaseTags
+    {
+        public override IntVec3 FindBestPositionTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<IntVec3, float> positionTargets, float range = -999)
+        {
+            positionTargets = new Dictionary<IntVec3, float>();
+            if (this.avoidMakingTooMuchOfThing != null)
+            {
+                for (int j = 0; j <= 100; j++)
+                {
+                    CellFinder.TryFindRandomCellNear(psycast.pawn.Position, psycast.pawn.Map, (int)this.Range(psycast), null, out IntVec3 spot);
+                    if (spot.InBounds(psycast.pawn.Map) && GenSight.LineOfSight(psycast.pawn.Position, spot, psycast.pawn.Map) && !spot.Filled(psycast.pawn.Map) && spot.GetEdifice(psycast.pawn.Map) == null && (this.avoidMakingTooMuchOfThing.terrainAffordanceNeeded == null || spot.GetTerrain(psycast.pawn.Map).affordances.Contains(this.avoidMakingTooMuchOfThing.terrainAffordanceNeeded)))
+                    {
+                        if (this.TooMuchThingNearby(psycast, spot, this.aoe))
+                        {
+                            return IntVec3.Invalid;
+                        }
+                        Zone zone = psycast.pawn.Map.zoneManager.ZoneAt(spot);
+                        if (zone != null && zone is Zone_Growing && !psycast.pawn.Faction.HostileTo(Faction.OfPlayerSilentFail))
+                        {
+                            continue;
+                        }
+                        bool goNext = false;
+                        if (psycast.pawn.Faction != null)
+                        {
+                            Faction ownFaction = psycast.pawn.Faction;
+                            foreach (Building b in GenRadial.RadialDistinctThingsAround(spot, psycast.pawn.Map, this.aoe, true).OfType<Building>().Distinct<Building>())
+                            {
+                                Faction bFaction = b.Faction;
+                                if (bFaction != null && (bFaction == ownFaction || bFaction.RelationKindWith(ownFaction) != FactionRelationKind.Hostile))
+                                {
+                                    goNext = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (goNext)
+                        {
+                            continue;
+                        } else {
+                            return spot;
+                        }
+                    }
+                }
+            }
+            return IntVec3.Invalid;
+        }
+        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            foreach (Ability a in psycast.pawn.abilities.abilities)
+            {
+                UseCaseTags uct = a.def.GetModExtension<UseCaseTags>();
+                if (uct != null && uct.trapPower > 0 && a.def.verbProperties.range > 0f && a.def.targetRequired && (a.def.PsyfocusCost+psycast.def.PsyfocusCost) < psycast.pawn.psychicEntropy.CurrentPsyfocus && !psycast.pawn.psychicEntropy.WouldOverflowEntropy(a.def.EntropyGain+psycast.def.PsyfocusCost))
+                {
+                    return base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+                }
+            }
+            return 0f;
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            if (intPsycasts.foes.Count > 0 || Rand.Chance(this.spontaneousCastChance))
+            {
+                IntVec3 spot = this.FindBestPositionTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<IntVec3, float> positionTargets, this.Range(psycast.ability));
+                psycast.lti = spot;
+                return 2f * Math.Min(10f, (intPsycasts.foes.Count + 1f));
+            }
+            return 0f;
+        }
+        public float spontaneousCastChance;
+    }
+    public class CompProperties_AbilitySpawnPsycastTrap_AIFriendly : CompProperties_AbilityEffect
+    {
+        public CompProperties_AbilitySpawnPsycastTrap_AIFriendly()
+        {
+            this.compClass = typeof(CompAbilityEffect_SpawnPsycastTrap_AIFriendly);
+        }
+        public ThingDef thingDef;
+    }
+    public class CompAbilityEffect_SpawnPsycastTrap_AIFriendly : CompAbilityEffect
+    {
+        public new CompProperties_AbilitySpawnPsycastTrap_AIFriendly Props
+        {
+            get
+            {
+                return (CompProperties_AbilitySpawnPsycastTrap_AIFriendly)this.props;
+            }
+        }
+        public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+            base.Apply(target, dest);
+            Pawn caster = this.parent.pawn;
+            IEnumerable<Ability> allAbilitiesForReading = caster.abilities.AllAbilitiesForReading;
+            if (allAbilitiesForReading.Count() == 0)
+            {
+                return;
+            }
+            Func<Ability, bool> func = delegate (Ability a)
+            {
+                if (a.def.IsPsycast && a.def.level <= caster.GetPsylinkLevel() && a.CanApplyOn(target) && a.def.verbProperties.range > 0f && a.def.targetRequired && a.FinalPsyfocusCost(target) < caster.psychicEntropy.CurrentPsyfocus && a.Id != this.parent.Id)
+                {
+                    if (!a.comps.Any((AbilityComp c) => c is CompAbilityEffect_WithDest))
+                    {
+                        return !caster.psychicEntropy.WouldOverflowEntropy(a.def.EntropyGain);
+                    }
+                }
+                return false;
+            };
+            List<Ability> trapSettableAbilities = allAbilitiesForReading.Where(func).ToList<Ability>();
+            if (this.parent.pawn.IsColonistPlayerControlled)
+            {
+                List<FloatMenuOption> options = new List<FloatMenuOption>();
+                foreach (Ability ability in trapSettableAbilities)
+                {
+                    Ability toCast = ability;
+                    FloatMenuOption option = new FloatMenuOption(ability.def.label, delegate
+                    {
+                        Thing thing = GenSpawn.Spawn(this.Props.thingDef, target.Cell, this.parent.pawn.Map, WipeMode.Vanish);
+                        thing.SetFaction(caster.Faction, null);
+                        if (thing.TryGetComp<CompPsycastTrap>() != null)
+                        {
+                            thing.TryGetComp<CompPsycastTrap>().storedPsycast = toCast;
+                        }
+                    }, MenuOptionPriority.Default, null, null, 30f, null, null, true, 0);
+                    options.Add(option);
+                }
+                FloatMenu menu = new FloatMenu(options);
+                menu.vanishIfMouseDistant = false;
+                Find.WindowStack.Add(menu);
+            } else {
+                Thing thing = GenSpawn.Spawn(this.Props.thingDef, target.Cell, this.parent.pawn.Map, WipeMode.Vanish);
+                thing.SetFaction(caster.Faction, null);
+                if (thing.TryGetComp<CompPsycastTrap>() != null)
+                {
+                    thing.TryGetComp<CompPsycastTrap>().storedPsycast = HVPAAUtility.StrongestTrapAbility(trapSettableAbilities, this.parent.pawn.Map,target.Cell);
+                }
+            }
+        }
+    }
     public class UseCaseTags_Execute : UseCaseTags
     {
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
@@ -1866,5 +2129,542 @@ namespace HVPAA_CoolerPsycasts
             return this.aoe * psycast.pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving);
         }
         public int maxLevel;
+    }
+    //transcendent HOP
+    public class UseCaseTags_PsyfocusTransfer : UseCaseTags
+    {
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            if (p.abilities == null || p.psychicEntropy == null || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon)
+            {
+                return true;
+            }
+            if (!initialTarget && p.Downed)
+            {
+                return true;
+            }
+            return false;
+        }
+        public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            return p.abilities == null || p.psychicEntropy == null || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.psychicEntropy.CurrentPsyfocus < this.donorMinPsyfocusCutoff;
+        }
+        public float TotalCostOfRelevantPsycasts(Pawn p, bool combat)
+        {
+            float totalPsyfocusCost = 0f;
+            foreach (Ability a in p.abilities.abilities)
+            {
+                UseCaseTags uct = a.def.GetModExtension<UseCaseTags>();
+                if (uct != null && (uct.healing || (combat ? (uct.damage || uct.defense || uct.debuff) : uct.utility)))
+                {
+                    totalPsyfocusCost += a.def.PsyfocusCost;
+                }
+            }
+            return totalPsyfocusCost;
+        }
+        public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            float biggestDiffInRange = 0f;
+            Pawn recipient = null;
+            foreach (Pawn p2 in intPsycasts.allies)
+            {
+                if (p2 != psycast.pawn && p2.PositionHeld.DistanceTo(psycast.pawn.PositionHeld) <= this.donorToRecipientRange && p.HasPsylink && !this.OtherAllyDisqualifiers(psycast, p2, useCase, false) && GenSight.LineOfSight(p.PositionHeld, p2.PositionHeld, p.Map))
+                {
+                    float p2sBiggestDiff = this.TotalCostOfRelevantPsycasts(p2,useCase != 5)*(1-p2.psychicEntropy.CurrentPsyfocus);
+                    if (p2sBiggestDiff > biggestDiffInRange)
+                    {
+                        recipient = p2;
+                        biggestDiffInRange = p2sBiggestDiff;
+                    }
+                }
+            }
+            biggestDiffInRange += this.TotalCostOfRelevantPsycasts(p, true) * p.psychicEntropy.CurrentPsyfocus;
+            if (recipient == null)
+            {
+                return -1f;
+            }
+            this.targetPairs.Add(p, recipient);
+            return Math.Max(0f, biggestDiffInRange);
+        }
+        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            float biggestDiffInRange = 0f;
+            Pawn recipient = null;
+            foreach (Pawn p2 in intPsycasts.allies)
+            {
+                if (p != p2 && p2 != psycast.pawn && p2.PositionHeld.DistanceTo(psycast.pawn.PositionHeld) <= this.donorToRecipientRange && p.HasPsylink && !this.OtherAllyDisqualifiers(psycast, p2, useCase, false) && GenSight.LineOfSight(p.PositionHeld, p2.PositionHeld, p.Map) && p.psychicEntropy.CurrentPsyfocus < this.recipientMaxPsyfocusCutoff)
+                {
+                    float scalar = 1 - p2.psychicEntropy.CurrentPsyfocus;
+                    float p2sBiggestDiff = (this.TotalCostOfRelevantPsycasts(p2,useCase != 5)-this.TotalCostOfRelevantPsycasts(p, useCase != 5))*scalar;
+                    if (p2sBiggestDiff > biggestDiffInRange)
+                    {
+                        recipient = p2;
+                        biggestDiffInRange = p2sBiggestDiff;
+                    }
+                }
+            }
+            if (recipient == null)
+            {
+                return -1f;
+            }
+            this.targetPairs.Add(p, recipient);
+            return Math.Max(0f, biggestDiffInRange);
+        }
+        public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
+            this.recipientPawn = this.targetPairs.TryGetValue(pawn);
+            if (pawn != null && this.recipientPawn != null)
+            {
+                psycast.lti = pawn;
+                psycast.ltiDest = this.recipientPawn;
+                return pawnTargets.TryGetValue(pawn);
+            }
+            return 0f;
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn2 = this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Pawn, float> pawnTargets2);
+            this.recipientPawn = this.targetPairs.TryGetValue(pawn2);
+            if (pawn2 != null && this.recipientPawn != null)
+            {
+                psycast.lti = pawn2;
+                psycast.ltiDest = this.recipientPawn;
+                return pawnTargets2.TryGetValue(pawn2);
+            }
+            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Pawn, float> pawnTargets);
+            this.recipientPawn = this.targetPairs.TryGetValue(pawn);
+            if (pawn != null && this.recipientPawn != null)
+            {
+                psycast.lti = pawn;
+                psycast.ltiDest = this.recipientPawn;
+                return pawnTargets.TryGetValue(pawn);
+            }
+            return 0f;
+        }
+        public override float ApplicabilityScore(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            this.targetPairs = new Dictionary<Pawn, Pawn>();
+            return base.ApplicabilityScore(intPsycasts, psycast, niceToEvil);
+        }
+        public override Pawn FindEnemyPawnTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<Pawn, float> pawnTargets, float range = -999, bool initialTarget = true, Thing nonCasterOrigin = null)
+        {
+            pawnTargets = new Dictionary<Pawn, float>();
+            IntVec3 origin = nonCasterOrigin != null ? nonCasterOrigin.PositionHeld : psycast.pawn.Position;
+            foreach (Pawn p in GenRadial.RadialDistinctThingsAround(psycast.pawn.Position, psycast.pawn.Map, this.Range(psycast), true).OfType<Pawn>().Distinct<Pawn>())
+            {
+                Log.Message("yuh");
+                if ((intPsycasts.foes.Contains(p) || p.Faction == null || (psycast.pawn.Faction != null && p.Faction != null && p.Faction.HostileTo(psycast.pawn.Faction))) && p.HasPsylink)
+                {
+                    Log.Error("p: " + p.Name.ToStringShort);
+                    if (GenSight.LineOfSight(origin, p.Position, p.Map) && (!initialTarget || psycast.CanApplyPsycastTo(p)) && !this.OtherEnemyDisqualifiers(psycast, p, useCase, initialTarget))
+                    {
+                        float pApplicability = this.PawnEnemyApplicability(intPsycasts, psycast, p, niceToEvil, useCase, initialTarget);
+                        Log.Message("pappl " + pApplicability);
+                        if (pApplicability > 0f)
+                        {
+                            pawnTargets.Add(p, pApplicability);
+                        }
+                    }
+                }
+            }
+            if (pawnTargets.Count > 0)
+            {
+                return this.BestPawnFound(pawnTargets);
+            }
+            return null;
+        }
+        public override Pawn FindAllyPawnTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<Pawn, float> pawnTargets, float range = -999, bool initialTarget = true, Thing nonCasterOrigin = null)
+        {
+            pawnTargets = new Dictionary<Pawn, float>();
+            IntVec3 origin = nonCasterOrigin != null ? nonCasterOrigin.PositionHeld : psycast.pawn.Position;
+            foreach (Pawn p in GenRadial.RadialDistinctThingsAround(psycast.pawn.Position, psycast.pawn.Map, this.Range(psycast), true).OfType<Pawn>().Distinct<Pawn>())
+            {
+                if (!intPsycasts.foes.Contains(p) && p.HasPsylink)
+                {
+                    if (GenSight.LineOfSight(origin, p.Position, p.Map) && (!initialTarget || psycast.CanApplyPsycastTo(p)) && !this.OtherEnemyDisqualifiers(psycast, p, useCase, initialTarget))
+                    {
+                        float pApplicability = this.PawnAllyApplicability(intPsycasts, psycast, p, niceToEvil, useCase, initialTarget);
+                        if (pApplicability > 0f)
+                        {
+                            pawnTargets.Add(p, pApplicability);
+                        }
+                    }
+                }
+            }
+            if (pawnTargets.Count > 0)
+            {
+                return this.BestPawnFound(pawnTargets);
+            }
+            return null;
+        }
+        public float donorToRecipientRange;
+        public Pawn recipientPawn;
+        public Dictionary<Pawn, Pawn> targetPairs;
+        public float recipientMaxPsyfocusCutoff;
+        public float donorMinPsyfocusCutoff;
+    }
+    public class UseCaseTags_MarkingPulse : UseCaseTags
+    {
+        public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            return p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
+        }
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            return p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
+        }
+        public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            return p.GetStatValue(StatDefOf.PsychicSensitivity) * (1+p.GetStatValue(StatDefOf.MeleeDodgeChance)) * (1+p.GetStatValue(VEF.Pawns.InternalDefOf.VEF_RangedDodgeChance)) /p.BodySize;
+        }
+        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            return this.allyMultiplier * this.PawnEnemyApplicability(intPsycasts,psycast,p,niceToEvil,useCase,initialTarget);
+        }
+        public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
+            if (pawnTargets.Count > 0)
+            {
+                List<Pawn> topTargets = this.TopTargets(5, pawnTargets);
+                if (topTargets.Count > 0)
+                {
+                    Pawn bestTarget = topTargets.First();
+                    IntVec3 bestTargetPos = bestTarget.Position;
+                    float bestTargetHits = 0f;
+                    foreach (Pawn p in topTargets)
+                    {
+                        float pTargetHits = 0f;
+                        foreach (Pawn p2 in (List<Pawn>)p.Map.mapPawns.AllPawnsSpawned)
+                        {
+                            if (p2.Position.DistanceTo(p.Position) <= this.aoe)
+                            {
+                                if (intPsycasts.foes.Contains(p2))
+                                {
+                                    if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 2))
+                                    {
+                                        pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
+                                    }
+                                } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2)) {
+                                    pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
+                                }
+                            }
+                        }
+                        if (pTargetHits > bestTargetHits)
+                        {
+                            bestTarget = p;
+                            bestTargetHits = pTargetHits;
+                        }
+                    }
+                    if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
+                    {
+                        bestTargetPos = bestTarget.Position;
+                        CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
+                        if (randAoE1.IsValid)
+                        {
+                            float pTargetHits = 0f;
+                            foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
+                            {
+                                if (p2.Position.DistanceTo(randAoE1) <= this.aoe)
+                                {
+                                    if (intPsycasts.foes.Contains(p2))
+                                    {
+                                        if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 2))
+                                        {
+                                            pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
+                                        }
+                                    } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2)) {
+                                        pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
+                                    }
+                                }
+                            }
+                            if (pTargetHits > bestTargetHits)
+                            {
+                                bestTargetPos = randAoE1;
+                                bestTargetHits = pTargetHits;
+                                psycast.lti = bestTargetPos;
+                                return bestTargetHits;
+                            }
+                        }
+                        psycast.lti = bestTarget;
+                        return bestTargetHits;
+                    }
+                }
+            }
+            return 0f;
+        }
+    }
+    public class UseCaseTags_SquadronCall : UseCaseTags
+    {
+        public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            List<Pawn> foes = intPsycasts.foes.InRandomOrder<Pawn>().ToList();
+            IntVec3 origin = intPsycasts.parent.pawn.Position;
+            psycast.lti = origin;
+            foreach (Pawn p in foes)
+            {
+                if (p.Position.DistanceTo(origin) <= this.Range(psycast.ability) && GenSight.LineOfSight(origin, p.Position, p.Map))
+                {
+                    psycast.lti = p.Position;
+                }
+            }
+            return intPsycasts.parent.pawn.GetStatValue(StatDefOf.PsychicSensitivity);
+        }
+        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            return Rand.Chance(this.castChanceWhileNotInImmediateCombat)? base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci) : 0f;
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            if (intPsycasts.foes.Count < 1)
+            {
+                return 0f;
+            }
+            psycast.lti = intPsycasts.parent.pawn.Position;
+            return intPsycasts.parent.pawn.GetStatValue(StatDefOf.PsychicSensitivity);
+        }
+        public float castChanceWhileNotInImmediateCombat;
+    }
+    public class UseCaseTags_TornadoLink : UseCaseTags
+    {
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            RoofDef roof = p.Map.roofGrid.RoofAt(p.Position);
+            return roof != null && roof.isThickRoof;
+        }
+        public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            RoofDef roof = p.Map.roofGrid.RoofAt(p.Position);
+            return roof != null && roof.isThickRoof;
+        }
+        public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            foreach (HediffDef h in this.dontUseIfHave)
+            {
+                if (psycast.pawn.health.hediffSet.HasHediff(h))
+                {
+                    return 0f;
+                }
+            }
+            return psycast.pawn.Faction == null ? 0f : base.PriorityScoreDamage(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+        }
+        public override IntVec3 FindBestPositionTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<IntVec3, float> positionTargets, float range = -999)
+        {
+            positionTargets = new Dictionary<IntVec3, float>();
+            IntVec3 tryNewPosition = IntVec3.Invalid;
+            float tryNewScore = 0f;
+            Map map = psycast.pawn.Map;
+            Faction f = psycast.pawn.Faction;
+            IntVec3 casterLoc = psycast.pawn.Position;
+            for (int i = 0; i <= 5; i++)
+            {
+                for (int j = 0; j <= 100; j++)
+                {
+                    CellFinder.TryFindRandomCellNear(casterLoc, map, (int)(this.Range(psycast)), null, out tryNewPosition);
+                    if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(casterLoc, tryNewPosition, map))
+                    {
+                        RoofDef roof = map.roofGrid.RoofAt(tryNewPosition);
+                        if (roof == null || !roof.isThickRoof)
+                        {
+                            break;
+                        }
+                    }
+                }
+                if (tryNewPosition.IsValid && !positionTargets.ContainsKey(tryNewPosition))
+                {
+                    tryNewScore = -1f;
+                    foreach (Thing thing in GenRadial.RadialDistinctThingsAround(tryNewPosition, map, aoe, true))
+                    {
+                        if (thing.def == this.avoidMakingTooMuchOfThing)
+                        {
+                            tryNewScore = -15f;
+                            break;
+                        }
+                        if (thing is Plant plant)
+                        {
+                            Zone zone = plant.Map.zoneManager.ZoneAt(plant.Position);
+                            if (zone != null && zone is Zone_Growing && f != Faction.OfPlayerSilentFail && f.HostileTo(Faction.OfPlayerSilentFail))
+                            {
+                                tryNewScore += this.TornadoThingScore(plant);
+                            }
+                        } else if (thing is Building b && b.Faction != null) {
+                            if (f != b.Faction && f.HostileTo(b.Faction))
+                            {
+                                tryNewScore += this.TornadoThingScore(b);
+                            } else if (niceToEvil > 0 || f == b.Faction || f.RelationKindWith(b.Faction) == FactionRelationKind.Ally) {
+                                tryNewScore -= this.TornadoThingScore(b);
+                            }
+                        } else if (thing is Pawn p) {
+                            if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast, p, 1))
+                            {
+                                tryNewScore -= this.TornadoThingScore(p) * 1.5f;
+                            } else if (intPsycasts.foes.Contains(p) && !this.OtherEnemyDisqualifiers(psycast, p, 1)) {
+                                tryNewScore += this.TornadoThingScore(p);
+                            }
+                        }
+                    }
+                    if (tryNewScore > 0)
+                    {
+                        positionTargets.Add(tryNewPosition, tryNewScore);
+                    }
+                }
+            }
+            IntVec3 bestPosition = IntVec3.Invalid;
+            if (positionTargets.Count > 0)
+            {
+                float value = -1f;
+                foreach (KeyValuePair<IntVec3, float> kvp in positionTargets)
+                {
+                    if (!bestPosition.IsValid || kvp.Value >= value)
+                    {
+                        bestPosition = kvp.Key;
+                        value = kvp.Value;
+                    }
+                }
+            }
+            return bestPosition;
+        }
+        public float TornadoThingScore(Thing t)
+        {
+            float scoreMulti = 1f;
+            if (t is Building b && b.def.building != null && b.def.building.IsTurret)
+            {
+                CompPowerTrader cpt = b.TryGetComp<CompPowerTrader>();
+                if (cpt == null || !cpt.PowerOn)
+                {
+                    scoreMulti = 2f;
+                }
+            } else if (t is Pawn p) {
+                scoreMulti *= p.GetStatValue(StatDefOf.IncomingDamageFactor);
+            } else if (t is Plant) {
+                scoreMulti /= 2.5f;
+            }
+            return scoreMulti * HautsUtility.DamageFactorFor(this.damageDef, t) * t.MarketValue / 200f;
+        }
+        public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            IntVec3 position = this.FindBestPositionTarget(intPsycasts, psycast.ability, niceToEvil, 1, out Dictionary<IntVec3, float> positionTargets);
+            if (position.IsValid)
+            {
+                psycast.lti = position;
+                return positionTargets.TryGetValue(position);
+            }
+            return 0f;
+        }
+        public DamageDef damageDef;
+        public List<HediffDef> dontUseIfHave = new List<HediffDef>();
+    }
+    public class UseCaseTags_WordOfBlessing : UseCaseTags
+    {
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Pawn, float> pawnTargets);
+            if (pawn != null)
+            {
+                psycast.lti = pawn;
+                return 10f * this.PawnAllyApplicability(intPsycasts, psycast.ability, pawn, niceToEvil, 4);
+            }
+            return 0f;
+        }
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            if (p.Downed)
+            {
+                return true;
+            }
+            foreach (Hediff hediff in p.health.hediffSet.hediffs)
+            {
+                if (this.grantableHediffs.Contains(hediff.def))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public override float Range(Psycast psycast)
+        {
+            return this.aoe * psycast.pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving);
+        }
+        public List<HediffDef> grantableHediffs;
+    }
+    public class UseCaseTags_Voidquake : UseCaseTags
+    {
+        public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            if (psycast.pawn.Faction == null || !psycast.pawn.Faction.HostileTo(Faction.OfPlayerSilentFail) || (situationCase != 1 && situationCase != 3))
+            {
+                return 0f;
+            }
+            if (pacifist)
+            {
+                return 0f;
+            }
+            switch (situationCase)
+            {
+                case 1:
+                    if (niceToEvil > 0f)
+                    {
+                        return 1f;
+                    } else if (niceToEvil < 0f) {
+                        return 2f;
+                    } else {
+                        return 1.7f;
+                    }
+                case 3:
+                    if (niceToEvil > 0f)
+                    {
+                        return 1f;
+                    } else if (niceToEvil < 0f) {
+                        return 2f;
+                    } else {
+                        return 1.7f;
+                    }
+                default:
+                    return 0f;
+            }
+        }
+        public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            if (Rand.Chance(this.chancePerEvil * (-niceToEvil - this.minEvil)) && (intPsycasts.continuousTimeSpawned > 5000 || !HVPAA_Mod.settings.powerLimiting))
+            {
+                psycast.lti = new LocalTargetInfo(intPsycasts.Pawn);
+                float score = 1f;
+                int situation = intPsycasts.GetSituation();
+                foreach (Pawn p in intPsycasts.allies)
+                {
+                    if (!this.ShouldRally(psycast.ability, p, situation))
+                    {
+                        if (ModsConfig.AnomalyActive && (p.IsMutant || p.RaceProps.IsAnomalyEntity))
+                        {
+                            score += p.MarketValue / 250f;
+                        } else if (!p.kindDef.isBoss && p.GetStatValue(StatDefOf.PsychicSensitivity) > float.Epsilon) {
+                            score -= p.MarketValue / (niceToEvil > 0f ? 250f : 1000f);
+                        }
+                    }
+                }
+                foreach (Pawn p in intPsycasts.foes)
+                {
+                    if (ModsConfig.AnomalyActive && (p.IsMutant || p.RaceProps.IsAnomalyEntity))
+                    {
+                        score -= p.MarketValue / 250f;
+                    } else if (!p.kindDef.isBoss && p.GetStatValue(StatDefOf.PsychicSensitivity) > float.Epsilon) {
+                        score += p.MarketValue / (niceToEvil > 0f ? 250f : 1000f);
+                    }
+                }
+                return score;
+            }
+            return 0f;
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            return intPsycasts.GetSituation() != 3 ? 0f : this.ApplicabilityScoreDamage(intPsycasts, psycast, niceToEvil);
+        }
+        public override bool ShouldRally(Psycast psycast, Pawn p, int situation)
+        {
+            return p != psycast.pawn && (!ModsConfig.AnomalyActive || (!p.IsMutant && !p.RaceProps.IsAnomalyEntity)) && (p.Position.DistanceTo(psycast.pawn.Position) - this.rallyRadius) / p.GetStatValue(StatDefOf.MoveSpeed) <= psycast.def.verbProperties.warmupTime;
+        }
+        public float minEvil;
+        public float chancePerEvil;
     }
 }
