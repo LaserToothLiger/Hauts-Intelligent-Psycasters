@@ -5128,6 +5128,25 @@ namespace HVPAA
             return !map.roofGrid.Roofed(iv3);
         }
     }
+    public class TrapPlacementWorker_NearWildAnimals : TrapPlacementWorker
+    {
+        public override bool IsGoodSpot(IntVec3 iv3, Map map)
+        {
+            int validCount = 0;
+            foreach (Pawn p in map.mapPawns.AllPawnsSpawned)
+            {
+                if (p.AnimalOrWildMan())
+                {
+                    validCount++;
+                    if (p.Position.DistanceTo(iv3) <= 27.9f)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return validCount >= 25;
+        }
+    }
     //this wizard war is so fucked
     public class UseCaseTags_CBT : UseCaseTags
     {

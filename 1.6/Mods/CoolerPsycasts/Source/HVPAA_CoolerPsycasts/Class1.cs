@@ -1364,6 +1364,13 @@ namespace HVPAA_CoolerPsycasts
                 UseCaseTags uct = a.def.GetModExtension<UseCaseTags>();
                 if (uct != null && uct.trapPower > 0 && a.def.verbProperties.range > 0f && a.def.targetRequired && (a.def.PsyfocusCost+psycast.def.PsyfocusCost) < psycast.pawn.psychicEntropy.CurrentPsyfocus && !psycast.pawn.psychicEntropy.WouldOverflowEntropy(a.def.EntropyGain+psycast.def.PsyfocusCost))
                 {
+                    if (ModsConfig.OdysseyActive && psycast.pawn.MapHeld.Biome.inVacuum)
+                    {
+                        if (a.VerbProperties.Any((VerbProperties vp) => !vp.useableInVacuum))
+                        {
+                            continue;
+                        }
+                    }
                     return base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci);
                 }
             }
@@ -2582,10 +2589,15 @@ namespace HVPAA_CoolerPsycasts
             }
             return false;
         }
+        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            return (p.MarketValue - this.minMarketValue)/500f;
+        }
         public override float Range(Psycast psycast)
         {
             return this.aoe * psycast.pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving);
         }
+        public float minMarketValue;
         public List<HediffDef> grantableHediffs;
     }
     public class UseCaseTags_Voidquake : UseCaseTags

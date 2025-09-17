@@ -362,6 +362,7 @@ Level 1 psycasts-->
 				<mfds><li>Morbid</li><li>Natural</li></mfds>
 				<animalRightsViolation>true</animalRightsViolation>
 				<trapPower>4</trapPower>
+				<trapPlacementWorker>HVPAA.TrapPlacementWorker_NearWildAnimals</trapPlacementWorker><!--can't be used as an embedded psycast if there are no wildmen/animals in 27.9c and there are less than 25 such pawns in the whole map-->
 			</li>
 		</value>
 	</Operation>
@@ -2095,7 +2096,9 @@ Level 1 psycasts-->
 										<aoe>20</aoe>
 										<requiresLoS>false</requiresLoS>
 										<mfds><li>Dignified</li></mfds>
+										<minMarketValue>1000</minMarketValue>
 										<grantableHediffs>
+											<li>HVP_WordOfBlessingSelf</li>
 											<li>HVP_BlessingSpirit</li>
 											<li>HVP_BlessingIntelligence</li>
 											<li>HVP_BlessingResilience</li>
