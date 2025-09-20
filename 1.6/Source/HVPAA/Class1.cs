@@ -5147,6 +5147,20 @@ namespace HVPAA
             return validCount >= 25;
         }
     }
+    public class TrapPlacementWorker_AdjacentToChunk : TrapPlacementWorker
+    {
+        public override bool IsGoodSpot(IntVec3 iv3, Map map)
+        {
+            foreach (Thing t in GenRadial.RadialDistinctThingsAround(iv3, map, 1.9f, true))
+            {
+                if (GenSight.LineOfSight(iv3, t.Position, map) && (t.HasThingCategory(ThingCategoryDefOf.Chunks) || t.HasThingCategory(ThingCategoryDefOf.StoneChunks)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
     //this wizard war is so fucked
     public class UseCaseTags_CBT : UseCaseTags
     {

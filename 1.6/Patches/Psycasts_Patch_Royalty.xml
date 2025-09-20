@@ -1783,6 +1783,7 @@ Level 1 psycasts-->
 							<chanceCanTargetHarmlessBuildings>0.5</chanceCanTargetHarmlessBuildings>
 							<allyMultiplier>2.75</allyMultiplier>
 							<chunkGetRadius>1.9</chunkGetRadius><!--only chunks in this radius can be used as ammo-->
+							<trapPlacementWorker>HVPAA.TrapPlacementWorker_AdjacentToChunk</trapPlacementWorker><!--this can't actually be embedded. Nevertheless, in case that does become possible, this prevents it from being embedded in a cell that lacks adjacent chunks to rain-->
 						</li>
 					</value>
 				</li>
