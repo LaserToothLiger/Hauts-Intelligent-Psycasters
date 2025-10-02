@@ -1773,7 +1773,7 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_ChunkRain"]</xpath>
 					<value>
-						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_ChunkSkip">
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_ChunkRain">
 							<damage>true</damage>
 							<aoe>4.4</aoe><!--wider than the actual explosion radii bc the chunks can fall in a not entirely predictable pattern-->
 							<mfds><li>Natural</li></mfds>
@@ -1782,11 +1782,25 @@ Level 1 psycasts-->
 							<chanceCanTargetPawns>0.2</chanceCanTargetPawns><!--less lethal than Meteoroid Skip per blast, but has more blasts and is lower-level, so similarly constrained by artificial stupidities-->
 							<chanceCanTargetHarmlessBuildings>0.5</chanceCanTargetHarmlessBuildings>
 							<allyMultiplier>2.75</allyMultiplier>
-							<chunkGetRadius>1.9</chunkGetRadius><!--only chunks in this radius can be used as ammo-->
+							<chunkGetRadius>1.9</chunkGetRadius><!--only chunks in this radius can be used as ammo...-->
+							<chunkSkip>Chunkskip</chunkSkip>
+							<chunkGetRadiusIfChunkSkip>25</chunkGetRadiusIfChunkSkip><!--unless you have the Chunkskip ability, then you use this radius instead. (This limit is an arbitrary boundary established for scanning performance, as Chunk Skip actually has no maximum range on the 5 'closest' chunks)-->
+							<minPsyfocusAfterChunkSkipToCast>0.25</minPsyfocusAfterChunkSkipToCast><!--as a level 3 psycast, you need at least this much psyfocus to cast it. Since the AI can Chunk Skip to get ammo for Chunk Rain, it needs to know how much psyfocus it would have left over after skipping to try raining.-->
 							<trapPlacementWorker>HVPAA.TrapPlacementWorker_AdjacentToChunk</trapPlacementWorker><!--this can't actually be embedded. Nevertheless, in case that does become possible, this prevents it from being embedded in a cell that lacks adjacent chunks to rain-->
 						</li>
 					</value>
 				</li>
+					<li Class="PatchOperationAddModExtension">
+						<xpath>/Defs/AbilityDef[defName="Chunkskip"]</xpath><!--allows a pawn w/ both Chunk Skip and Chunk Rain to grab ammo using Chunk Skip. It uses Chunk Skip only if there are chunks in 25c radius but not 1.9c radius, targeting self-->
+						<value>
+							<li Class="HVPAA_CoolerPsycasts.UseCaseTags_ChunkSkip">
+								<meta>true</meta>
+								<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+								<chunkRain>CoolPsycasts_ChunkRain</chunkRain>
+								<mfds><li>Natural</li></mfds>
+							</li>
+						</value>
+					</li>
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Illusion"]</xpath>
 					<value>

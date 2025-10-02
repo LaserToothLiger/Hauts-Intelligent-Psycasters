@@ -666,6 +666,39 @@ namespace HVPAA_CoolerPsycasts
     //level 3
     public class UseCaseTags_ChunkSkip : UseCaseTags
     {
+        public override float MetaApplicability(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, List<PotentialPsycast> psycasts, int situationCase, float niceToEvil)
+        {
+            Pawn p = psycast.ability.pawn;
+            if (p.psychicEntropy != null)
+            {
+                foreach (PotentialPsycast potPsy in psycasts)
+                {
+                    Psycast psy = potPsy.ability;
+                    if (psy.def == this.chunkRain)
+                    {
+                        Psycast cs = psycast.ability;
+                        UseCaseTags_ChunkRain uct = psy.def.GetModExtension<UseCaseTags_ChunkRain>();
+                        if (uct != null && !p.psychicEntropy.WouldOverflowEntropy(cs.def.EntropyGain + psy.def.EntropyGain) && p.psychicEntropy.CurrentPsyfocus + 0.0005f >= cs.def.PsyfocusCost + psy.def.PsyfocusCost && p.psychicEntropy.CurrentPsyfocus - cs.def.PsyfocusCost - 0.0005f >= uct.minPsyfocusAfterChunkSkipToCast)
+                        {
+                            foreach (Thing t in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, uct.chunkGetRadius, true))
+                            {
+                                if (GenSight.LineOfSight(p.Position, t.Position, t.Map) && (t.HasThingCategory(ThingCategoryDefOf.Chunks) || t.HasThingCategory(ThingCategoryDefOf.StoneChunks)))
+                                {
+                                    return 0f;
+                                }
+                            }
+                            psycast.lti = p.Position;
+                            return potPsy.score;
+                        }
+                    }
+                }
+            }
+            return 0f;
+        }
+        public AbilityDef chunkRain;
+    }
+    public class UseCaseTags_ChunkRain : UseCaseTags
+    {
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
             return p.Downed || (p.pather.MovingNow && p.GetStatValue(StatDefOf.MoveSpeed) >= this.ignoreAllPawnsFasterThan);
@@ -699,38 +732,65 @@ namespace HVPAA_CoolerPsycasts
             }
             return 0f;
         }
+        public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            float numChunks = 0f;
+            Pawn p = psycast.pawn;
+            float getRadius = this.chunkGetRadius;
+            if (p.abilities != null && p.psychicEntropy != null)
+            {
+                Ability cs = p.abilities.GetAbility(this.chunkSkip);
+                if (cs != null && !p.psychicEntropy.WouldOverflowEntropy(cs.def.EntropyGain + psycast.def.EntropyGain) && p.psychicEntropy.CurrentPsyfocus + 0.0005f >= cs.def.PsyfocusCost + psycast.def.PsyfocusCost && p.psychicEntropy.CurrentPsyfocus - cs.def.PsyfocusCost - 0.0005f >= this.minPsyfocusAfterChunkSkipToCast)
+                {
+                    getRadius = this.chunkGetRadiusIfChunkSkip;
+                }
+            }
+            foreach (Thing t in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, getRadius, true))
+            {
+                if (GenSight.LineOfSight(p.Position, t.Position, t.Map) && (t.HasThingCategory(ThingCategoryDefOf.Chunks) || t.HasThingCategory(ThingCategoryDefOf.StoneChunks)))
+                {
+                    numChunks += 1f;
+                    if (numChunks >= 5f)
+                    {
+                        break;
+                    }
+                }
+            }
+            return Math.Min(numChunks,base.PriorityScoreDamage(psycast, situationCase, pacifist, niceToEvil, usableFoci));
+        }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
             this.canTargetHB = Rand.Chance(this.chanceCanTargetHarmlessBuildings);
             this.canTargetPawns = Rand.Chance(this.chanceCanTargetPawns);
-            float numChunks = 0f;
-            foreach (Thing t in GenRadial.RadialDistinctThingsAround(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, this.chunkGetRadius, true))
-            {
-                if (GenSight.LineOfSight(intPsycasts.Pawn.Position, t.Position, t.Map) && (t.HasThingCategory(ThingCategoryDefOf.Chunks) || t.HasThingCategory(ThingCategoryDefOf.StoneChunks)))
-                {
-                    numChunks += 1f;
-                }
-            }
-            if (numChunks > 5f)
-            {
-                numChunks = 5f;
-            }
             psycast.lti = IntVec3.Invalid;
             float app = 0f;
+            float numChunks = 0f;
+            Pawn pawn = intPsycasts.Pawn;
+            foreach (Thing t in GenRadial.RadialDistinctThingsAround(pawn.Position, pawn.Map, this.chunkGetRadius, true))
+            {
+                if (GenSight.LineOfSight(pawn.Position, t.Position, t.Map) && (t.HasThingCategory(ThingCategoryDefOf.Chunks) || t.HasThingCategory(ThingCategoryDefOf.StoneChunks)))
+                {
+                    numChunks += 1f;
+                    if (numChunks >= 5f)
+                    {
+                        break;
+                    }
+                }
+            }
             if (numChunks > 0f)
             {
                 Thing bestHit = null;
                 float applic = 0f;
-                foreach (Thing t2 in GenRadial.RadialDistinctThingsAround(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, this.Range(psycast.ability), true))
+                foreach (Thing t2 in GenRadial.RadialDistinctThingsAround(pawn.Position, pawn.Map, this.Range(psycast.ability), true))
                 {
-                    if (!GenSight.LineOfSight(t2.Position, intPsycasts.Pawn.Position, t2.Map))
+                    if (!GenSight.LineOfSight(t2.Position, pawn.Position, t2.Map))
                     {
                         continue;
                     }
                     if (t2.Position.GetRoof(t2.Map) == null || !t2.Position.GetRoof(t2.Map).isThickRoof)
                     {
                         float applicability = 0f;
-                        foreach (Thing t3 in GenRadial.RadialDistinctThingsAround(t2.Position, intPsycasts.Pawn.Map, this.aoe, true))
+                        foreach (Thing t3 in GenRadial.RadialDistinctThingsAround(t2.Position, pawn.Map, this.aoe, true))
                         {
                             if (t3 is Pawn p && this.canTargetPawns)
                             {
@@ -740,14 +800,10 @@ namespace HVPAA_CoolerPsycasts
                                     {
                                         applicability += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p, niceToEvil, 2);
                                     }
-                                }
-                                else if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast.ability, p, 2))
-                                {
+                                } else if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast.ability, p, 2)) {
                                     applicability -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p, niceToEvil, 2);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 applicability += this.ThingApplicability(psycast.ability, t3, niceToEvil, 1);
                             }
                         }
@@ -773,6 +829,9 @@ namespace HVPAA_CoolerPsycasts
         public float chanceCanTargetPawns;
         public float chanceCanTargetHarmlessBuildings;
         public float chunkGetRadius;
+        public float chunkGetRadiusIfChunkSkip;
+        public AbilityDef chunkSkip;
+        public float minPsyfocusAfterChunkSkipToCast = 0.25f;
     }
     public class UseCaseTags_Illusion : UseCaseTags
     {
