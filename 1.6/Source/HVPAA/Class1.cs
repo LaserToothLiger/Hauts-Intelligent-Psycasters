@@ -69,7 +69,7 @@ namespace HVPAA
             {
                 yield return fmo;
             }
-            if (clickedPawn != null && clickedPawn.Faction != null && ((ITrader)clickedPawn).CanTradeNow && context.FirstSelectedPawn.CanReach(clickedPawn, PathEndMode.OnCell, Danger.Deadly, false, false, TraverseMode.ByPawn) && !context.FirstSelectedPawn.skills.GetSkill(SkillDefOf.Social).TotallyDisabled && !clickedPawn.mindState.traderDismissed && context.FirstSelectedPawn.CanTradeWith(clickedPawn.Faction, clickedPawn.TraderKind).Accepted)
+            if (clickedPawn != null && clickedPawn.Faction != null && ((ITrader)clickedPawn).CanTradeNow && clickedPawn.GetLord().LordJob is LordJob_TradeWithColony && !clickedPawn.mindState.traderDismissed && context.FirstSelectedPawn.CanReach(clickedPawn, PathEndMode.OnCell, Danger.Deadly, false, false, TraverseMode.ByPawn) && !context.FirstSelectedPawn.skills.GetSkill(SkillDefOf.Social).TotallyDisabled && context.FirstSelectedPawn.CanTradeWith(clickedPawn.Faction, clickedPawn.TraderKind).Accepted)
             {
                 FactionPsycasterRuleDef fprd = HVPAAUtility.GetPsycasterRules(clickedPawn.Faction.def);
                 if (fprd != null && fprd.offersSellcasts && Find.AnyPlayerHomeMap != null)

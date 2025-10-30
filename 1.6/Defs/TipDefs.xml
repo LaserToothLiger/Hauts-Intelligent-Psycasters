@@ -6,7 +6,7 @@
     <tips>
       <li TKey="HVPAA_DisableCasts">Many higher-level psycasts are utterly, unfairly devastating when enemies can use them. You can disable the use of specific psycasts for allied and/or enemy psycasters in the mod settings for Hauts' Intelligent Psycasters.</li>
       <li TKey="HVPAA_CasterPersonalities">Traits and ideoligion influence the behavior of AI psycasters. "Nicer" casters prefer defensive or healing casts, for example, and Pyromaniacs will refuse to cast Waterskip.</li>
-      <li TKey="HVPAA_FactionalCasters">Different factions field different amounts and types of psycasters. For example, anyone from a tribal society may be a psycaster, while the Empire has almost no psycasters outside of its nobility and its heavily armed and armored 'persona templar'.</li>
+      <li TKey="HVPAA_FactionalCasters">Different factions field different amounts and types of psycasters. For example, any tribal person may be a psycaster, while the Empire has almost no psycasters outside of its nobility and the persona templar.</li>
       <li TKey="HVPAA_CombatCasting">AI psycasters use their abilities more frequently in combat.</li>
     </tips>
   </TipSetDef>
