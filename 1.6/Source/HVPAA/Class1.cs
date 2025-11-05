@@ -45,7 +45,7 @@ namespace HVPAA
             harmony.Patch(AccessTools.Method(typeof(FactionDialogMaker), nameof(FactionDialogMaker.FactionDialogFor)),
                           postfix: new HarmonyMethod(patchType, nameof(HVPAA_FactionDialogForPostfix)));
             harmony.Patch(AccessTools.Property(typeof(Pawn), nameof(Pawn.IsColonistPlayerControlled)).GetGetMethod(),
-                           prefix: new HarmonyMethod(patchType, nameof(HVPAA_IsColonistPlayerControlledPrefix)));
+                           postfix: new HarmonyMethod(patchType, nameof(HVPAA_IsColonistPlayerControlledPostfix)));
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), nameof(PawnGenerator.GeneratePawn), new[] { typeof(PawnGenerationRequest) }),
                            postfix: new HarmonyMethod(patchType, nameof(HVPAA_GeneratePawnPostfix)));
             harmony.Patch(AccessTools.Method(typeof(SymbolResolver_PawnGroup), nameof(SymbolResolver_PawnGroup.Resolve)),
@@ -177,14 +177,12 @@ namespace HVPAA
                 }
             }
         }
-        public static bool HVPAA_IsColonistPlayerControlledPrefix(Pawn __instance, ref bool __result)
+        public static void HVPAA_IsColonistPlayerControlledPostfix(Pawn __instance, ref bool __result)
         {
-            if (HVPAAUtility.IsSellcastDiscounted(__instance))
+            if (__result == true && HVPAAUtility.IsSellcastDiscounted(__instance))
             {
                 __result = false;
-                return false;
             }
-            return true;
         }
         public static void HVPAA_GeneratePawnPostfix(ref Pawn __result, PawnGenerationRequest request)
         {
