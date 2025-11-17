@@ -1376,7 +1376,7 @@ namespace HVPAA_HOP
                 List<Tool> list2 = pet.Primary.def.tools;
                 if (!melee)
                 {
-                    app = pet.Primary.MarketValue * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) * p.GetStatValue(StatDefOf.AimingDelayFactor) * p.GetStatValue(StatDefOf.RangedCooldownFactor) / (100f * p.GetStatValue(VEFDefOf.VEF_RangeAttackSpeedFactor));
+                    app = pet.Primary.MarketValue * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) * p.GetStatValue(StatDefOf.AimingDelayFactor) * p.GetStatValue(StatDefOf.RangedCooldownFactor) / 100f;
                 }
                 else
                 {
