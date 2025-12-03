@@ -90,9 +90,7 @@
 	  </li>
 	</modExtensions>
   </PawnKindDef>
-  <PawnKindDef ParentName="HoraxianBase">
-    <defName>HVPAA_Transgressor</defName>
-    <label>transgressor</label>
+  <PawnKindDef ParentName="HoraxianBase" Name="HVPAA_TransgressorBase" Abstract="True">
     <combatPower>400</combatPower>
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
     <studiableAsPrisoner>true</studiableAsPrisoner>
@@ -155,6 +153,10 @@
         <OldOne MayRequire="ellit.IlkoftheOldOnes">0.025</OldOne>
       </xenotypeChances>
     </xenotypeSet>
+  </PawnKindDef>
+  <PawnKindDef ParentName="HVPAA_TransgressorBase">
+    <defName>HVPAA_Transgressor</defName>
+    <label>transgressor</label>
 	<modExtensions>
 	  <li Class="HVPAA.AddedSpecPsycasters">
 		<domesticChance>1</domesticChance>
@@ -168,5 +170,47 @@
 	  </li>
 	</modExtensions>
   </PawnKindDef>
+  <PawnKindDef ParentName="HVPAA_TransgressorBase"><!--sir not-appearing-in-this-mod, used in other mods-->
+    <defName>HVPAA_ArchHeretic</defName>
+    <label>arch-heretic</label>
+    <startingHediffs>
+      <li>
+        <def>Regeneration</def>
+        <severity>0.1</severity>
+      </li>
+      <li>
+        <def>HVPAA_CultLeader</def>
+      </li>
+    </startingHediffs>
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>0</domesticChance>
+		<pointCost>99999</pointCost>
+		<domesticCount>0</domesticCount>
+		<minPsylinkLevel>3~5</minPsylinkLevel>
+		<bonusPsycasts>2</bonusPsycasts>
+		<raidChance>0</raidChance>
+		<raidCount>0</raidCount>
+		<combatCastIntervalOverride>90</combatCastIntervalOverride>
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
+	  <HediffDef ParentName="HVT_TraitHediffBase">
+		<defName>HVPAA_CultLeader</defName>
+		<label>deadlife haze</label>
+		<description>Deadlife mechanites streaming out of every orifice.</description>
+		<hediffClass>HediffWithComps</hediffClass>
+		<isBad>false</isBad>
+		<comps>
+		  <li Class="HVPAA.HediffCompProperties_Heresiarch">
+			<reinforcementCount>4~7</reinforcementCount>
+			<reinforcingFaction>HoraxCult</reinforcingFaction>
+			<deadlifeRadius>3</deadlifeRadius>
+			<deadlifeDamage>DeadlifeDust</deadlifeDamage>
+			<deadlifePeriodicity>500</deadlifePeriodicity>
+		  </li>
+		  <li Class="HediffCompProperties_DisappearsOnDeath"/>
+		</comps>
+	  </HediffDef>
   
 </Defs>
