@@ -344,6 +344,7 @@ namespace HVPAA
         public static JobDef HVPAA_FollowRally;
         public static JobDef HVPAA_BuySellcast;
         public static QuestScriptDef HVPAA_HiredSellcasterQuest;
+        public static QuestScriptDef HVPAA_MendicantCaster;
         public static TraitDef HVPAA_SellcastTrait;
 
         public static FactionPsycasterRuleDef HVPAA_Default;
@@ -2006,6 +2007,85 @@ namespace HVPAA
         private string levelText;
         public static float lastGoodwillFlashTime = -100f;
         protected static readonly Vector2 AcceptButtonSize = new Vector2(160f, 40f);
+    }
+    public class QuestNode_GenerateRandomSellcastProperties : QuestNode
+    {
+        protected override void RunInt()
+        {
+            Slate slate = QuestGen.slate;
+            List<FactionRelation> list2 = new List<FactionRelation>();
+            FactionDef fd = Rand.Chance(0.5f) ? FactionDefOf.OutlanderCivil: FactionDefOf.TribeCivil;
+            foreach (Faction faction4 in Find.FactionManager.AllFactionsListForReading)
+            {
+                if (!faction4.def.PermanentlyHostileTo(fd))
+                {
+                    list2.Add(new FactionRelation
+                    {
+                        other = faction4,
+                        kind = FactionRelationKind.Neutral
+                    });
+                }
+            }
+            FactionGeneratorParms factionGeneratorParms = new FactionGeneratorParms(fd, default(IdeoGenerationParms), true);
+            if (ModsConfig.IdeologyActive)
+            {
+                factionGeneratorParms.ideoGenerationParms = new IdeoGenerationParms(factionGeneratorParms.factionDef, false, DefDatabase<PreceptDef>.AllDefs.Where((PreceptDef p) => p.proselytizes || p.approvesOfCharity).ToList<PreceptDef>(), null, null, false, false, false, false, "", null, null, false, "", false);
+            }
+            Faction faction = FactionGenerator.NewGeneratedFactionWithRelations(factionGeneratorParms, list2);
+            faction.temporary = true;
+            Find.FactionManager.Add(faction);
+            Pawn sellcast = HVPAAUtility.GenerateSellcast(faction, this.factionPsycasterRuleset);
+            bool discounted = Rand.Chance(0.5f);
+            if (discounted && sellcast.story != null)
+            {
+                sellcast.story.traits.GainTrait(new Trait(HVPAADefOf.HVPAA_SellcastTrait));
+            }
+            HVPAAUtility.GiveRandPsylinkLevel(sellcast, this.factionPsycasterRuleset.avgRandCasterLevel);
+            if (sellcast.psychicEntropy != null)
+            {
+                sellcast.psychicEntropy.RechargePsyfocus();
+            }
+            slate.Set<Pawn>(this.storeAs.GetValue(slate), sellcast, false);
+            slate.Set<Pawn>("sellcast", sellcast, false);
+            slate.Set<int>("sellcastLevel", sellcast.GetPsylinkLevel(), false);
+            slate.Set<int>("days", this.daysRange.RandomInRange, false);
+            int psycastCount = 0;
+            if (sellcast.abilities != null)
+            {
+                foreach (Ability a in sellcast.abilities.abilities)
+                {
+                    if (a is Psycast)
+                    {
+                        psycastCount++;
+                    }
+                }
+            }
+            slate.Set<int>("psycastCount", psycastCount, false);
+            slate.Set<int>("discounted", discounted ? 1 : 0, false);
+            slate.Set<int>("choosable", 0, false);
+            slate.Set<int>("isHighFantasy", HautsUtility.IsHighFantasy() ? 1 : 0, false);
+            List<Pawn> pawns = new List<Pawn> { sellcast };
+            Map map = QuestGen_Get.GetMap(false, null, false);
+            QuestGen.quest.SetFaction(pawns, Faction.OfPlayer, null);
+            QuestGen.quest.PawnsArrive(pawns, null, map.Parent, null, false, null, null, null, null, null, false, false, false);
+        }
+        protected override bool TestRunInt(Slate slate)
+        {
+            Map map = QuestGen_Get.GetMap(false, null, false);
+            if (map == null)
+            {
+                return false;
+            }
+            if (!FactionDefOf.OutlanderRefugee.allowedArrivalTemperatureRange.Includes(map.mapTemperature.OutdoorTemp))
+            {
+                return false;
+            }
+            return true;
+        }
+        public FactionPsycasterRuleDef factionPsycasterRuleset;
+        [NoTranslate]
+        public SlateRef<string> storeAs;
+        public IntRange daysRange;
     }
     public class QuestNode_Sellcast_Etc : QuestNode
     {
@@ -6355,6 +6435,14 @@ namespace HVPAA
             {
                 LeaveQuestPartUtility.MakePawnLeave(pawn, quest);
                 HVPAAUtility.SkipOutPawnInner(pawn);
+            }
+            if (!quest.Historical)
+            {
+                quest.End(QuestEndOutcome.Success, false);
+                foreach (Pawn p in pawns)
+                {
+                    p.Destroy();
+                }
             }
         }
         public static void SkipOutPawnInner(Pawn pawn)

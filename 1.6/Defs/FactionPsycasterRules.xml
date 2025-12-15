@@ -172,6 +172,46 @@
 	</raidSpecCasters>
   </HVPAA.FactionPsycasterRuleDef>
   
+  
+  
+  
+  
+  <!--specifically for psycasters generated for/by the Mendicant Psycaster quest-->
+  <HVPAA.FactionPsycasterRuleDef>
+    <defName>HVPAA_MendicantQuest</defName>
+	<bonusCastChance>
+	  <li>1</li>
+	  <li>0.75</li>
+	  <li>0.5</li>
+	  <li>0.25</li>
+	  <li>0.15</li>
+	  <li>0.1</li>
+	</bonusCastChance>
+	<randCastersPerCapita>0</randCastersPerCapita><!--(capped at 75%) percentage of people in this faction that randomly have psylinks-->
+	<randCasterHediffs />
+	<maxRandCasterHediffs>0</maxRandCasterHediffs>
+	<randCasterItems>
+	  <li><key>GoJuice</key><value>0.1</value></li>
+	</randCasterItems>
+	<maxRandCasterItems>1</maxRandCasterItems>
+	<randCasterEquipment>
+	  <li><key>MeleeWeapon_PsyfocusStaff</key><value>1</value></li>
+	</randCasterEquipment>
+	<maxRandCasterEquipment>1</maxRandCasterEquipment>
+	<avgRandCasterLevel>4</avgRandCasterLevel>
+	<maxDomesticPower>0</maxDomesticPower>
+	<domesticSpecCasters />
+	<specChanceInRaids>0</specChanceInRaids>
+	<specPointsPerRaidPoint>0</specPointsPerRaidPoint>
+	<raidSpecCasters/>
+	<offersSellcasts>false</offersSellcasts>
+  </HVPAA.FactionPsycasterRuleDef>
+  
+  
+  
+  
+  
+  
   <!--rulesets for particular modded factions:
 		Forsakens-->
   <HVPAA.FactionPsycasterRuleDef MayRequireAnyOf="quad.forsakens,sarg.alphagenes">

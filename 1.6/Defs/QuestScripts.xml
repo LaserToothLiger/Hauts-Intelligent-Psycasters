@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
+  <!--sellcasts you hire-->
   <QuestScriptDef>
     <defName>HVPAA_HiredSellcasterQuest</defName>
     <autoAccept>true</autoAccept>
@@ -82,6 +83,144 @@
         </li>
       </nodes>
     </root>
+  </QuestScriptDef>
+  
+  <!--mendicant psycaster-->
+  <VEF.Storyteller.QuestChainDef>
+	<defName>HVMP_TheMendicants</defName>
+	<iconPath>UI/QuestChainIcon</iconPath>
+	<label>The Mendicants</label>
+	<description>A loose order of psycasters wanders the world, guided by the messages of an archotech. It might guide them to your doorstep!</description>
+  </VEF.Storyteller.QuestChainDef>
+	
+  <QuestScriptDef>
+    <defName>HVPAA_MendicantCaster</defName>
+    <defaultChallengeRating>1</defaultChallengeRating>
+    <isRootSpecial>true</isRootSpecial>
+    <expireDaysRange>4~8</expireDaysRange>
+    <everAcceptableInSpace>false</everAcceptableInSpace>
+    <questNameRules>
+      <rulesStrings>
+        <li>questName->The [wandering] [caster]</li>
+		
+        <li>wandering->wandering</li>
+        <li>wandering->itinerant</li>
+        <li>wandering->vagabond</li>
+        <li>wandering->hermit</li>
+        <li>wandering->roving</li>
+        <li>wandering->nomad</li>
+        <li>wandering->mendicant</li>
+        <li>wandering->drifting</li>
+        <li>wandering->errant</li>
+		
+        <li>caster(p=15)->caster</li>
+        <li>caster->oracle</li>
+        <li>caster->sage</li>
+        <li>caster->disciple</li>
+        <li>caster->archon</li>
+        <li>caster->invoker</li>
+        <li>caster->devotee</li>
+        <li>caster->acolyte</li>
+        <li>caster->seeker</li>
+        <li>caster->prophet</li>
+      </rulesStrings>
+    </questNameRules>
+    <questDescriptionRules>
+      <rulesStrings>
+		<li>questDescription->A [archotech] is sending you a message. One of its devout [psycasters], [sellcast_nameFull], is nearby. It would like you to take care of [sellcast_objective] for [days] days. [selfDirected]\n\n[sellcast_pronoun] is a level [sellcastLevel] caster with [psycastCount] [psycasts] at [sellcast_possessive] disposal.[canChooseCasts]</li>
+		
+		<li>psycasters(isHighFantasy==0)->psycasters</li>
+		<li>psycasters(isHighFantasy==1)->spellcasters</li>
+		
+		<li>archotech(isHighFantasy==0)->psychically resonant machine intelligence</li>
+		<li>archotech(isHighFantasy==1)->higher spiritual entity</li>
+		
+		<li>psycasts(isHighFantasy==0)->psycasts</li>
+		<li>psycasts(isHighFantasy==1)->spells</li>
+		
+		<li>selfDirected(discounted==0)->For the duration of [sellcast_possessive] stay, [sellcast_pronoun] will perform tasks and obey commands like one of your own people.</li>
+		<li>selfDirected(discounted==1)->[sellcast_pronoun] is under no obligation to respect your commands, and so cannot be directly controlled.</li>
+		
+		<li>canChooseCasts(choosable==0)-></li>
+		<li>canChooseCasts(choosable==1)->\n\nYou may choose which [psycasts] [sellcast_definite] has when [sellcast_pronoun] arrives.</li>
+      </rulesStrings>
+    </questDescriptionRules>
+	<questContentRules>
+	  <rulesStrings>
+        <li>lodgersLeavingLetterLabel->[sellcast_definite] leaving</li>
+        <li>lodgersLeavingLetterText->The power [sellcast_definite] serves has called [sellcast_objective] to move on. [sellcast_pronoun] will now leave.</li>
+	  </rulesStrings>
+	</questContentRules>
+    <root Class="QuestNode_Sequence">
+      <nodes>
+		<li Class="HVPAA.QuestNode_GenerateRandomSellcastProperties">
+          <factionPsycasterRuleset>HVPAA_MendicantQuest</factionPsycasterRuleset>
+		  <storeAs>sellcast</storeAs>
+		  <daysRange>6~60</daysRange>
+		</li>
+		<li Class="QuestNode_AddToList">
+		  <name>lodgers</name>
+		  <value>$sellcast</value>
+		</li>
+        <li Class="QuestNode_SetAllApparelLocked">
+          <pawns>$lodgers</pawns>
+        </li>
+		<li Class="QuestNode_Equal">
+          <value1>$discounted</value1>
+          <value2>1</value2>
+		  <node Class="QuestNode_WorkDisabled">
+		    <pawns>$lodgers</pawns>
+			<disabledWorkTags>
+			  <li>ManualSkilled</li>
+			</disabledWorkTags>
+		  </node>
+        </li>
+		<li Class="QuestNode_ExtraFaction">
+          <factionOf>$sellcast</factionOf>
+          <pawns>$lodgers</pawns>
+          <factionType>HomeFaction</factionType>
+          <inSignalsRemovePawn>
+            <li>lodgers.RanWild</li>
+            <li>lodgers.BecameMutant</li>
+          </inSignalsRemovePawn>
+        </li>
+		<li Class="HVPAA.QuestNode_Sellcast_Etc">
+          <faction>$sellcastFaction</faction>
+          <pawns>$lodgers</pawns>
+		  <days>$days</days>
+        </li>
+        <li Class="QuestNode_Signal">
+          <inSignal>lodgers.Destroyed</inSignal>
+          <node Class="QuestNode_Sequence">
+            <nodes>
+              <li Class="QuestNode_Letter">
+                <label TKey="LetterLabelGuestDied">Sellcast died: {SUBJECT_definite}</label>
+                <text TKey="LetterTextGuestDied">[sellcast_nameFull], whom you hired as a sellcast, has died.</text>
+              </li>
+              <li Class="HVPAA.QuestNode_EndSellcast">
+                <outcome>Fail</outcome>
+                <goodwillChangeAmount>-200</goodwillChangeAmount>
+                <goodwillChangeFactionOf>$sellcastFaction</goodwillChangeFactionOf>
+                <goodwillChangeReason>QuestPawnLost</goodwillChangeReason>
+              </li>
+            </nodes>
+          </node>
+        </li>
+		<li Class="HVPAA.QuestNode_SkipOutOnCleanup">
+          <pawns>$lodgers</pawns>
+          <sendStandardLetter>false</sendStandardLetter>
+          <inSignalRemovePawn>lodgers.RanWild</inSignalRemovePawn>
+        </li>
+      </nodes>
+    </root>
+	<modExtensions>
+		<li Class="VEF.Storyteller.QuestChainExtension">
+			<questChainDef>HVMP_TheMendicants</questChainDef>
+			<isRepeatable>True</isRepeatable>
+			<mtbDaysRepeat>75</mtbDaysRepeat>
+			<conditionMinDaysSinceStart>10</conditionMinDaysSinceStart>
+		</li>
+	</modExtensions>
   </QuestScriptDef>
 
 </Defs>

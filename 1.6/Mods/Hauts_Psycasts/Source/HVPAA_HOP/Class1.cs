@@ -787,6 +787,27 @@ namespace HVPAA_HOP
         public float brainEfficiencyFactor;
     }
     //HOP lvl3
+    public class UseCaseTags_DPC : UseCaseTags
+    {
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            if ((Rand.Chance(this.spontaneousCastChance) && (intPsycasts.Pawn.Faction == null || (intPsycasts.Pawn.Map.ParentFaction != null && intPsycasts.Pawn.Faction == intPsycasts.Pawn.Map.ParentFaction))) || Rand.Chance(this.spontaneousCastChanceAway))
+            {
+                for (int j = 0; j <= 100; j++)
+                {
+                    CellFinder.TryFindRandomCellNear(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, (int)this.aoe, null, out IntVec3 spot);
+                    if (spot.IsValid && GenSight.LineOfSight(intPsycasts.Pawn.Position, spot, intPsycasts.Pawn.Map) && !spot.Standable(intPsycasts.Pawn.Map))
+                    {
+                        psycast.lti = spot;
+                        return 2f;
+                    }
+                }
+            }
+            return 0f;
+        }
+        public float spontaneousCastChance;
+        public float spontaneousCastChanceAway;
+    }
     public class UseCaseTags_Lightning : UseCaseTags
     {
         public override IntVec3 FindBestPositionTarget(HediffComp_IntPsycasts intPsycasts, Psycast psycast, float niceToEvil, int useCase, out Dictionary<IntVec3, float> positionTargets, float range = -999)
@@ -947,37 +968,6 @@ namespace HVPAA_HOP
         }
         public float canDebuffBelowPsyfocusLvl;
         public List<HediffDef> dontUseIfHave = new List<HediffDef>();
-    }
-    public class UseCaseTags_Replicate : UseCaseTags
-    {
-        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
-        {
-            return (Rand.Chance(this.chanceToUtilityCast) && (psycast.pawn.Faction == null || (psycast.pawn.MapHeld.ParentFaction != null && (psycast.pawn.Faction == psycast.pawn.MapHeld.ParentFaction || psycast.pawn.Faction.RelationKindWith(psycast.pawn.MapHeld.ParentFaction) == FactionRelationKind.Ally || (niceToEvil > 0 && psycast.pawn.Faction.RelationKindWith(psycast.pawn.MapHeld.ParentFaction) == FactionRelationKind.Neutral) || Rand.Chance(this.chanceToUtilityCast))))) ? base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci) : 0f;
-        }
-        public override float ThingApplicability(Psycast psycast, Thing t, float niceToEvil, int useCase = 1)
-        {
-            if (t.def.thingCategories != null && this.allowedItemCategories.ContainsAny((ThingCategoryDef tcd) => t.HasThingCategory(tcd)) && this.IsValidThing(psycast.pawn, t, niceToEvil, useCase) && t.MarketValue <= this.marketValueLimitItem)
-            {
-                float val = Math.Min(this.marketValueLimitStack, t.MarketValue * t.stackCount);
-                return val*val;
-            }
-            return 0f;
-        }
-        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            float app = 0f;
-            Thing item = this.FindBestThingTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Thing, float> thingTargets);
-            if (item != null)
-            {
-                psycast.lti = item;
-                app = thingTargets.TryGetValue(item)/50;
-            }
-            return app;
-        }
-        public float chanceToUtilityCast;
-        public List<ThingCategoryDef> allowedItemCategories;
-        public int marketValueLimitItem;
-        public int marketValueLimitStack;
     }
     public class UseCaseTags_Shield : UseCaseTags
     {
@@ -1308,27 +1298,6 @@ namespace HVPAA_HOP
         public float chanceToUtilityCast;
         public int minUtilitySkillLevel;
     }
-    public class UseCaseTags_DPC : UseCaseTags
-    {
-        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            if ((Rand.Chance(this.spontaneousCastChance) && (intPsycasts.Pawn.Faction == null || (intPsycasts.Pawn.Map.ParentFaction != null && intPsycasts.Pawn.Faction == intPsycasts.Pawn.Map.ParentFaction))) || Rand.Chance(this.spontaneousCastChanceAway))
-            {
-                for (int j = 0; j <= 100; j++)
-                {
-                    CellFinder.TryFindRandomCellNear(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, (int)this.aoe, null, out IntVec3 spot);
-                    if (spot.IsValid && GenSight.LineOfSight(intPsycasts.Pawn.Position, spot, intPsycasts.Pawn.Map) && !spot.Standable(intPsycasts.Pawn.Map))
-                    {
-                        psycast.lti = spot;
-                        return 2f;
-                    }
-                }
-            }
-            return 0f;
-        }
-        public float spontaneousCastChance;
-        public float spontaneousCastChanceAway;
-    }
     public class UseCaseTags_Flare : UseCaseTags
     {
         public override float MetaApplicability(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, List<PotentialPsycast> psycasts, int situationCase, float niceToEvil)
@@ -1349,6 +1318,37 @@ namespace HVPAA_HOP
         }
         public float minCombatPsyfocusCost;
         public float minUtilityPsyfocusCost;
+    }
+    public class UseCaseTags_Replicate : UseCaseTags
+    {
+        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            return (Rand.Chance(this.chanceToUtilityCast) && (psycast.pawn.Faction == null || (psycast.pawn.MapHeld.ParentFaction != null && (psycast.pawn.Faction == psycast.pawn.MapHeld.ParentFaction || psycast.pawn.Faction.RelationKindWith(psycast.pawn.MapHeld.ParentFaction) == FactionRelationKind.Ally || (niceToEvil > 0 && psycast.pawn.Faction.RelationKindWith(psycast.pawn.MapHeld.ParentFaction) == FactionRelationKind.Neutral) || Rand.Chance(this.chanceToUtilityCast))))) ? base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci) : 0f;
+        }
+        public override float ThingApplicability(Psycast psycast, Thing t, float niceToEvil, int useCase = 1)
+        {
+            if (t.def.thingCategories != null && this.allowedItemCategories.ContainsAny((ThingCategoryDef tcd) => t.HasThingCategory(tcd)) && this.IsValidThing(psycast.pawn, t, niceToEvil, useCase) && t.MarketValue <= this.marketValueLimitItem)
+            {
+                float val = Math.Min(this.marketValueLimitStack, t.MarketValue * t.stackCount);
+                return val * val;
+            }
+            return 0f;
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            float app = 0f;
+            Thing item = this.FindBestThingTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Thing, float> thingTargets);
+            if (item != null)
+            {
+                psycast.lti = item;
+                app = thingTargets.TryGetValue(item) / 50;
+            }
+            return app;
+        }
+        public float chanceToUtilityCast;
+        public List<ThingCategoryDef> allowedItemCategories;
+        public int marketValueLimitItem;
+        public int marketValueLimitStack;
     }
     public class UseCaseTags_Skiptheft : UseCaseTags
     {

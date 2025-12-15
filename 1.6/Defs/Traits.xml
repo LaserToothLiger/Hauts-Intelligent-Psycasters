@@ -8,7 +8,7 @@
 	  <li>
 		<degree>0</degree>
 		<label>self-directed</label>
-		<description>Though {PAWN_nameDef} is under mercenary contract, its terms allow {PAWN_objective} some degree of autonomy. {PAWN_pronoun} is thus not responsive to direct commands.</description>
+		<description>{PAWN_nameDef} is not responsive to direct commands. However, {PAWN_pronoun} will still respect zoning, policies, scheduling, and work priorities.</description>
 	  </li>
 	</degreeDatas>
 	<modExtensions>

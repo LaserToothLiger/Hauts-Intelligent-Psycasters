@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+		  <li>RPG Adventure Flavour Pack</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--mendicant questchain-->
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/VEF.Storyteller.QuestChainDef[defName="HVMP_TheMendicants"]/description</xpath>
+					<value>
+						<description>A loose order of magi wanders the world, guided by the decrees of a higher power. It might guide them to your doorstep!</description>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

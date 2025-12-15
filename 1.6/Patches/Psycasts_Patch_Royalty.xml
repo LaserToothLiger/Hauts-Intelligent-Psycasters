@@ -585,6 +585,17 @@ Level 1 psycasts-->
 				</li>
 				<!--level 3-->
 				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_DropPodCall"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_DPC">
+							<utility>true</utility>
+							<mfds><li>Dignified</li></mfds>
+							<spontaneousCastChance>0.1</spontaneousCastChance><!--chance to use it if factionless or in faction-owned map-->
+							<spontaneousCastChanceAway>0.001</spontaneousCastChanceAway><!--chance otherwise-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_LightningStrike"]</xpath>
 					<value>
 						<li Class="HVPAA_HOP.UseCaseTags_Lightning">
@@ -604,22 +615,6 @@ Level 1 psycasts-->
 							<avoidTargetsWithHediff>HVP_PsyphonSucker</avoidTargetsWithHediff>
 							<mfds><li>Dignified</li></mfds>
 							<canDebuffBelowPsyfocusLvl>0.8</canDebuffBelowPsyfocusLvl><!--only cast as debuff if psyfocus below this level-->
-						</li>
-					</value>
-				</li>
-				<li Class="PatchOperationAddModExtension">
-					<xpath>/Defs/AbilityDef[defName="HVP_Replicate"]</xpath>
-					<value>
-						<li Class="HVPAA_HOP.UseCaseTags_Replicate">
-							<utility>true</utility>
-							<allowedItemCategories><!--property mirrors-->
-							  <li>FoodRaw</li>
-							  <li>Manufactured</li>
-							  <li>ResourcesRaw</li>
-							</allowedItemCategories>
-							<marketValueLimitItem>350</marketValueLimitItem>
-							<marketValueLimitStack>500</marketValueLimitStack>
-							<chanceToUtilityCast>0.05</chanceToUtilityCast>
 						</li>
 					</value>
 				</li>
@@ -683,17 +678,6 @@ Level 1 psycasts-->
 						</li>
 					</value>
 				</li>
-				<li Class="PatchOperationAddModExtension">
-					<xpath>/Defs/AbilityDef[defName="HVP_DropPodCall"]</xpath>
-					<value>
-						<li Class="HVPAA_HOP.UseCaseTags_DPC">
-							<utility>true</utility>
-							<mfds><li>Dignified</li></mfds>
-							<spontaneousCastChance>0.1</spontaneousCastChance><!--chance to use it if factionless or in faction-owned map-->
-							<spontaneousCastChanceAway>0.001</spontaneousCastChanceAway><!--chance otherwise-->
-						</li>
-					</value>
-				</li>
 				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_DropPodCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_Flare"]</xpath>
@@ -704,6 +688,22 @@ Level 1 psycasts-->
 							<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
 							<minCombatPsyfocusCost>0.04</minCombatPsyfocusCost>
 							<minUtilityPsyfocusCost>0.1</minUtilityPsyfocusCost>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Replicate"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Replicate">
+							<utility>true</utility>
+							<allowedItemCategories><!--property mirrors-->
+							  <li>FoodRaw</li>
+							  <li>Manufactured</li>
+							  <li>ResourcesRaw</li>
+							</allowedItemCategories>
+							<marketValueLimitItem>350</marketValueLimitItem>
+							<marketValueLimitStack>500</marketValueLimitStack>
+							<chanceToUtilityCast>0.05</chanceToUtilityCast>
 						</li>
 					</value>
 				</li>
