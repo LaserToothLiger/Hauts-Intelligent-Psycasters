@@ -32,16 +32,19 @@
 <HVPAA_SellcastPsylinkLabelF>Attunement level</HVPAA_SellcastPsylinkLabelF>
 <HVPAA_SellcastPsylinkTextF>Set the magical attunement level of the sellcast you want to recruit.</HVPAA_SellcastPsylinkTextF>
 <HVPAA_SellcastDiscountLabel>Allow self-determination (60% discount)</HVPAA_SellcastDiscountLabel>
-<HVPAA_SellcastDiscountText>You can attain a 60% discount in exchange for allowing the sellcast some independence. If you opt into this, the sellcast will not do skilled labor and you will not be able to directly control them; they will only respond to indirect controls, such as those found in the Schedule and Assign tabs.</HVPAA_SellcastDiscountText>
+<HVPAA_SellcastDiscountText>You can attain a 60% discount in exchange for allowing the sellcast some independence. If you opt into this, the sellcast will not do skilled labor and you will not be able to directly control them; they will only respond to indirect controls, such as those found in the Schedule and Assign tabs.\n\nThis stacks multiplicatively with the other discount to 80%.</HVPAA_SellcastDiscountText>
+<HVPAA_SellcastDiscountLabel2>Allow predetermined psycasts (50% discount)</HVPAA_SellcastDiscountLabel2>
+<HVPAA_SellcastDiscountText2>Ordinarily, you can choose which psycasts the sellcast has. To attain a 50% discount, you can allow the sellcast to have predetermined, random psycasts.\n\nThis stacks multiplicatively with the other discount to 80%.</HVPAA_SellcastDiscountText2>
+<HVPAA_SellcastDiscountLabel2F>Allow predetermined spells (50% discount)</HVPAA_SellcastDiscountLabel2F>
+<HVPAA_SellcastDiscountText2F>Ordinarily, you can choose which spells the sellcast has. To attain a 50% discount, you can allow the sellcast to have predetermined, random spells.\n\nThis stacks multiplicatively with the other discount to 80%.</HVPAA_SellcastDiscountText2F>
 <HVPAA_GoodwillCost>Costs {0}/{1} goodwill</HVPAA_GoodwillCost>
 <HVPAA_FloatMenuSellcast>Hire a sellcast</HVPAA_FloatMenuSellcast>
 <HVPAA_SellcastConfirm>You have hired {0} for {1} days.</HVPAA_SellcastConfirm>
-<!--<HVPAA_SellcastPsycastsLabel>Desired psycasts (max 2)</HVPAA_SellcastPsycastsLabel>
-<HVPAA_SellcastPsycastsText>Select up to 2 psycasts for the sellcast to have. The price of the contract scales with the sum level of selected psycasts.</HVPAA_SellcastPsycastsText>
-<HVPAA_SellcastPsycastsLabelF>Desired spells (max 2)</HVPAA_SellcastPsycastsLabelF>
-<HVPAA_SellcastPsycastsTextF>Select up to 2 spells for the sellcast to have. The price of the contract scales with the sum level of selected spells.</HVPAA_SellcastPsycastsTextF>
-<HVPAA_NoSelectedPsycast>-</HVPAA_NoSelectedPsycast>
-Psycast letters-->
+<!--Sellcast choose my casts-->
+<HVPAA_ChooseMyCastsLabel>Choose level {0} cast</HVPAA_ChooseMyCastsLabel>
+<HVPAA_ChooseMyCastsText>Select an ability to gain.</HVPAA_ChooseMyCastsText>
+<HVPAA_ChooseMyCastWindowLabel>Choose an ability for {PAWN_nameDef} to gain.</HVPAA_ChooseMyCastWindowLabel>
+<!--Psycast letters-->
 <HVPAA_NQ_label>Incoming neuroquake</HVPAA_NQ_label>
 <HVPAA_NQ_text>A psycaster is about to unleash a neuroquake! After casting for 12 seconds, every creature in range but outside of the safe, inner, circle will be driven violently insane. Move out of range, get into the safe zone, or disable the psycaster.</HVPAA_NQ_text>
 <HVPAA_NQ_labelF>Incoming mindquake</HVPAA_NQ_labelF>

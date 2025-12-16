@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
   
-  <!--originally, the AI was actually handled as a property of psylinks themselves. But I did testing with some big combos of mods and sometimes they would cause null exceptions that killed the AI comp, and therefore, removed a pawn's psylinks.
-		Now, all psylinks do for HIPAA is add this hediff, which handles the AI. If the AI gets null exception'd to death, it's only this hediff that disappears, and the psylink will restore this hediff w/in the next tenth of an hour.-->
+  <!--originally, the AI was actually handled as a property of psylinks themselves. But while playing with a lot of mods, there were rare circumstances in which the AI would hit null exceptions that killed the AI comp, and therefore, removed a pawn's psylinks.
+		While I have fixed those bugs, the fact remains that the more mods you play with, the more novel interactions there are, and I certainly don't have the omniscience to preemptively address all of them.
+		Therefore, all psylinks do for HIPAA is add this hediff, which handles the AI. If the AI gets null exception'd to death, it's only this hediff that disappears, and the psylink will restore this hediff w/in the next tenth of an hour.-->
   <HediffDef ParentName="HVT_TraitHediffBase">
     <defName>HVPAA_AI</defName>
 	<hediffClass>HediffWithComps</hediffClass>
@@ -20,6 +21,20 @@
 			<scale>1</scale>
 		</li>
     </comps>
+  </HediffDef>
+  
+  <!--Sellcasts-->
+  <HediffDef ParentName="HVT_TraitHediffBase">
+    <defName>HVPAA_ChooseMyCasts</defName>
+	<hediffClass>HVPAA.Hediff_ChooseMyCasts</hediffClass>
+    <label>choose my psycasts boy</label>
+    <description>My powers are yours. But what are my powers?</description>
+    <defaultLabelColor>(1, 1, 1)</defaultLabelColor>
+    <stages>
+      <li>
+		<becomeVisible>false</becomeVisible>
+      </li>
+    </stages>
   </HediffDef>
   
   <!--stuff for multiple non-Royalty DLCs and/or other mods-->

@@ -339,6 +339,7 @@ namespace HVPAA
             DefOfHelper.EnsureInitializedInCtor(typeof(HVPAADefOf));
         }
         public static HediffDef HVPAA_AI;
+        public static HediffDef HVPAA_ChooseMyCasts;
         public static HistoryEventDef HVPAA_HiredSellcaster;
         public static HistoryEventDef HVPAA_SellcasterCaptured;
         public static JobDef HVPAA_FollowRally;
@@ -1618,7 +1619,7 @@ namespace HVPAA
         public int combatCastIntervalOverride;
         public float unwaveringLoyaltyChance = 0.98f;
     }
-    //sellcasts
+    //sellcasts and mendicants
     public static class SellcastHiringSession
     {
         public static bool Active
@@ -1690,7 +1691,7 @@ namespace HVPAA
             }
             Faction.OfPlayer.TryAffectGoodwillWith(SellcastHiringSession.trader.Faction, -this.goodwillCost, false, true, HVPAADefOf.HVPAA_HiredSellcaster);
         }
-        public bool TryExecute(out bool actuallyTraded, int durationDays, bool discount, int psylinkLevel, Map mapToDeliverTo)
+        public bool TryExecute(out bool actuallyTraded, int durationDays, bool discount, int psylinkLevel, bool canChooseCasts, Map mapToDeliverTo)
         {
             if (SellcastHiringSession.Goodwill - this.goodwillCost < 0)
             {
@@ -1706,7 +1707,7 @@ namespace HVPAA
             if (SellcastHiringSession.trader.Faction != null)
             {
                 SellcastHiringSession.trader.Faction.Notify_PlayerTraded(0f, SellcastHiringSession.playerNegotiator);
-                Pawn sellcast = HVPAAUtility.GenerateSellcast(SellcastHiringSession.trader.Faction, SellcastHiringSession.FPRD);
+                Pawn sellcast = HVPAAUtility.GenerateSellcast(SellcastHiringSession.trader.Faction, SellcastHiringSession.FPRD, canChooseCasts);
                 if (sellcast != null)
                 {
                     if (sellcast.psychicEntropy != null)
@@ -1857,14 +1858,17 @@ namespace HVPAA
         public override void PreOpen()
         {
             base.PreOpen();
-            this.HVPAA_MenuLabel = HautsUtility.IsHighFantasy() ? "HVPAA_SellcastLabelF".Translate() : "HVPAA_SellcastLabel".Translate();
+            bool isHighFantasy = HautsUtility.IsHighFantasy();
+            this.HVPAA_MenuLabel = isHighFantasy ? "HVPAA_SellcastLabelF".Translate() : "HVPAA_SellcastLabel".Translate();
             this.HVPAA_DurationLabel = "HVPAA_SellcastDurationLabel".Translate();
             this.HVPAA_DurationText = "HVPAA_SellcastDurationText".Translate();
-            this.HVPAA_PsylinkLabel = HautsUtility.IsHighFantasy() ? "HVPAA_SellcastPsylinkLabelF".Translate() : "HVPAA_SellcastPsylinkLabel".Translate();
-            this.HVPAA_PsylinkText = HautsUtility.IsHighFantasy() ? "HVPAA_SellcastPsylinkTextF".Translate() : "HVPAA_SellcastPsylinkText".Translate();
+            this.HVPAA_PsylinkLabel = isHighFantasy ? "HVPAA_SellcastPsylinkLabelF".Translate() : "HVPAA_SellcastPsylinkLabel".Translate();
+            this.HVPAA_PsylinkText = isHighFantasy ? "HVPAA_SellcastPsylinkTextF".Translate() : "HVPAA_SellcastPsylinkText".Translate();
             this.maxPsylinkLevel = SellcastHiringSession.FPRD.maxSellcastPsylinkLevel;
             this.HVPAA_DiscountLabel = "HVPAA_SellcastDiscountLabel".Translate();
             this.HVPAA_DiscountText = "HVPAA_SellcastDiscountText".Translate();
+            this.HVPAA_DiscountLabel2 = isHighFantasy ? "HVPAA_SellcastDiscountLabel2F".Translate() : "HVPAA_SellcastDiscountLabel2".Translate();
+            this.HVPAA_DiscountText2 = isHighFantasy ? "HVPAA_SellcastDiscountText2F".Translate() : "HVPAA_SellcastDiscountText2".Translate();
             this.durationDays = 6;
             this.psylinkLevel = 1;
         }
@@ -1926,6 +1930,7 @@ namespace HVPAA
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect2);
             listingStandard.CheckboxLabeled(this.HVPAA_DiscountLabel, ref this.discount, this.HVPAA_DiscountText);
+            listingStandard.CheckboxLabeled(this.HVPAA_DiscountLabel2, ref this.discount2, this.HVPAA_DiscountText2);
             listingStandard.End();
             GUI.color = Color.gray;
             Widgets.DrawLineHorizontal(0f, inRect.height - 61f, inRect.width);
@@ -1937,7 +1942,7 @@ namespace HVPAA
             {
                 Action action = delegate
                 {
-                    if (SellcastHiringSession.deal.TryExecute(out bool flag, this.durationDays, this.discount, this.psylinkLevel, this.HVPAA_MapToGoTo))
+                    if (SellcastHiringSession.deal.TryExecute(out bool flag, this.durationDays, this.discount, this.psylinkLevel, !this.discount2, this.HVPAA_MapToGoTo))
                     {
                         if (flag)
                         {
@@ -1979,7 +1984,7 @@ namespace HVPAA
         private void RecalcCosts()
         {
             this.goodwillCost = this.psylinkLevel;
-            this.goodwillCost *= (int)(Math.Ceiling(5f * this.durationDays * (this.discount ? 0.4f : 1f) / 6f));
+            this.goodwillCost *= (int)(Math.Round(5f * this.durationDays * (this.discount ? 0.4f : 1f) * (this.discount2 ? 0.5f : 1f) / 6f));
             SellcastHiringSession.deal.goodwillCost = this.goodwillCost;
         }
         public void FlashGoodwill()
@@ -1998,11 +2003,14 @@ namespace HVPAA
         private string HVPAA_PsylinkText;
         private string HVPAA_DiscountLabel;
         private string HVPAA_DiscountText;
+        private string HVPAA_DiscountLabel2;
+        private string HVPAA_DiscountText2;
         private int maxPsylinkLevel;
         private int goodwillCost;
         private int durationDays;
         private int psylinkLevel;
         private bool discount;
+        private bool discount2;
         private string daysText;
         private string levelText;
         public static float lastGoodwillFlashTime = -100f;
@@ -2034,7 +2042,8 @@ namespace HVPAA
             Faction faction = FactionGenerator.NewGeneratedFactionWithRelations(factionGeneratorParms, list2);
             faction.temporary = true;
             Find.FactionManager.Add(faction);
-            Pawn sellcast = HVPAAUtility.GenerateSellcast(faction, this.factionPsycasterRuleset);
+            bool choosable = Rand.Chance(0.5f);
+            Pawn sellcast = HVPAAUtility.GenerateSellcast(faction, this.factionPsycasterRuleset, choosable);
             bool discounted = Rand.Chance(0.5f);
             if (discounted && sellcast.story != null)
             {
@@ -2062,7 +2071,7 @@ namespace HVPAA
             }
             slate.Set<int>("psycastCount", psycastCount, false);
             slate.Set<int>("discounted", discounted ? 1 : 0, false);
-            slate.Set<int>("choosable", 0, false);
+            slate.Set<int>("choosable", choosable ? 1 : 0, false);
             slate.Set<int>("isHighFantasy", HautsUtility.IsHighFantasy() ? 1 : 0, false);
             List<Pawn> pawns = new List<Pawn> { sellcast };
             Map map = QuestGen_Get.GetMap(false, null, false);
@@ -2247,6 +2256,202 @@ namespace HVPAA
         public SlateRef<int> goodwillChangeAmount;
         public SlateRef<Faction> goodwillChangeFactionOf;
         public SlateRef<HistoryEventDef> goodwillChangeReason;
+    }
+    [StaticConstructorOnStartup]
+    public class Hediff_ChooseMyCasts : Hediff
+    {
+        public override void PostMake()
+        {
+            base.PostMake();
+            this.buttonTooltip = "HVPAA_ChooseMyCastsText".Translate();
+        }
+        public override IEnumerable<Gizmo> GetGizmos()
+        {
+            if (this.choices != null)
+            {
+                foreach (int i in this.choices)
+                {
+                    if (i > 0)
+                    {
+                        Command_Action cmdRecall = new Command_Action
+                        {
+                            defaultLabel = "HVPAA_ChooseMyCastsLabel".Translate(i),
+                            defaultDesc = this.buttonTooltip,
+                            icon = Hediff_ChooseMyCasts.uiIcon,
+                            action = delegate ()
+                            {
+                                this.OpenWindow(i);
+                            }
+                        };
+                        yield return cmdRecall;
+                    }
+                }
+            }
+            yield break;
+        }
+        public void OpenWindow(int level)
+        {
+            ChooseMyCastWindow window = new ChooseMyCastWindow(this.pawn, level, this);
+            Find.WindowStack.Add(window);
+        }
+        public override void PostTickInterval(int delta)
+        {
+            base.PostTickInterval(delta);
+            if (!this.triggered)
+            {
+                if (this.pawn.abilities != null && !this.pawn.abilities.abilities.NullOrEmpty())
+                {
+                    List<AbilityDef> psycasts = new List<AbilityDef>();
+                    foreach (Ability a in this.pawn.abilities.abilities)
+                    {
+                        if (a is Psycast p)
+                        {
+                            psycasts.Add(a.def);
+                            this.choices.Add(a.def.level);
+                        }
+                    }
+                    foreach (AbilityDef ad in psycasts)
+                    {
+                        if (this.pawn.abilities.GetAbility(ad) != null)
+                        {
+                            this.pawn.abilities.RemoveAbility(ad);
+                        }
+                    }
+                }
+                this.triggered = true;
+            }
+        }
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look<bool>(ref this.triggered, "triggered", false, false);
+            Scribe_Collections.Look<int>(ref this.choices, "choices", LookMode.Value, Array.Empty<object>());
+            Scribe_Values.Look<string>(ref this.buttonTooltip, "buttonTooltip", "HVPAA_ChooseMyCastsText".Translate(), false);
+        }
+        public bool triggered;
+        public List<int> choices = new List<int>();
+        public static readonly Texture2D uiIcon = ContentFinder<Texture2D>.Get("Things/Mote/PsycastSkipFlash", true);
+        string buttonTooltip;
+    }
+    public class ChooseMyCastWindow : Window
+    {
+        public override void PreOpen()
+        {
+            base.PreOpen();
+            this.grantableAbilities.Clear();
+            if (this.pawn.abilities == null)
+            {
+                return;
+            }
+            foreach (AbilityDef a in DefDatabase<AbilityDef>.AllDefsListForReading)
+            {
+                if (a.IsPsycast && a.level == this.level && this.pawn.abilities.GetAbility(a) == null)
+                {
+                    this.grantableAbilities.Add(a);
+                }
+            }
+            this.grantableAbilities.SortBy((AbilityDef a) => a.label);
+        }
+        public ChooseMyCastWindow(Pawn pawn, int level, Hediff_ChooseMyCasts hcmc)
+        {
+            this.pawn = pawn;
+            this.forcePause = true;
+            this.level = level;
+            this.hcmc = hcmc;
+        }
+        private float Height
+        {
+            get
+            {
+                return CharacterCardUtility.PawnCardSize(this.pawn).y + Window.CloseButSize.y + 4f + this.Margin * 2f;
+            }
+        }
+        public override Vector2 InitialSize
+        {
+            get
+            {
+                return new Vector2(500f, this.Height);
+            }
+        }
+        public override void DoWindowContents(Rect inRect)
+        {
+            inRect.yMax -= 4f + Window.CloseButSize.y;
+            Text.Font = GameFont.Small;
+            Rect viewRect = new Rect(inRect.x, inRect.y, inRect.width * 0.7f, this.scrollHeight);
+            Widgets.BeginScrollView(inRect, ref this.scrollPosition, viewRect, true);
+            float num = 0f;
+            Widgets.Label(0f, ref num, viewRect.width, "HVPAA_ChooseMyCastWindowLabel".Translate().CapitalizeFirst().Formatted(this.pawn.Named("PAWN")).AdjustedFor(this.pawn, "PAWN", true).Resolve(), default(TipSignal));
+            num += 14f;
+            Listing_Standard listing_Standard = new Listing_Standard();
+            Rect rect = new Rect(0f, num, inRect.width - 30f, 99999f);
+            listing_Standard.Begin(rect);
+            foreach (AbilityDef a in this.grantableAbilities)
+            {
+                bool flag = this.chosenAbility == a;
+                bool flag2 = flag;
+                listing_Standard.CheckboxLabeled(a.label, ref flag, a.description);
+                if (flag != flag2)
+                {
+                    if (flag)
+                    {
+                        this.chosenAbility = a;
+                    }
+                }
+            }
+            listing_Standard.End();
+            num += listing_Standard.CurHeight + 10f + 4f;
+            if (Event.current.type == EventType.Layout)
+            {
+                this.scrollHeight = Mathf.Max(num, inRect.height);
+            }
+            Widgets.EndScrollView();
+            Rect rect2 = new Rect(0f, inRect.yMax + 4f, inRect.width, Window.CloseButSize.y);
+            AcceptanceReport acceptanceReport = this.CanClose();
+            if (!acceptanceReport.Accepted)
+            {
+                TextAnchor anchor = Text.Anchor;
+                GameFont font = Text.Font;
+                Text.Font = GameFont.Tiny;
+                Text.Anchor = TextAnchor.MiddleRight;
+                Rect rect3 = rect;
+                rect3.xMax = rect2.xMin - 4f;
+                Widgets.Label(rect3, acceptanceReport.Reason.Colorize(ColoredText.WarningColor));
+                Text.Font = font;
+                Text.Anchor = anchor;
+            }
+            if (Widgets.ButtonText(rect2, "OK".Translate(), true, true, true, null))
+            {
+                if (acceptanceReport.Accepted)
+                {
+                    if (this.pawn.abilities != null)
+                    {
+                        this.pawn.abilities.GainAbility(this.chosenAbility);
+                    }
+                    if (this.hcmc != null && !this.hcmc.choices.NullOrEmpty() && this.hcmc.choices.Contains(this.level))
+                    {
+                        this.hcmc.choices.Remove(this.level);
+                    }
+                    this.Close(true);
+                } else {
+                    Messages.Message(acceptanceReport.Reason, null, MessageTypeDefOf.RejectInput, false);
+                }
+            }
+        }
+        private AcceptanceReport CanClose()
+        {
+            if (this.chosenAbility == null)
+            {
+                return "HVPAA_ChooseMyCastWindowLabel".Translate().CapitalizeFirst().Formatted(this.pawn.Named("PAWN")).AdjustedFor(this.pawn, "PAWN", true).Resolve();
+            }
+            return AcceptanceReport.WasAccepted;
+        }
+        private Pawn pawn;
+        private AbilityDef chosenAbility = null;
+        private float scrollHeight;
+        private Vector2 scrollPosition;
+        private List<AbilityDef> grantableAbilities = new List<AbilityDef>();
+        private int level;
+        private Hediff_ChooseMyCasts hcmc;
     }
     //bespoke DMEs for specific psycasts, starting w vanilla level 1 psycasts
     public class UseCaseTags_Burden : UseCaseTags
@@ -6248,7 +6453,7 @@ namespace HVPAA
             }
             return false;
         }
-        public static Pawn GenerateSellcast(Faction faction, FactionPsycasterRuleDef fprd, List<AbilityDef> guaranteedPsycasts = null)
+        public static Pawn GenerateSellcast(Faction faction, FactionPsycasterRuleDef fprd, bool canChoosePsycasts, List<AbilityDef> guaranteedPsycasts = null)
         {
             if (!faction.def.pawnGroupMakers.NullOrEmpty())
             {
@@ -6308,6 +6513,11 @@ namespace HVPAA
                     HVPAAUtility.CleanPsycasterTraits(pawn);
                     HVPAAUtility.GrantBonusPsycasts(pawn, fprd);
                     pawn.psychicEntropy?.RechargePsyfocus();
+                    if (canChoosePsycasts)
+                    {
+                        Hediff hediff = HediffMaker.MakeHediff(HVPAADefOf.HVPAA_ChooseMyCasts,pawn);
+                        pawn.health.AddHediff(hediff);
+                    }
                     if (pawn.guest != null)
                     {
                         pawn.guest.Recruitable = false;

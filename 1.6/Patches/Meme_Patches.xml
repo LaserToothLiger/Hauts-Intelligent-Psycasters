@@ -202,6 +202,24 @@
 	</Operation>
 	<Operation Class="PatchOperationFindMod">
 		<mods>
+			<li>Menagerist - Mort's Ideologies: Memes and Precepts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--menagerie = animals-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="MI_Menagerist"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
 			<li>Political Compass - Mort's Ideologies</li>
 		</mods>
 		<match Class="PatchOperationSequence">
