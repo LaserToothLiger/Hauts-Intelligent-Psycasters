@@ -194,15 +194,12 @@
           <node Class="QuestNode_Sequence">
             <nodes>
               <li Class="QuestNode_Letter">
-                <label TKey="LetterLabelGuestDied">Sellcast died: {SUBJECT_definite}</label>
-                <text TKey="LetterTextGuestDied">[sellcast_nameFull], whom you hired as a sellcast, has died.</text>
+                <label TKey="LetterLabelGuestDied">{SUBJECT_definite} died</label>
+                <text TKey="LetterTextGuestDied">[sellcast_nameFull], whom you agreed to temporarily host at your settlement, has died.</text>
               </li>
-              <li Class="HVPAA.QuestNode_EndSellcast">
-                <outcome>Fail</outcome>
-                <goodwillChangeAmount>-200</goodwillChangeAmount>
-                <goodwillChangeFactionOf>$sellcastFaction</goodwillChangeFactionOf>
-                <goodwillChangeReason>QuestPawnLost</goodwillChangeReason>
-              </li>
+			  <li Class="QuestNode_End">
+				<outcome>Fail</outcome>
+			  </li>
             </nodes>
           </node>
         </li>
@@ -218,7 +215,7 @@
 			<questChainDef>HVMP_TheMendicants</questChainDef>
 			<isRepeatable>True</isRepeatable>
 			<mtbDaysRepeat>75</mtbDaysRepeat>
-			<conditionMinDaysSinceStart>10</conditionMinDaysSinceStart>
+			<!--<conditionMinDaysSinceStart>10</conditionMinDaysSinceStart>-->
 		</li>
 	</modExtensions>
   </QuestScriptDef>
