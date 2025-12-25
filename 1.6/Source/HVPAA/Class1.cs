@@ -54,6 +54,8 @@ namespace HVPAA
                            postfix: new HarmonyMethod(patchType, nameof(HVPAA_PGMU_GeneratePawnsPostfix)));
             harmony.Patch(AccessTools.Method(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.Notify_DamageTaken)),
                            prefix: new HarmonyMethod(patchType, nameof(HVPAA_Notify_DamageTakenPrefix)));
+            harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.GetGizmos)),
+                          postfix: new HarmonyMethod(patchType, nameof(HVPAA_GetGizmosPostfix)));
             Log.Message("HVPAA_Initialize".Translate().CapitalizeFirst());
         }
         internal static object GetInstanceField(Type type, object instance, string fieldName)
@@ -329,6 +331,28 @@ namespace HVPAA
                 }
             }
             return true;
+        }
+        public static IEnumerable<Gizmo> HVPAA_GetGizmosPostfix(IEnumerable<Gizmo> __result, Pawn __instance)
+        {
+            foreach (Gizmo gizmo in __result)
+            {
+                yield return gizmo;
+            }
+            if (Find.Selector.SingleSelectedThing == __instance && __instance.story != null && __instance.story.traits.HasTrait(HVPAADefOf.HVPAA_SellcastTrait))
+            {
+                Hediff h = __instance.health.hediffSet.GetFirstHediffOfDef(HVPAADefOf.HVPAA_ChooseMyCasts);
+                if (h != null && h is Hediff_ChooseMyCasts hcmc)
+                {
+                    IEnumerable<Gizmo> gizmos = hcmc.GetGizmos();
+                    if (gizmos != null)
+                    {
+                        foreach (Gizmo g in gizmos)
+                        {
+                            yield return g;
+                        }
+                    }
+                }
+            }
         }
     }
     [DefOf]
@@ -5337,6 +5361,8 @@ namespace HVPAA
                                     if ((thing2 is Pawn p && intPsycasts.allies.Contains(p)) || (thing2.def.category == ThingCategory.Building && thing2.def.building.isTrap) || ((thing2.def.IsBlueprint || thing2.def.IsFrame) && thing2.def.entityDefToBuild is ThingDef && ((ThingDef)thing2.def.entityDefToBuild).building.isTrap))
                                     {
                                         goNext = true;
+                                    } else if ((!this.canDisplaceTrees && thing2.def.plant != null && thing2.def.plant.IsTree) || thing2.def == ThingDefOf.Plant_GrassAnima) {
+                                        goNext = true;
                                     }
                                 }
                             }
@@ -5363,6 +5389,7 @@ namespace HVPAA
             return 0f;
         }
         public float spontaneousCastChance;
+        public bool canDisplaceTrees;
     }
     public class UseCaseTags_XavierAttack : UseCaseTags
     {
