@@ -340,6 +340,7 @@ Let's start with the EVILS, from least to greatest.-->
 			</operations>
 		</match>
 	</Operation>
+	<!--Consolidated Traits has animals only-->
 	<Operation Class="PatchOperationFindMod">
 		<mods>
 			<li>[LC] Consolidated Traits</li>
@@ -361,6 +362,55 @@ Let's start with the EVILS, from least to greatest.-->
 							<niceToAnimals>-1</niceToAnimals>
 						</li>
 					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<!--TST has -->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>The Sims Traits</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="ST_Naive"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1.5</niceOrEvil>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="ST_Vegan"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceToAnimals>1</niceToAnimals>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/TraitDef[defName="ST_Zen"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<niceOrEvil>1</niceOrEvil>
+							<niceToAnimals>1</niceToAnimals>
+							<pacifist>true</pacifist>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Biotech</li>
+					</mods>
+					<match Class="PatchOperationAddModExtension">
+						<xpath>/Defs/TraitDef[defName="ST_FamilyOriented"]</xpath>
+						<value>
+							<li Class="HVPAA.CasterPersonality">
+								<niceOrEvil>0.5</niceOrEvil>
+							</li>
+						</value>
+					</match>
 				</li>
 			</operations>
 		</match>
