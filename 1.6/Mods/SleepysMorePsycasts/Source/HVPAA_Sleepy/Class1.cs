@@ -374,7 +374,6 @@ namespace HVPAA_Sleepy
                     return 0f;
                 }
             }
-            Log.Error(p.Name.ToStringShort + " inh " + iNeedHealing);
             return Math.Min(p.GetStatValue(StatDefOf.PsychicSensitivity), 2f) * iNeedHealing;
         }
         public override float Range(Psycast psycast)
