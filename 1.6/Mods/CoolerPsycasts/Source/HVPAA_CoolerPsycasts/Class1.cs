@@ -2319,14 +2319,11 @@ namespace HVPAA_CoolerPsycasts
             IntVec3 origin = nonCasterOrigin != null ? nonCasterOrigin.PositionHeld : psycast.pawn.Position;
             foreach (Pawn p in GenRadial.RadialDistinctThingsAround(psycast.pawn.Position, psycast.pawn.Map, this.Range(psycast), true).OfType<Pawn>().Distinct<Pawn>())
             {
-                Log.Message("yuh");
                 if ((intPsycasts.foes.Contains(p) || p.Faction == null || (psycast.pawn.Faction != null && p.Faction != null && p.Faction.HostileTo(psycast.pawn.Faction))) && p.HasPsylink)
                 {
-                    Log.Error("p: " + p.Name.ToStringShort);
                     if (GenSight.LineOfSight(origin, p.Position, p.Map) && (!initialTarget || psycast.CanApplyPsycastTo(p)) && !this.OtherEnemyDisqualifiers(psycast, p, useCase, initialTarget))
                     {
                         float pApplicability = this.PawnEnemyApplicability(intPsycasts, psycast, p, niceToEvil, useCase, initialTarget);
-                        Log.Message("pappl " + pApplicability);
                         if (pApplicability > 0f)
                         {
                             pawnTargets.Add(p, pApplicability);
