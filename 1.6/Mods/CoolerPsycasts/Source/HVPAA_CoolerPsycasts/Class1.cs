@@ -6,17 +6,10 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.AI.Group;
-using Verse.Noise;
 using VEF;
-using static HarmonyLib.Code;
-using static UnityEngine.GraphicsBuffer;
-using VEF.AnimalBehaviours;
-using VEF.Genes;
 
 namespace HVPAA_CoolerPsycasts
 {
@@ -338,7 +331,7 @@ namespace HVPAA_CoolerPsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, p) * (this.damageType.armorCategory != null ? 1f + p.GetStatValue(this.damageType.armorCategory.armorRatingStat) : 1f) / p.GetStatValue(StatDefOf.IncomingDamageFactor);
+            return HautsMiscUtility.DamageFactorFor(this.damageType, p) * (this.damageType.armorCategory != null ? 1f + p.GetStatValue(this.damageType.armorCategory.armorRatingStat) : 1f) / p.GetStatValue(StatDefOf.IncomingDamageFactor);
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -420,11 +413,11 @@ namespace HVPAA_CoolerPsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return (1f+p.GetStatValue(StatDefOf.ArmorRating_Heat))/(p.GetStatValue(StatDefOf.Flammability)*HautsUtility.DamageFactorFor(DamageDefOf.Flame,p)*HautsUtility.DamageFactorFor(DamageDefOf.Burn,p));
+            return (1f+p.GetStatValue(StatDefOf.ArmorRating_Heat))/(p.GetStatValue(StatDefOf.Flammability)*HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame,p)*HautsMiscUtility.DamageFactorFor(DamageDefOf.Burn,p));
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return (1f + p.GetStatValue(StatDefOf.ArmorRating_Heat)) / (p.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, p) * HautsUtility.DamageFactorFor(DamageDefOf.Burn, p));
+            return (1f + p.GetStatValue(StatDefOf.ArmorRating_Heat)) / (p.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, p) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Burn, p));
         }
         public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -705,11 +698,11 @@ namespace HVPAA_CoolerPsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (this.damageType.armorCategory != null ? 1f + p.GetStatValue(this.damageType.armorCategory.armorRatingStat) : 1f);
+            return HautsMiscUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (this.damageType.armorCategory != null ? 1f + p.GetStatValue(this.damageType.armorCategory.armorRatingStat) : 1f);
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return this.allyMultiplier * HautsUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (this.damageType.armorCategory != null ? 1f + p.GetStatValue(this.damageType.armorCategory.armorRatingStat) : 1f);
+            return this.allyMultiplier * HautsMiscUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (this.damageType.armorCategory != null ? 1f + p.GetStatValue(this.damageType.armorCategory.armorRatingStat) : 1f);
         }
         public override float ThingApplicability(Psycast psycast, Thing t, float niceToEvil, int useCase = 1)
         {
@@ -723,11 +716,11 @@ namespace HVPAA_CoolerPsycasts
                     {
                         return 0f;
                     }
-                    return allyOrFoe * t.MarketValue * HautsUtility.DamageFactorFor(this.damageType, t) / 200f;
+                    return allyOrFoe * t.MarketValue * HautsMiscUtility.DamageFactorFor(this.damageType, t) / 200f;
                 }
                 else if (this.canTargetHB)
                 {
-                    return allyOrFoe * t.MarketValue * HautsUtility.DamageFactorFor(this.damageType, t) / 1000f;
+                    return allyOrFoe * t.MarketValue * HautsMiscUtility.DamageFactorFor(this.damageType, t) / 1000f;
                 }
             }
             return 0f;
@@ -968,9 +961,9 @@ namespace HVPAA_CoolerPsycasts
                         {
                             if (intPsycasts.foes.Contains(p2))
                             {
-                                multi += p2.GetStatValue(StatDefOf.IncomingDamageFactor) * HautsUtility.DamageFactorFor(this.damageDef, p2);
+                                multi += p2.GetStatValue(StatDefOf.IncomingDamageFactor) * HautsMiscUtility.DamageFactorFor(this.damageDef, p2);
                             } else if (intPsycasts.allies.Contains(p2)) {
-                                multi -= this.allyMultiplier * p2.GetStatValue(StatDefOf.IncomingDamageFactor) * HautsUtility.DamageFactorFor(this.damageDef, p2);
+                                multi -= this.allyMultiplier * p2.GetStatValue(StatDefOf.IncomingDamageFactor) * HautsMiscUtility.DamageFactorFor(this.damageDef, p2);
                             }
                         }
                     }
@@ -1902,7 +1895,7 @@ namespace HVPAA_CoolerPsycasts
         }
         public float GammaValue(Pawn p)
         {
-            return p.MarketValue * HautsUtility.DamageFactorFor(this.damageDef, p) / (1000f * (1f + p.GetStatValue(StatDefOf.ToxicResistance)));
+            return p.MarketValue * HautsMiscUtility.DamageFactorFor(this.damageDef, p) / (1000f * (1f + p.GetStatValue(StatDefOf.ToxicResistance)));
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -1987,11 +1980,11 @@ namespace HVPAA_CoolerPsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, p);
+            return HautsMiscUtility.DamageFactorFor(this.damageType, p);
         }
         public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return this.allyMultiplier * HautsUtility.DamageFactorFor(this.damageType, p);
+            return this.allyMultiplier * HautsMiscUtility.DamageFactorFor(this.damageType, p);
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -2603,7 +2596,7 @@ namespace HVPAA_CoolerPsycasts
             } else if (t is Plant) {
                 scoreMulti /= 2.5f;
             }
-            return scoreMulti * HautsUtility.DamageFactorFor(this.damageDef, t) * t.MarketValue / 200f;
+            return scoreMulti * HautsMiscUtility.DamageFactorFor(this.damageDef, t) * t.MarketValue / 200f;
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {

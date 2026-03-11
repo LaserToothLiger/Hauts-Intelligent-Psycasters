@@ -55,10 +55,6 @@
       <HintPath>..\..\..\..\..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="VEF">
-      <HintPath>..\..\..\..\..\..\..\..\..\..\..\..\..\Users\ianti\OneDrive\Pictures\modstuff\VanillaExpandedFramework-main\1.6\Assemblies\VEF.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />

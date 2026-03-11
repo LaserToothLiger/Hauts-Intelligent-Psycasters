@@ -5,14 +5,8 @@ using Sleepys_MorePsycasts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using Verse;
 using Verse.AI;
-using Verse.Noise;
-using VEF;
 
 namespace HVPAA_Sleepy
 {
@@ -43,7 +37,7 @@ namespace HVPAA_Sleepy
                             Zone zone = plant.Map.zoneManager.ZoneAt(plant.Position);
                             if (zone != null && zone is Zone_Growing && intPsycasts.Pawn.Faction != null && intPsycasts.Pawn.Faction.HostileTo(Faction.OfPlayerSilentFail))
                             {
-                                tryNewScore += plant.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, plant) * plant.MarketValue / 500f;
+                                tryNewScore += plant.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, plant) * plant.MarketValue / 500f;
                             }
                         } else if (thing is Building b && b.Faction != null) {
                             if (intPsycasts.Pawn.Faction.HostileTo(b.Faction))
@@ -1426,7 +1420,7 @@ namespace HVPAA_Sleepy
             positionTargets = new Dictionary<IntVec3, float>();
             IntVec3 tryNewPosition = IntVec3.Invalid;
             float tryNewScore = 0f;
-            List<TerrainDef> terrainDefs = HautsUtility.FertilityTerrainDefs(psycast.pawn.Map);
+            List<TerrainDef> terrainDefs = HautsMiscUtility.FertilityTerrainDefs(psycast.pawn.Map);
             for (int i = 0; i <= 5; i++)
             {
                 for (int j = 0; j <= 100; j++)

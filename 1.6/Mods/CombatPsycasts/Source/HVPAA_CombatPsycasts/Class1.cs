@@ -1,18 +1,12 @@
 ﻿using CombatPsycasts.Comps;
-using CombatPsycasts.Verbs;
 using HarmonyLib;
 using HautsFramework;
 using HVPAA;
 using RimWorld;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
-using Verse.AI;
 
 namespace HVPAA_CombatPsycasts
 {
@@ -61,7 +55,7 @@ namespace HVPAA_CombatPsycasts
         }
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.GetStatValue(StatDefOf.IncomingDamageFactor) < this.incomingDamageResistCutoff || HautsUtility.DamageFactorFor(damageType, p) < this.specificDamageResistCutoff;
+            return p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.GetStatValue(StatDefOf.IncomingDamageFactor) < this.incomingDamageResistCutoff || HautsMiscUtility.DamageFactorFor(damageType, p) < this.specificDamageResistCutoff;
         }
         public override float ThingApplicability(Psycast psycast, Thing t, float niceToEvil, int useCase = 1)
         {
@@ -203,11 +197,11 @@ namespace HVPAA_CombatPsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor);
+            return HautsMiscUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor);
         }
         public override float ThingApplicability(Psycast psycast, Thing t, float niceToEvil, int useCase = 1)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, t) * t.GetStatValue(StatDefOf.IncomingDamageFactor);
+            return HautsMiscUtility.DamageFactorFor(this.damageType, t) * t.GetStatValue(StatDefOf.IncomingDamageFactor);
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {

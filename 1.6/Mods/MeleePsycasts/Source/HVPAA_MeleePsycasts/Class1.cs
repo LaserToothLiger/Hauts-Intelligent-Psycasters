@@ -4,10 +4,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
-using static UnityEngine.GraphicsBuffer;
 
 namespace HVPAA_MeleePsycasts
 {
@@ -29,7 +26,7 @@ namespace HVPAA_MeleePsycasts
         }
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !HautsUtility.ReactsToEMP(p);
+            return p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !HautsMiscUtility.ReactsToEMP(p);
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
@@ -68,7 +65,7 @@ namespace HVPAA_MeleePsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (1f + Math.Max(0f, this.damageType.armorCategory != null ? p.GetStatValue(this.damageType.armorCategory.armorRatingStat) - this.armorPen : 0f));
+            return HautsMiscUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (1f + Math.Max(0f, this.damageType.armorCategory != null ? p.GetStatValue(this.damageType.armorCategory.armorRatingStat) - this.armorPen : 0f));
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -233,7 +230,7 @@ namespace HVPAA_MeleePsycasts
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return HautsUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (1f + Math.Max(0f, this.damageType.armorCategory != null ? p.GetStatValue(this.damageType.armorCategory.armorRatingStat) - this.armorPen : 0f));
+            return HautsMiscUtility.DamageFactorFor(this.damageType, p) * p.GetStatValue(StatDefOf.IncomingDamageFactor) / (1f + Math.Max(0f, this.damageType.armorCategory != null ? p.GetStatValue(this.damageType.armorCategory.armorRatingStat) - this.armorPen : 0f));
         }
         public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {

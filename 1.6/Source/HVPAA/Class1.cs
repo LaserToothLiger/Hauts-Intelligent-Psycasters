@@ -1,33 +1,19 @@
-﻿using VEF.AnimalBehaviours;
-using HarmonyLib;
+﻿using HarmonyLib;
 using HautsFramework;
 using RimWorld;
 using RimWorld.BaseGen;
 using RimWorld.Planet;
 using RimWorld.QuestGen;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Runtime;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
-using Verse.Noise;
 using Verse.Sound;
 using VEF;
-using static HarmonyLib.Code;
-using static RimWorld.RitualStage_InteractWithRole;
-using static System.Collections.Specialized.BitVector32;
-using static UnityEngine.GraphicsBuffer;
-using System.Runtime.CompilerServices;
 
 namespace HVPAA
 {
@@ -242,9 +228,10 @@ namespace HVPAA
         }
         public static void HVPAA_PawnGroup_ResolvePostfix(ResolveParams rp)
         {
-            if (rp.faction != null && BaseGen.globalSettings.map != null)
+            Map m = BaseGen.globalSettings.map;
+            if (rp.faction != null && m != null)
             {
-                float multi = Find.World.worldObjects.SettlementAt(BaseGen.globalSettings.map.Tile) != null ? 1f : 0.1f;
+                float multi = (m.Tile != null && Find.World.worldObjects.SettlementAt(m.Tile) != null) ? 1f : 0.1f;
                 FactionPsycasterRuleDef fprd = HVPAAUtility.GetPsycasterRules(rp.faction.def);
                 if (fprd != null)
                 {
@@ -479,7 +466,7 @@ namespace HVPAA
             }
             this.continuousTimeSpawned = Math.Min(this.continuousTimeSpawned + 1, 60000);
             base.CompPostTickInterval(ref severityAdjustment, delta);
-            if (HautsUtility.IsntCastingAbility(this.Pawn))
+            if (HautsMiscUtility.IsntCastingAbility(this.Pawn))
             {
                 if (this.timer > 0)
                 {
@@ -655,7 +642,7 @@ namespace HVPAA
                 {
                     TaggedString label;
                     TaggedString message;
-                    if (HautsUtility.IsHighFantasy())
+                    if (ModCompatibilityUtility.IsHighFantasy())
                     {
                         label = uct.letterLabelF.Translate();
                         message = uct.letterTextF.Translate();
@@ -689,7 +676,7 @@ namespace HVPAA
         public override void Notify_PawnPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
         {
             base.Notify_PawnPostApplyDamage(dinfo, totalDamageDealt);
-            if (HautsUtility.IsntCastingAbility(this.Pawn) && Rand.Chance(0.5f))
+            if (HautsMiscUtility.IsntCastingAbility(this.Pawn) && Rand.Chance(0.5f))
             {
                 this.timer = Math.Min(240, this.timer);
             }
@@ -1882,7 +1869,7 @@ namespace HVPAA
         public override void PreOpen()
         {
             base.PreOpen();
-            bool isHighFantasy = HautsUtility.IsHighFantasy();
+            bool isHighFantasy = ModCompatibilityUtility.IsHighFantasy();
             this.HVPAA_MenuLabel = isHighFantasy ? "HVPAA_SellcastLabelF".Translate() : "HVPAA_SellcastLabel".Translate();
             this.HVPAA_DurationLabel = "HVPAA_SellcastDurationLabel".Translate();
             this.HVPAA_DurationText = "HVPAA_SellcastDurationText".Translate();
@@ -2096,7 +2083,7 @@ namespace HVPAA
             slate.Set<int>("psycastCount", psycastCount, false);
             slate.Set<int>("discounted", discounted ? 1 : 0, false);
             slate.Set<int>("choosable", choosable ? 1 : 0, false);
-            slate.Set<int>("isHighFantasy", HautsUtility.IsHighFantasy() ? 1 : 0, false);
+            slate.Set<int>("isHighFantasy", ModCompatibilityUtility.IsHighFantasy() ? 1 : 0, false);
             List<Pawn> pawns = new List<Pawn> { sellcast };
             Map map = QuestGen_Get.GetMap(false, null, false);
             QuestGen.quest.SetFaction(pawns, Faction.OfPlayer, null);
@@ -5134,11 +5121,11 @@ namespace HVPAA
     {
         public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || p.stances.stunner.Stunned || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !HautsUtility.ReactsToEMP(p);
+            return p.Downed || p.stances.stunner.Stunned || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !HautsMiscUtility.ReactsToEMP(p);
         }
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            return p.Downed || p.stances.stunner.Stunned || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !HautsUtility.ReactsToEMP(p);
+            return p.Downed || p.stances.stunner.Stunned || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !HautsMiscUtility.ReactsToEMP(p);
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
@@ -5801,7 +5788,7 @@ namespace HVPAA
         //psycasting decision-making
         public static bool CanPsyast(Pawn pawn, int situation)
         {
-            if (pawn.Spawned && !pawn.IsColonistPlayerControlled && (!pawn.IsPrisoner || !pawn.guest.PrisonerIsSecure) && !pawn.DeadOrDowned && !pawn.Suspended && !pawn.DevelopmentalStage.Baby() && !pawn.InBed() && (!pawn.InMentalState || pawn.MentalStateDef.HasModExtension<PsycastPermissiveMentalState>()) && pawn.HasPsylink && HautsUtility.IsntCastingAbility(pawn) && !pawn.stances.stunner.Stunned)
+            if (pawn.Spawned && !pawn.IsColonistPlayerControlled && (!pawn.IsPrisoner || !pawn.guest.PrisonerIsSecure) && !pawn.DeadOrDowned && !pawn.Suspended && !pawn.DevelopmentalStage.Baby() && !pawn.InBed() && (!pawn.InMentalState || pawn.MentalStateDef.HasModExtension<PsycastPermissiveMentalState>()) && pawn.HasPsylink && HautsMiscUtility.IsntCastingAbility(pawn) && !pawn.stances.stunner.Stunned)
             {
                 if (pawn.CurJob != null && pawn.CurJobDef.HasModExtension<LimitsHVPAACasting>())
                 {
@@ -5958,7 +5945,7 @@ namespace HVPAA
                         Zone zone = plant.Map.zoneManager.ZoneAt(plant.Position);
                         if (zone != null && zone is Zone_Growing && f != Faction.OfPlayerSilentFail && f.HostileTo(Faction.OfPlayerSilentFail))
                         {
-                            tryNewScore += plant.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, plant) * plant.MarketValue / 500f;
+                            tryNewScore += plant.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, plant) * plant.MarketValue / 500f;
                         }
                     }
                     else if (thing is Building b && b.Faction != null)
@@ -5972,11 +5959,11 @@ namespace HVPAA
                     } else if (thing is Pawn p) {
                         if (intPsycasts.allies.Contains(p) && !uct.OtherAllyDisqualifiers(psycast, p, 1))
                         {
-                            tryNewScore -= p.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, p) * 1.5f;
+                            tryNewScore -= p.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, p) * 1.5f;
                         }
                         else if (intPsycasts.foes.Contains(p) && !uct.OtherEnemyDisqualifiers(psycast, p, 1))
                         {
-                            tryNewScore += p.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, p);
+                            tryNewScore += p.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, p);
                         }
                     }
                 }
@@ -5994,7 +5981,7 @@ namespace HVPAA
                     scoreMulti = 2f;
                 }
             }
-            return scoreMulti * b.GetStatValue(StatDefOf.Flammability) * HautsUtility.DamageFactorFor(DamageDefOf.Flame, b) * b.MarketValue / 200f;
+            return scoreMulti * b.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, b) * b.MarketValue / 200f;
         }
         public static bool SkipImmune(Pawn p, float maxBodySize)
         {
@@ -6393,7 +6380,7 @@ namespace HVPAA
             {
                 for (int i = pawn.story.traits.allTraits.Count - 1; i >= 0; i--)
                 {
-                    if (HautsUtility.IsExciseTraitExempt(pawn.story.traits.allTraits[i].def))
+                    if (TraitModExtensionUtility.IsExciseTraitExempt(pawn.story.traits.allTraits[i].def))
                     {
                         continue;
                     }
@@ -6429,7 +6416,7 @@ namespace HVPAA
                 bool anyTraits = false;
                 foreach (Trait t in pawn.story.traits.allTraits)
                 {
-                    if (!HautsUtility.IsExciseTraitExempt(t.def, true))
+                    if (!TraitModExtensionUtility.IsExciseTraitExempt(t.def, true))
                     {
                         anyTraits = true;
                     }
@@ -6610,7 +6597,7 @@ namespace HVPAA
             Pawn bestNegotiator = BestCaravanPawnUtility.FindBestNegotiator(caravan, faction, trader);
             Command_Action command_Action = new Command_Action();
             command_Action.defaultLabel = "HVPAA_FloatMenuSellcast".Translate();
-            command_Action.defaultDesc = HautsUtility.IsHighFantasy() ? "HVPAA_SellcastLabelF".Translate() : "HVPAA_SellcastLabel".Translate();
+            command_Action.defaultDesc = ModCompatibilityUtility.IsHighFantasy() ? "HVPAA_SellcastLabelF".Translate() : "HVPAA_SellcastLabel".Translate();
             command_Action.icon = HVPAATextures.HireSellcastCommandTex;
             command_Action.action = delegate
             {
