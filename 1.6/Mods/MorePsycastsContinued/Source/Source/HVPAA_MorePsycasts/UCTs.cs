@@ -6,10 +6,6 @@ using Verse;
 
 namespace HVPAA_MorePsycasts
 {
-    [StaticConstructorOnStartup]
-    public class HVPAA_MorePsycasts
-    {
-    }
     public class UseCaseTags_MechDisease : UseCaseTags
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)

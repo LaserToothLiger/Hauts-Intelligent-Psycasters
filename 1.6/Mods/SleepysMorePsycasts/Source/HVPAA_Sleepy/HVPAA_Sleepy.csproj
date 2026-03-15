@@ -65,8 +65,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="UCTs_Level_III.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UCTs_Level_I.cs" />
+    <Compile Include="UCTs_Level_II.cs" />
+    <Compile Include="UCTs_Level_IV.cs" />
+    <Compile Include="UCTs_Level_V.cs" />
+    <Compile Include="UCTs_Level_VI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

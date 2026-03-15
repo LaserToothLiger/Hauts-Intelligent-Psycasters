@@ -10,10 +10,6 @@ using VEF;
 
 namespace HVPAA_FSF
 {
-    [StaticConstructorOnStartup]
-    public class HVPAA_FSF
-    {
-    }
     //level 2
     public class UseCaseTags_Disarm : UseCaseTags
     {
@@ -324,7 +320,7 @@ namespace HVPAA_FSF
             {
                 psycast.lti = new LocalTargetInfo(intPsycasts.Pawn);
                 float score = -15f;
-                HVPAAUtility.LightningApplicability(this, intPsycasts, psycast.ability, intPsycasts.Pawn.Position, niceToEvil, this.aoe, ref score);
+                HVPAA_DecisionMakingUtility.LightningApplicability(this, intPsycasts, psycast.ability, intPsycasts.Pawn.Position, niceToEvil, this.aoe, ref score);
                 return score;
             }
             return 0f;
@@ -428,7 +424,7 @@ namespace HVPAA_FSF
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
         {
-            if (HVPAAUtility.SkipImmune(p, this.maxBodySize) || p.Downed)
+            if (HVPAA_DecisionMakingUtility.SkipImmune(p, this.maxBodySize) || p.Downed)
             {
                 return true;
             }
@@ -478,7 +474,7 @@ namespace HVPAA_FSF
                 default:
                     break;
             }
-            return HVPAAUtility.SkipImmune(p, this.maxBodySize);
+            return HVPAA_DecisionMakingUtility.SkipImmune(p, this.maxBodySize);
         }
         public bool RangedP(Pawn p)
         {

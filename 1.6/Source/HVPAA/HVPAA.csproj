@@ -69,8 +69,35 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="CastingBehaviorBasics.cs" />
+    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="DefsOf.cs" />
+    <Compile Include="FactionComp_AlliesAndAdversaries.cs" />
+    <Compile Include="FactionPsycasterRules.cs" />
+    <Compile Include="HVPAA_DecisionMakingUtility.cs" />
+    <Compile Include="JobDriver_FollowRally.cs" />
+    <Compile Include="ModSettings.cs" />
+    <Compile Include="MoteNPCasterText.cs" />
+    <Compile Include="UCTs_ReusedInMultipleOtherMods.cs" />
+    <Compile Include="UCTs_Royalty_Level_III.cs" />
+    <Compile Include="UCTs_Royalty_Level_II.cs" />
+    <Compile Include="UCTs_Royalty_Level_IV.cs" />
+    <Compile Include="UCTs_Royalty_Level_V.cs" />
+    <Compile Include="UCTs_Royalty_Level_VI.cs" />
+    <Compile Include="UCT_TorsionPsycast.cs" />
+    <Compile Include="UCT_0Basic.cs" />
+    <Compile Include="PawnGenAsPsycasterUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SellcastHiring.cs" />
+    <Compile Include="SellcastsMendicants_QuestNodes.cs" />
+    <Compile Include="SellcastsMendicants_ChooseMyCasts.cs" />
+    <Compile Include="SellcastUtility.cs" />
+    <Compile Include="SensitizeScalar.cs" />
+    <Compile Include="SpecCasters_Heresiarch.cs" />
+    <Compile Include="SpecCasters_TemplarStrikeSquad.cs" />
+    <Compile Include="Textures.cs" />
+    <Compile Include="TrapPlacementWorkers.cs" />
+    <Compile Include="UCTs_Royalty_Level_I.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

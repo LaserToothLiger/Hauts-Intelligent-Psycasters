@@ -14,7 +14,7 @@
 	</bonusCastChance>
 	<!--Random Casters-->
 	<randCastersPerCapita>0.0025</randCastersPerCapita><!--(capped at 75%) percentage of people in this faction that randomly have psylinks-->
-	<randCasterHediffs><!--random psycasters of this faction can have these health conditions; the 'value' of each pair is the chance that occurs-->
+	<randCasterHediffs><!--random psycasters of this faction can have these health conditions; the 'value' of each pair is the chance that occurs. These must be conditions that are added via some surgical recipe applicable to the pawn's def, e.g. Bionic Arm would work, but not Hypothermia-->
 	</randCasterHediffs>
 	<maxRandCasterHediffs>1</maxRandCasterHediffs>
 	<randCasterItems><!--random psycasters of this faction can have things from this list; the 'value' of each pair is the chance that occurs. If it's an item that can stack, it gets generated in a stack of 1~3 -->
@@ -29,7 +29,8 @@
 	<domesticSpecCasters><!--these are the kinds of spec casters that can show up in this faction's settlements. Their point costs, detailed in their own PawnKindDef, are subtracted from the maxDomesticPower value-->
 	  <li>HVPAA_RoguePsycaster</li>
 	</domesticSpecCasters>
-	<specChanceInRaids>0.05</specChanceInRaids><!--(psycaster commonality mod setting can't bring this above 50%) determines the chance a raid CAN have spec casters, but the chance any given spec caster is present in a raid depends on its PawnKindDef's own chance to spawn in raids...-->
+	<specChanceInRaids>0.05</specChanceInRaids><!--(psycaster commonality mod setting can't bring this above 50%, but if you set it above 50% it'll just be that value, independent of the mod setting)
+													determines the chance a raid CAN have spec casters, but the chance any given spec caster is present in a raid depends on its PawnKindDef's own chance to spawn in raids...-->
 	<specPointsPerRaidPoint>0.0035</specPointsPerRaidPoint><!--...and whether the raid even has enough points to afford that kind of spec caster in the first place. Unlike a settlement, the number of spec points a raid has is fluid, scaling w/ its raid points-->
 	<raidSpecCasters><!--these are the spec casters that can show up in this faction's raids-->
 	  <li>HVPAA_RoguePsycaster</li>
@@ -112,7 +113,6 @@
 	  <li>0.2</li>
 	  <li>0.15</li>
 	</bonusCastChance>
-	<respectsTitleMinPsylevel>false</respectsTitleMinPsylevel><!--this is true by default for every faction. if true, any pawn from this faction with a title that grants a min psylink level will have a psylink of at least that level.-->
 	<randCastersPerCapita>0</randCastersPerCapita>
 	<randCasterHediffs></randCasterHediffs>
 	<maxRandCasterHediffs>3</maxRandCasterHediffs>

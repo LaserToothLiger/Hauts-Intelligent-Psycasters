@@ -8,11 +8,6 @@ using Verse;
 
 namespace HVPAA_MeleePsycasts
 {
-    [StaticConstructorOnStartup]
-    public class HVPAA_MeleePsycasts
-    {
-
-    }
     //level 3
     public class UseCaseTags_EMPBlow : UseCaseTags
     {

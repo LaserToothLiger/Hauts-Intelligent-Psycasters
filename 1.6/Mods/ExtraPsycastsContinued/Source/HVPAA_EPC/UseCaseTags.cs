@@ -7,11 +7,6 @@ using Verse;
 
 namespace HVPAA_EPC
 {
-    [StaticConstructorOnStartup]
-    public class HVPAA_EPC
-    {
-    }
-    //ai
     public class UseCaseTags_XLR8Dheal : UseCaseTags
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
@@ -175,7 +170,7 @@ namespace HVPAA_EPC
                 if (tryNewPosition.IsValid && !possibleTargets.ContainsKey(tryNewPosition) && GenSight.LineOfSight(psycast.pawn.Position, tryNewPosition, psycast.pawn.Map, true, null, 0, 0) && FireUtility.NumFiresAt(tryNewPosition,psycast.pawn.Map) == 0)
                 {
                     tryNewScore = 0f;
-                    HVPAAUtility.LightningApplicability(this, intPsycasts, psycast, tryNewPosition, niceToEvil, 1.5f, ref tryNewScore);
+                    HVPAA_DecisionMakingUtility.LightningApplicability(this, intPsycasts, psycast, tryNewPosition, niceToEvil, 1.5f, ref tryNewScore);
                     possibleTargets.Add(tryNewPosition, tryNewScore);
                 }
             }
@@ -357,17 +352,5 @@ namespace HVPAA_EPC
             return 0f;
         }
         public int ticksToFatalBloodLossCutoff;
-    }
-    //Soothe Mind rework
-    public class CompAbilityEffect_SootheMind : CompAbilityEffect_GiveHediff
-    {
-        public override bool Valid(LocalTargetInfo target, bool throwMessages = false)
-        {
-            if (target.Thing != null && target.Thing is Pawn p && !p.InMentalState)
-            {
-                return false;
-            }
-            return base.Valid(target, throwMessages);
-        }
     }
 }
