@@ -195,10 +195,12 @@ namespace HVPAA
                                     num = anyPlayerHomeMap.Tile;
                                 }
                             }
+                            bool inVacuum = false;
                             if (num != -1)
                             {
                                 temperature = GenTemperature.AverageTemperatureAtTileForTwelfth(num, GenLocalDate.Twelfth(num));
                                 toxicity = Mathf.Clamp01(Find.WorldGrid[num].pollution);
+                                inVacuum = Find.WorldGrid[num].PrimaryBiome.inVacuum;
                             }
                             ThingStuffPair tsm = new ThingStuffPair(kvp.Key, GenStuff.RandomStuffFor(kvp.Key));
                             foreach (Apparel a in alreadyWorn)
@@ -220,6 +222,14 @@ namespace HVPAA
                                 {
                                     canReplace = false;
                                     break;
+                                }
+                                if (ModsConfig.OdysseyActive && inVacuum)
+                                {
+                                    if (tsm.VacuumResistance < new ThingStuffPair(a.def,a.Stuff).VacuumResistance)
+                                    {
+                                        canReplace = false;
+                                        break;
+                                    }
                                 }
                             }
                             if (canReplace)
