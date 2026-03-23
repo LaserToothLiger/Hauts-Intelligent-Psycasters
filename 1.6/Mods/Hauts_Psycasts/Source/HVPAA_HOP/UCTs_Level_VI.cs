@@ -175,9 +175,7 @@ namespace HVPAA_HOP
                         iNeedHealing += this.bonusBrainInjurySeverity;
                     }
                     injuryCount += h.Severity;
-                }
-                else if (h is Hediff_MissingPart && h.Part != null)
-                {
+                } else if (h is Hediff_MissingPart && h.Part != null && !p.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(h.Part)) {
                     mbCount += h.Part.def.GetMaxHealth(p);
                 }
             }

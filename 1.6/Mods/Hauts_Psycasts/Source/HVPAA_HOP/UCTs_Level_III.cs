@@ -21,6 +21,26 @@ namespace HVPAA_HOP
                     CellFinder.TryFindRandomCellNear(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, (int)this.aoe, null, out IntVec3 spot);
                     if (spot.IsValid && GenSight.LineOfSight(intPsycasts.Pawn.Position, spot, intPsycasts.Pawn.Map) && !spot.Standable(intPsycasts.Pawn.Map))
                     {
+                        RoofDef rd = spot.GetRoof(intPsycasts.Pawn.Map);
+                        if (rd != null)
+                        {
+                            if (rd.isThickRoof)
+                            {
+                                continue;
+                            }
+                            if (!JoyUtility.EnjoyableOutsideNow(intPsycasts.Pawn, null))
+                            {
+                                continue;
+                            }
+                            if (ModsConfig.OdysseyActive)
+                            {
+                                BiomeDef bd = intPsycasts.Pawn.Map.Biome;
+                                if (bd != null && bd.inVacuum)
+                                {
+                                    continue;
+                                }
+                            }
+                        }
                         psycast.lti = spot;
                         return 2f;
                     }
