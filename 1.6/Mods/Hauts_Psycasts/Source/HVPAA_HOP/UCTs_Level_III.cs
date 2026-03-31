@@ -12,35 +12,19 @@ namespace HVPAA_HOP
     //see comments in Psycasts_Patch_Royalty.xml, as well as comments in UCT_0Basic.xml
     public class UseCaseTags_DPC : UseCaseTags
     {
+        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            return Rand.Chance(this.spontaneousCastChance) ? base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci) : 0f;
+        }
         public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
-            if ((Rand.Chance(this.spontaneousCastChance) && (intPsycasts.Pawn.Faction == null || (intPsycasts.Pawn.Map.ParentFaction != null && intPsycasts.Pawn.Faction == intPsycasts.Pawn.Map.ParentFaction))) || Rand.Chance(this.spontaneousCastChanceAway))
+            if (intPsycasts.Pawn.Faction == null || (intPsycasts.Pawn.Map.ParentFaction != null && intPsycasts.Pawn.Faction == intPsycasts.Pawn.Map.ParentFaction) || Rand.Chance(this.spontaneousCastChanceAway))
             {
-                for (int j = 0; j <= 100; j++)
+                for (int j = 0; j <= 10; j++)
                 {
                     CellFinder.TryFindRandomCellNear(intPsycasts.Pawn.Position, intPsycasts.Pawn.Map, (int)this.aoe, null, out IntVec3 spot);
-                    if (spot.IsValid && GenSight.LineOfSight(intPsycasts.Pawn.Position, spot, intPsycasts.Pawn.Map) && !spot.Standable(intPsycasts.Pawn.Map))
+                    if (spot.IsValid && GenSight.LineOfSight(intPsycasts.Pawn.Position, spot, intPsycasts.Pawn.Map) && spot.Standable(intPsycasts.Pawn.Map) && spot.GetRoof(intPsycasts.Pawn.Map) == null)
                     {
-                        RoofDef rd = spot.GetRoof(intPsycasts.Pawn.Map);
-                        if (rd != null)
-                        {
-                            if (rd.isThickRoof)
-                            {
-                                continue;
-                            }
-                            if (!JoyUtility.EnjoyableOutsideNow(intPsycasts.Pawn, null))
-                            {
-                                continue;
-                            }
-                            if (ModsConfig.OdysseyActive)
-                            {
-                                BiomeDef bd = intPsycasts.Pawn.Map.Biome;
-                                if (bd != null && bd.inVacuum)
-                                {
-                                    continue;
-                                }
-                            }
-                        }
                         psycast.lti = spot;
                         return 2f;
                     }

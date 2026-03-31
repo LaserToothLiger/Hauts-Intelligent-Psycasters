@@ -80,7 +80,7 @@ namespace HVPAA
         }
         public bool triggered;
         public List<int> choices = new List<int>();
-        public static readonly Texture2D uiIcon = ContentFinder<Texture2D>.Get("Things/Mote/PsycastSkipFlash", true);
+        public static readonly Texture2D uiIcon = ContentFinder<Texture2D>.Get("UI/Commands/HVPAA_ChooseMyCasts", true);
         string buttonTooltip;
     }
     public class ChooseMyCastWindow : Window

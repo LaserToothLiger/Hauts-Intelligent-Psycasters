@@ -590,8 +590,8 @@ Level 1 psycasts-->
 						<li Class="HVPAA_HOP.UseCaseTags_DPC">
 							<utility>true</utility>
 							<mfds><li>Dignified</li></mfds>
-							<spontaneousCastChance>0.1</spontaneousCastChance><!--chance to use it if factionless or in faction-owned map-->
-							<spontaneousCastChanceAway>0.001</spontaneousCastChanceAway><!--chance otherwise-->
+							<spontaneousCastChance>0.1</spontaneousCastChance><!--chance to use if factionless or in faction-owned map-->
+							<spontaneousCastChanceAway>0.001</spontaneousCastChanceAway><!--chance to use otherwise-->
 						</li>
 					</value>
 				</li>

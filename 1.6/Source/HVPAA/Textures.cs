@@ -6,6 +6,6 @@ namespace HVPAA
     [StaticConstructorOnStartup]
     public class HVPAATextures
     {
-        public static readonly Texture2D HireSellcastCommandTex = ContentFinder<Texture2D>.Get("UI/Commands/Trade", true);
+        public static readonly Texture2D HireSellcastCommandTex = ContentFinder<Texture2D>.Get("UI/Commands/HVPAA_HireSellcast", true);
     }
 }

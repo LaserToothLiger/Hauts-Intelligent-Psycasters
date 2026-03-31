@@ -171,26 +171,18 @@ namespace HVPAA
                         {
                             tryNewScore += plant.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, plant) * plant.MarketValue / 500f;
                         }
-                    }
-                    else if (thing is Building b && b.Faction != null)
-                    {
+                    } else if (thing is Building b && b.Faction != null) {
                         if (f != b.Faction && f.HostileTo(b.Faction))
                         {
                             tryNewScore += HVPAA_DecisionMakingUtility.LightningBuildingScore(b);
-                        }
-                        else if (niceToEvil > 0 || f == b.Faction || f.RelationKindWith(b.Faction) == FactionRelationKind.Ally)
-                        {
+                        } else if (niceToEvil > 0 || f == b.Faction || f.RelationKindWith(b.Faction) == FactionRelationKind.Ally) {
                             tryNewScore -= HVPAA_DecisionMakingUtility.LightningBuildingScore(b);
                         }
-                    }
-                    else if (thing is Pawn p)
-                    {
+                    } else if (thing is Pawn p) {
                         if (intPsycasts.allies.Contains(p) && !uct.OtherAllyDisqualifiers(psycast, p, 1))
                         {
                             tryNewScore -= p.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, p) * 1.5f;
-                        }
-                        else if (intPsycasts.foes.Contains(p) && !uct.OtherEnemyDisqualifiers(psycast, p, 1))
-                        {
+                        } else if (intPsycasts.foes.Contains(p) && !uct.OtherEnemyDisqualifiers(psycast, p, 1)) {
                             tryNewScore += p.GetStatValue(StatDefOf.Flammability) * HautsMiscUtility.DamageFactorFor(DamageDefOf.Flame, p);
                         }
                     }
