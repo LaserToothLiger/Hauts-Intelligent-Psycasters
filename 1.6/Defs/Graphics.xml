@@ -51,7 +51,7 @@
       <needsMaintenance>true</needsMaintenance>
     </mote>
     <graphicData>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_Mote</graphicClass>
       <texPath>Things/Mote/SolarPinhole</texPath>
       <shaderType>MoteGlowDistorted</shaderType>
       <color>(255, 0, 75)</color>

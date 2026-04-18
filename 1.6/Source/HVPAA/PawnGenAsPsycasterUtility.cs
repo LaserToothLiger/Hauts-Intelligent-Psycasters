@@ -52,7 +52,7 @@ namespace HVPAA
         //checks the chance this pawn should be a random caster according to the specified FPRD. If so, give them the appropriate psylinks, bonus psycasts, hediffs, items, equipment. Possibly also give them full psyfocus
         public static void FullRandCasterTreatment(Pawn pawn, float psysens, FactionPsycasterRuleDef fprd, PawnGenerationRequest request)
         {
-            if (Rand.Chance(Math.Min(fprd.randCastersPerCapita * psysens * PawnGenAsPsycasterUtility.PsycasterCommonality, 0.75f)))
+            if (Rand.Chance(Math.Min(PawnGenAsPsycasterUtility.ChanceForPawnToBeRandCaster(pawn,psysens,fprd), 0.75f)))
             {
                 PawnGenAsPsycasterUtility.GiveRandPsylinkLevel(pawn, fprd.avgRandCasterLevel);
                 PawnGenAsPsycasterUtility.GrantBonusPsycasts(pawn, fprd);
@@ -73,6 +73,11 @@ namespace HVPAA
                     pawn.psychicEntropy?.RechargePsyfocus();
                 }
             }
+        }
+        //aforementioned chance in previous method is its own method, which can therefore be easily Harmony patched. However, the 75% max chance lies outside the scope of this method
+        public static float ChanceForPawnToBeRandCaster(Pawn pawn, float psysens, FactionPsycasterRuleDef fprd)
+        {
+            return fprd.randCastersPerCapita * psysens * PawnGenAsPsycasterUtility.PsycasterCommonality;
         }
         //add psylinks to the target pawn, using RandPsylinkLevel to determine exactly how many psylinks they should get. Non-adults can't gain a psylink level higher than 2 from this.
         public static void GiveRandPsylinkLevel(Pawn pawn, int avgRandCasterLevel)
