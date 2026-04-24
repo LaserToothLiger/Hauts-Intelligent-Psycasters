@@ -2113,7 +2113,6 @@ Level 1 psycasts-->
 										<mfds><li>Dignified</li></mfds>
 										<minMarketValue>1000</minMarketValue>
 										<grantableHediffs>
-											<li>HVP_WordOfBlessingSelf</li>
 											<li>HVP_BlessingSpirit</li>
 											<li>HVP_BlessingIntelligence</li>
 											<li>HVP_BlessingResilience</li>
