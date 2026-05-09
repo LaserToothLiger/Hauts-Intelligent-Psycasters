@@ -419,18 +419,54 @@ namespace HVPAA
                             if (aaa.mapsCovered.TryGetValue(this.Pawn.Map, out MapAlliesAndAdversaries maaa))
                             {
                                 this.allies = maaa.allies;
+                                if (this.niceToEvil > 0)
+                                {
+                                    this.allies.AddRange(maaa.alliesIfNice);
+                                }
+                                if (this.niceToAnimals > 0)
+                                {
+                                    this.allies.AddRange(maaa.alliesIfAnimalFriend);
+                                }
                                 this.foes = maaa.foes;
                             } else {
                                 MapAlliesAndAdversaries maaa2 = new MapAlliesAndAdversaries();
-                                HVPAA_DecisionMakingUtility.SetAlliesAndAdversaries(this.Pawn, maaa2.allies, maaa2.foes, this.niceToAnimals, this.niceToEvil);
+                                HVPAA_DecisionMakingUtility.SetAlliesAndAdversaries(this.Pawn, maaa2.alliesIfAnimalFriend, maaa2.allies, maaa2.alliesIfNice, maaa2.foes, this.niceToAnimals, this.niceToEvil);
+                                /*Log.Error("generating MAAA for " + this.Pawn.Name + ", allies:");
+                                foreach (Pawn a in maaa2.allies)
+                                {
+                                    Log.Message(">" + a.Name);
+                                }
+                                Log.Warning("animal friends:");
+                                foreach (Pawn a in maaa2.alliesIfAnimalFriend)
+                                {
+                                    Log.Message(">" + a.Name);
+                                }
+                                Log.Warning("nicies:");
+                                foreach (Pawn a in maaa2.alliesIfNice)
+                                {
+                                    Log.Message(">" + a.Name);
+                                }
+                                Log.Warning("foes:");
+                                foreach (Pawn a in maaa2.foes)
+                                {
+                                    Log.Message(">" + a.Name);
+                                }*/
                                 aaa.mapsCovered.Add(this.Pawn.Map, maaa2);
                                 this.allies = maaa2.allies;
+                                if (this.niceToEvil > 0)
+                                {
+                                    this.allies.AddRange(maaa2.alliesIfNice);
+                                }
+                                if (this.niceToAnimals > 0)
+                                {
+                                    this.allies.AddRange(maaa2.alliesIfAnimalFriend);
+                                }
                                 this.foes = maaa2.foes;
                             }
                         }
                     }
                 } else {
-                    HVPAA_DecisionMakingUtility.SetAlliesAndAdversaries(this.Pawn, this.allies, this.foes, this.niceToAnimals, this.niceToEvil);
+                    HVPAA_DecisionMakingUtility.SetAlliesAndAdversaries(this.Pawn, this.niceToAnimals > 0 ?this.allies:null, this.allies, this.niceToEvil > 0 ? this.allies:null, this.foes, this.niceToAnimals, this.niceToEvil);
                 }
                 //HVPAA_DecisionMakingUtility.SetAlliesAndAdversaries(this.Pawn, this.allies, this.foes, this.niceToAnimals, this.niceToEvil);
             }
@@ -593,9 +629,7 @@ namespace HVPAA
                 if (uct.mfds.Contains(DefDatabase<MeditationFocusDef>.GetNamed("Flame")) && !this.fireUser)
                 {
                     return;
-                }
-                else if (this.mfds != null)
-                {
+                } else if (this.mfds != null) {
                     //otherwise, certain psycasts appeal more to psycasters with certain meditation focus types. Pyromaniacs LOVE shooting fire and Morbids desire the disturbing and gory
                     foreach (MeditationFocusDef mfd in uct.mfds)
                     {

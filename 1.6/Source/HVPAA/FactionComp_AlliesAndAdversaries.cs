@@ -8,9 +8,8 @@ namespace HVPAA
      * To partially meliorate this, psycasters of a given faction intermittently share their determinations of who their allies and adversaries are.
      * This is handled by each faction's AlliesAndAdversaries comp, which contains a mapsCovered dictionary (Map keys, MapALliesAndAdversaries values).
      * If a psycaster of that faction begins its casting attempt and realizes its current map isn't on the mapsCovered, it adds the map to the dictionary,
-     *   along with a MapAlliesAndAdversaries object containing the allies & foes it has determined.
-     * This dictionary resets every 250 ticks to force periodic redeterminations.
-     * Note that whichever psycaster sets the allies list does so based on their own niceToEvil rating and animal affinity. Everybody else in the faction accepts it*/
+     *   along with a MapAlliesAndAdversaries object containing the allies, foes, and conditional flavors of ally it has determined.
+     * This dictionary resets every 250 ticks to force periodic redeterminations.*/
     public class HautsFactionCompProperties_AlliesAndAdversaries : HautsFactionCompProperties
     {
         public HautsFactionCompProperties_AlliesAndAdversaries()
@@ -42,9 +41,13 @@ namespace HVPAA
         public MapAlliesAndAdversaries()
         {
             this.allies = new List<Pawn>();
+            this.alliesIfNice = new List<Pawn>();
+            this.alliesIfAnimalFriend = new List<Pawn>();
             this.foes = new List<Pawn>();
         }
         public List<Pawn> allies = new List<Pawn>();
+        public List<Pawn> alliesIfNice = new List<Pawn>();
+        public List<Pawn> alliesIfAnimalFriend = new List<Pawn>();
         public List<Pawn> foes = new List<Pawn>();
     }
 }

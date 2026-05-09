@@ -26,17 +26,19 @@ namespace HVPAA
             }
             return false;
         }
-        public static void SetAlliesAndAdversaries(Pawn caster, List<Pawn> allies, List<Pawn> foes, float niceToAnimals, float niceToEvil)
+        public static void SetAlliesAndAdversaries(Pawn caster, List<Pawn> animalFriends, List<Pawn> allies, List<Pawn> alliesForNice, List<Pawn> foes, float niceToAnimals, float niceToEvil)
         {
             foreach (Pawn p in (List<Pawn>)caster.Map.mapPawns.AllPawnsSpawned)
             {
                 if (HVPAA_DecisionMakingUtility.IsEnemy(caster, p))
                 {
                     foes.Add(p);
-                }
-                else if (HVPAA_DecisionMakingUtility.IsAlly(niceToAnimals <= 0, caster, p, niceToEvil))
-                {
+                } else if (animalFriends != null && HVPAA_DecisionMakingUtility.IsAnimalFriend(caster,p,niceToAnimals<=0)) {
+                    animalFriends.Add(p);
+                } else if (HVPAA_DecisionMakingUtility.IsAllyForNotNice(caster, p)) {
                     allies.Add(p);
+                } else if (alliesForNice != null && HVPAA_DecisionMakingUtility.IsAllyForNice(caster, p)) {
+                    alliesForNice.Add(p);
                 }
             }
         }
@@ -48,23 +50,13 @@ namespace HVPAA
         {
             if (p is Pawn pawn)
             {
-                if (pawn.RaceProps.Animal && (pawn.Faction == null || !p.HostileTo(pawn)) && !canUseAnimalRightsViolations)
+                if (HVPAA_DecisionMakingUtility.IsAnimalFriend(caster,pawn,canUseAnimalRightsViolations))
                 {
-                    return !pawn.IsPsychologicallyInvisible();
-                }
-                else
-                {
-                    if (caster.Faction == null || p.Faction == null)
+                    return true;
+                } else {
+                    if (HVPAA_DecisionMakingUtility.IsAllyForNotNice(caster, pawn) && (niceToEvil > 0 && HVPAA_DecisionMakingUtility.IsAllyForNice(caster, pawn)))
                     {
-                        return false;
-                    }
-                    if (caster.Faction != p.Faction)
-                    {
-                        return !pawn.IsPsychologicallyInvisible() && !caster.HostileTo(p) && (caster.Faction.RelationKindWith(p.Faction) == FactionRelationKind.Ally || (niceToEvil > 0f && caster.Faction.RelationKindWith(p.Faction) == FactionRelationKind.Neutral));
-                    }
-                    else
-                    {
-                        return !caster.HostileTo(p);
+                        return true;
                     }
                 }
             }
@@ -75,10 +67,38 @@ namespace HVPAA
             if (caster.Faction != p.Faction)
             {
                 return !caster.HostileTo(p) && (caster.Faction.RelationKindWith(p.Faction) == FactionRelationKind.Ally || (niceToEvil > 0f && caster.Faction.RelationKindWith(p.Faction) == FactionRelationKind.Neutral));
-            }
-            else
-            {
+            } else {
                 return !caster.HostileTo(p);
+            }
+        }
+        public static bool IsAnimalFriend(Pawn caster, Pawn pawn, bool canUseAnimalRightsViolations)
+        {
+            return !canUseAnimalRightsViolations && pawn.RaceProps.Animal && (pawn.Faction == null || (caster.Faction != null && !pawn.Faction.HostileTo(caster.Faction))) && !caster.HostileTo(pawn);
+        }
+        public static bool IsAllyForNice(Pawn caster, Pawn pawn)
+        {
+            if (caster.Faction == null || pawn.Faction == null)
+            {
+                return false;
+            }
+            if (caster.Faction != pawn.Faction)
+            {
+                return !pawn.IsPsychologicallyInvisible() && !caster.HostileTo(pawn) && caster.Faction.RelationKindWith(pawn.Faction) != FactionRelationKind.Hostile;
+            } else {
+                return !caster.HostileTo(pawn);
+            }
+        }
+        public static bool IsAllyForNotNice(Pawn caster, Pawn pawn)
+        {
+            if (caster.Faction == null || pawn.Faction == null)
+            {
+                return false;
+            }
+            if (caster.Faction != pawn.Faction)
+            {
+                return !pawn.IsPsychologicallyInvisible() && !caster.HostileTo(pawn) && caster.Faction.RelationKindWith(pawn.Faction) == FactionRelationKind.Ally;
+            } else {
+                return !caster.HostileTo(pawn);
             }
         }
         public static bool MovesFasterInLight(Pawn p)
