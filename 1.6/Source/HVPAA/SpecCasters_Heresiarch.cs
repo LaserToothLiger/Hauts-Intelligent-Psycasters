@@ -16,8 +16,8 @@ namespace HVPAA
             this.compClass = typeof(HediffComp_Heresiarch);
         }
         public int deadlifePeriodicity;
-        public DamageDef deadlifeDamage;
         public float deadlifeRadius;
+        public EffecterDef effecter;
         public FactionDef reinforcingFaction;
         public IntRange reinforcementCount;
     }
@@ -35,19 +35,20 @@ namespace HVPAA
             base.CompPostTickInterval(ref severityAdjustment, delta);
             if (this.Pawn.IsHashIntervalTick(this.Props.deadlifePeriodicity, delta))
             {
-                if (!this.calledReinforcementsYet && this.Pawn.Map != null && this.Pawn.Map.Tile.Valid)
+                Pawn p = this.Pawn;
+                if (!this.calledReinforcementsYet && p.Map != null && p.Map.Tile.Valid)
                 {
                     this.calledReinforcementsYet = true;
-                    Faction f = this.Pawn.Faction ?? Find.FactionManager.FirstFactionOfDef(this.Props.reinforcingFaction);
-                    Lord lord = this.Pawn.lord ?? LordMaker.MakeNewLord(f, new LordJob_AssaultColony(f, false, false, false, false, false, false, false), this.Pawn.Map, null);
+                    Faction f = p.Faction ?? Find.FactionManager.FirstFactionOfDef(this.Props.reinforcingFaction);
+                    Lord lord = p.lord ?? LordMaker.MakeNewLord(f, new LordJob_AssaultColony(f, false, false, false, false, false, false, false), p.Map, null);
                     int toSpawn = this.Props.reinforcementCount.RandomInRange;
                     while (toSpawn > 0)
                     {
                         toSpawn--;
                         Pawn reinforcement = PawnGenerator.GeneratePawn(f.def.pawnGroupMakers.Where((PawnGroupMaker pgm) => pgm.kindDef == PawnGroupKindDefOf.Combat).RandomElement().options.RandomElement().kind, f, null);
-                        GenSpawn.Spawn(reinforcement, CellFinder.RandomClosewalkCellNear(this.Pawn.Position, this.Pawn.Map, 10), this.Pawn.Map, WipeMode.Vanish);
-                        FleckMaker.Static(reinforcement.Position, this.Pawn.Map, FleckDefOf.PsycastSkipInnerExit, 1f);
-                        FleckMaker.Static(reinforcement.Position, this.Pawn.Map, FleckDefOf.PsycastSkipOuterRingExit, 1f);
+                        GenSpawn.Spawn(reinforcement, CellFinder.RandomClosewalkCellNear(p.Position, p.Map, 10), p.Map, WipeMode.Vanish);
+                        FleckMaker.Static(reinforcement.Position, p.Map, FleckDefOf.PsycastSkipInnerExit, 1f);
+                        FleckMaker.Static(reinforcement.Position, p.Map, FleckDefOf.PsycastSkipOuterRingExit, 1f);
                         if (!reinforcement.Downed)
                         {
                             Lord lord2 = reinforcement.lord;
@@ -58,19 +59,29 @@ namespace HVPAA
                             lord.AddPawn(reinforcement);
                         }
                     }
-                    if (this.Pawn.lord == null)
+                    if (p.lord == null)
                     {
-                        lord.AddPawn(this.Pawn);
+                        lord.AddPawn(p);
                     }
-                    else if (this.Pawn.lord != lord)
+                    else if (p.lord != lord)
                     {
-                        this.Pawn.lord.RemovePawn(this.Pawn);
-                        lord.AddPawn(this.Pawn);
+                        p.lord.RemovePawn(p);
+                        lord.AddPawn(p);
                     }
                 }
-                if (this.Pawn.Spawned && ModsConfig.AnomalyActive)
+                if (p.Spawned && ModsConfig.AnomalyActive)
                 {
-                    GenExplosion.DoExplosion(this.Pawn.Position, this.Pawn.Map, this.Props.deadlifeRadius, this.Props.deadlifeDamage, this.Pawn, postExplosionGasType: GasType.DeadlifeDust);
+                    Effecter effecter = this.Props.effecter.Spawn();
+                    effecter.Trigger(new TargetInfo(p.Position, p.Map, false), new TargetInfo(p.Position, p.Map, false), -1);
+                    effecter.Cleanup();
+                    foreach (Corpse c in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, this.Props.deadlifeRadius, true).OfType<Corpse>().Distinct<Corpse>())
+                    {
+                        if (MutantUtility.CanResurrectAsShambler(c))
+                        {
+                            c.InnerPawn.MarkDeadlifeDustForFaction(p.Faction);
+                            MutantUtility.ResurrectAsShambler(c.InnerPawn, 15000, c.InnerPawn.DeadlifeDustFaction);
+                        }
+                    }
                 }
             }
         }

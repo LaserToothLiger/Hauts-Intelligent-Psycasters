@@ -197,17 +197,17 @@
   </PawnKindDef>
 	  <HediffDef ParentName="HVT_TraitHediffBase">
 		<defName>HVPAA_CultLeader</defName>
-		<label>deadlife haze</label>
-		<description>Deadlife mechanites streaming out of every orifice.</description>
+		<label>master of death</label>
+		<description>Nearby corpses will periodically be animated as shamblers.</description>
 		<hediffClass>HediffWithComps</hediffClass>
 		<isBad>false</isBad>
 		<comps>
 		  <li Class="HVPAA.HediffCompProperties_Heresiarch">
 			<reinforcementCount>4~7</reinforcementCount>
 			<reinforcingFaction>HoraxCult</reinforcingFaction>
-			<deadlifeRadius>3</deadlifeRadius>
-			<deadlifeDamage>DeadlifeDust</deadlifeDamage>
 			<deadlifePeriodicity>500</deadlifePeriodicity>
+			<deadlifeRadius>5.9</deadlifeRadius>
+			<effecter>Hauts_DarkPsychicShockwave</effecter>
 		  </li>
 		  <li Class="HediffCompProperties_DisappearsOnDeath"/>
 		</comps>
