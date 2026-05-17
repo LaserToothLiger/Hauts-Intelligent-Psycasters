@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System.Linq;
+using UnityEngine;
 using Verse;
 using Verse.AI.Group;
 
@@ -17,7 +18,8 @@ namespace HVPAA
         }
         public int deadlifePeriodicity;
         public float deadlifeRadius;
-        public EffecterDef effecter;
+        public FleckDef fleck;
+        public float fleckScale;
         public FactionDef reinforcingFaction;
         public IntRange reinforcementCount;
     }
@@ -62,18 +64,14 @@ namespace HVPAA
                     if (p.lord == null)
                     {
                         lord.AddPawn(p);
-                    }
-                    else if (p.lord != lord)
-                    {
+                    } else if (p.lord != lord) {
                         p.lord.RemovePawn(p);
                         lord.AddPawn(p);
                     }
                 }
                 if (p.Spawned && ModsConfig.AnomalyActive)
                 {
-                    Effecter effecter = this.Props.effecter.Spawn();
-                    effecter.Trigger(new TargetInfo(p.Position, p.Map, false), new TargetInfo(p.Position, p.Map, false), -1);
-                    effecter.Cleanup();
+                    FleckMaker.AttachedOverlay(p, this.Props.fleck, Vector3.zero, this.Props.fleckScale, -1f);
                     foreach (Corpse c in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, this.Props.deadlifeRadius, true).OfType<Corpse>().Distinct<Corpse>())
                     {
                         if (MutantUtility.CanResurrectAsShambler(c))

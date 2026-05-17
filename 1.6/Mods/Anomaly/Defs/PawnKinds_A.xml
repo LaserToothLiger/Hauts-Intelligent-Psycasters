@@ -207,7 +207,8 @@
 			<reinforcingFaction>HoraxCult</reinforcingFaction>
 			<deadlifePeriodicity>500</deadlifePeriodicity>
 			<deadlifeRadius>5.9</deadlifeRadius>
-			<effecter>Hauts_DarkPsychicShockwave</effecter>
+			<fleck>ShamblerRaiseSplatter</fleck>
+			<fleckScale>3</fleckScale>
 		  </li>
 		  <li Class="HediffCompProperties_DisappearsOnDeath"/>
 		</comps>
