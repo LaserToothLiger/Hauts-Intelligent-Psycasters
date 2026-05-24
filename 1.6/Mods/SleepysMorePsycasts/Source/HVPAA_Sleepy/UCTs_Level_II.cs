@@ -1,4 +1,5 @@
-﻿using HVPAA;
+﻿using HautsFramework;
+using HVPAA;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,76 @@ using Verse.AI;
 namespace HVPAA_Sleepy
 {
     //see comments in Psycasts_Patch_Royalty.xml, as well as comments in UCT_0Basic.xml
+    public class UseCaseTags_Chemskip : UseCaseTags
+    {
+        public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            if (psycast.pawn.Faction == null || !Rand.Chance(this.chance))
+            {
+                return 0f;
+            }
+            List<Thing> list = psycast.pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.Corpse);
+            if (list.Count > 0)
+            {
+                foreach (Thing t in list)
+                {
+                    if (t is Corpse corpse && corpse.InnerPawn != null && corpse.InnerPawn.Faction != null && corpse.InnerPawn.Faction.HostileTo(psycast.pawn.Faction))
+                    {
+                        WorldComponent_HautsDelayedResurrections WCDR = (WorldComponent_HautsDelayedResurrections)Find.World.GetComponent(typeof(WorldComponent_HautsDelayedResurrections));
+                        if (WCDR != null && WCDR.CorpseHasDelayedResurrection(corpse))
+                        {
+                            return base.PriorityScoreDamage(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+                        }
+                        if (ModsConfig.AnomalyActive)
+                        {
+                            Hediff_DeathRefusal deathres = corpse.InnerPawn.health.hediffSet.GetFirstHediff<Hediff_DeathRefusal>();
+                            if (deathres != null)
+                            {
+                                return base.PriorityScoreDamage(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+                            }
+                        }
+                    }
+                }
+            }
+            return 0f;
+        }
+        public override float ApplicabilityScoreDamage(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Thing corpse = this.FindBestThingTarget(intPsycasts, psycast.ability, niceToEvil, 1, out Dictionary<Thing, float> thingTargets);
+            if (corpse != null)
+            {
+                psycast.lti = corpse;
+                return thingTargets.TryGetValue(corpse) * 2f;
+            }
+            return 0f;
+        }
+        public override float ThingApplicability(Psycast psycast, Thing t, float niceToEvil, int useCase = 1)
+        {
+            if (t is Corpse corpse && corpse.InnerPawn != null && corpse.InnerPawn.Faction != null && corpse.InnerPawn.Faction.HostileTo(psycast.pawn.Faction))
+            {
+                WorldComponent_HautsDelayedResurrections WCDR = (WorldComponent_HautsDelayedResurrections)Find.World.GetComponent(typeof(WorldComponent_HautsDelayedResurrections));
+                if (WCDR != null && WCDR.CorpseHasDelayedResurrection(corpse))
+                {
+                    return this.CorpseMarketValue(corpse.InnerPawn);
+                }
+                if (ModsConfig.AnomalyActive)
+                {
+                    Hediff_DeathRefusal deathres = corpse.InnerPawn.health.hediffSet.GetFirstHediff<Hediff_DeathRefusal>();
+                    if (deathres != null)
+                    {
+                        return this.CorpseMarketValue(corpse.InnerPawn);
+                    }
+                }
+            }
+            return 0f;
+        }
+        public float CorpseMarketValue(Pawn pawn)
+        {
+            return Math.Max(pawn.MarketValue, pawn.def.BaseMarketValue) - this.minMarketValue;
+        }
+        public float chance;
+        public float minMarketValue;
+    }
     public class UseCaseTags_ThisIsHowWeHeal : UseCaseTags
     {
         public override float PriorityScoreHealing(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)

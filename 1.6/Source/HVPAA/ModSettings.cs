@@ -35,8 +35,9 @@ namespace HVPAA
             Scribe_Values.Look(ref psycastAttemptInterval, "psycastAttemptInterval", 500f);
             Scribe_Values.Look(ref maxChoicesPerAttempt, "maxChoicesPerAttempt", 3f);
             Scribe_Values.Look(ref showNPCasterLevel, "showNPCasterLevel", true);
-            Scribe_Values.Look(ref showNPCasterLevel, "showNPCasterLevel", true);
+            Scribe_Values.Look(ref mostDangerousNotifs, "mostDangerousNotifs", true);
             Scribe_Values.Look(ref powerLimiting, "powerLimiting", true);
+            Scribe_Values.Look(ref nicerPsycasters, "nicerPsycasters", true);
             Scribe_Values.Look(ref psycasterCommonalityFactor, "psycasterCommonalityFactor", 100f);
             Scribe_Collections.Look<string, bool>(ref this.hostileUsabilities, "hostileUsabilities", LookMode.Value, LookMode.Value, ref this.castablePsycasts, ref this.hostileUseRecord, true, false, false);
             Scribe_Collections.Look<string, bool>(ref this.nonhostileUsabilities, "nonhostileUsabilities", LookMode.Value, LookMode.Value, ref this.castablePsycasts, ref this.nonhostileUseRecord, true, false, false);

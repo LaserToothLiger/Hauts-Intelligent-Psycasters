@@ -541,12 +541,12 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_Sensitize"]</xpath>
 					<value>
-						<li Class="HVPAA_HOP.UseCaseTags_Sensitize">
+						<li Class="HVPAA.UseCaseTags_MyStrengthIsYours">
 							<defense>true</defense>
 							<utility>true</utility>
 							<avoidTargetsWithHediff>HVP_SensitizeBuff</avoidTargetsWithHediff>
 							<dontCastIfSufferingFrom>HVP_SensitizeNerf</dontCastIfSufferingFrom>
-							<ownEntropyCost>10</ownEntropyCost>
+							<ownEntropyCost>10</ownEntropyCost><!--when calculating how much neural heat the caster has, deduct this much.-->
 						</li>
 					</value>
 				</li>
@@ -1232,6 +1232,17 @@ Level 1 psycasts-->
 				</li>
 				<!--level 2-->
 				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Chemskip"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Chemskip">
+							<damage>true</damage>
+							<mfds><li>Morbid</li></mfds>
+							<chance>0.2</chance>
+							<minMarketValue>700</minMarketValue>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="SLP_PSY_HealingBoost"]</xpath>
 					<value>
 						<li Class="HVPAA_Sleepy.UseCaseTags_ThisIsHowWeHeal">
@@ -1299,12 +1310,14 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ComfortShield"]</xpath>
 					<value>
-						<li Class="HVPAA_Sleepy.UseCaseTags_ComfortShield">
+						<li Class="HVPAA.UseCaseTags_ElementalShield_Melee">
 							<healing>true</healing>
 							<avoidTargetsWithHediff>SLP_ComfortShield</avoidTargetsWithHediff>
 							<usableWhileAsleep>true</usableWhileAsleep>
 							<aoe>20</aoe>
 							<requiresLoS>false</requiresLoS>
+							<helpsVsHeat>true</helpsVsHeat><!--enables it to care about prospective targets w insufficient max comfy temp-->
+							<helpsVsChill>true</helpsVsChill><!--for min comfy temp-->
 						</li>
 					</value>
 				</li>
@@ -1597,6 +1610,256 @@ Level 1 psycasts-->
 							<scoreFactor>0.65</scoreFactor><!--we want this to be marginally less lucrative than Skip (the level 6 to 4 differential means this is 150% as valuable), but it's like 3x as expensive so it should only be used over Skip when doing things Skip can't-->
 							<skipRange>38.9</skipRange><!--mirrors "range" in CompProperties_AbilityTeleport-->
 							<maxBodySize>99</maxBodySize>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Sleepy's More Psycasts - Volume 2</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Guidance"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV2.UseCaseTags_Guidance">
+							<utility>true</utility>
+							<aoe>20</aoe><!--Word castrange-->
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<dontCastBelowThisPsyfocus>0.6</dontCastBelowThisPsyfocus><!--this thing is reasonably expensive for player casting, but for NPCs it has basically no worth other than pissing their (largely non-regenerating) psyfocus down the drain
+																							for your POSSIBLE benefit. since it costs 25%, this ensures they can basically only cast it once, and it'll leave most of their other psycasts castable thereafter-->
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Resonance"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV2.UseCaseTags_MyStrengthIsYours_Melee">
+							<defense>true</defense>
+							<utility>true</utility>
+							<aoe>20</aoe><!--Word castrange-->
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_ResonanceTarget</avoidTargetsWithHediff>
+							<ownValueMultiplier>3</ownValueMultiplier><!--since this thing costs an obscene amount of psyfocus, a candidate must have over this times the net neural heat and psyfocus costs of their own psycasts to be a good target-->
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Command"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Disarm">
+							<debuff>true</debuff>
+							<mfds><li>Minimal</li></mfds>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Extinguish"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Waterskip">
+							<healing>true</healing>
+							<antiFlame>true</antiFlame>
+							<aoe>4.9</aoe>
+							<usableWhileAsleep>true</usableWhileAsleep><!--you should wake up to help put out fires-->
+							<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_HealingBloom"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV2.UseCaseTags_HealAoE">
+							<healing>true</healing>
+							<aoe>3.9</aoe>
+							<avoidTargetsWithHediff>SLP_Psycast_HealingBloom</avoidTargetsWithHediff>
+							<antiDisease>true</antiDisease>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Biotech</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<!--level 2-->
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="SLP_PSY_BeastBond"]</xpath>
+								<value>
+									<li Class="HVPAA_SleepyV2.UseCaseTags_BeastBond">
+										<defense>true</defense>
+										<mfds><li>Natural</li></mfds>
+										<!--<animalRightsViolation>true</animalRightsViolation> yttakin use the non-psycast version all the time, and they're typically Animal Personhood believers, so this should be fine?-->
+										<canTargetTameAnimals>false</canTargetTameAnimals><!--it can't target NPC animals, but the vanilla mechanism can for some reason theoretically target player animals. I target ANY faction-owned pawn please and thank you-->
+									</li>
+								</value>
+							</li>
+							<!--level 4-->
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="SLP_PSY_GasPop"]</xpath>
+								<value>
+									<li Class="HVPAA_SleepyV2.UseCaseTags_Gaspop">
+										<damage>true</damage>
+										<mfds><li>Morbid</li><li>Natural</li></mfds>
+										<aoe>3.5</aoe>
+										<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less EMP friendly fire. does mean you also see slightly less use of it in tight melees-->
+										<trapPower>4</trapPower>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Sleepy's More Psycasts - Volume 3</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Hex"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Hex">
+							<debuff>true</debuff>
+							<avoidTargetsWithHediff>SLP_Psycast_Hex</avoidTargetsWithHediff>
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Clairvoyance"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Clairvoyance">
+							<defense>true</defense>
+							<aoe>3</aoe><!--Word castrange but way shorter. Rarely worth the added travel time and risk to dap up a faraway ally-->
+							<avoidTargetsWithHediff>SLP_Psycast_Clairvoyance</avoidTargetsWithHediff>
+							<sufficientDodgeChanceToIgnore>0.3</sufficientDodgeChanceToIgnore><!--past this point, additional melee dodge chance has reduced effect, so we don't give the buff to people who already have this much-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Fireshield"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ElementalShield_Melee">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>SLP_Psycast_Fireshield</avoidTargetsWithHediff>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<helpsVsFire>true</helpsVsFire><!--makes it heavily prioritize anyone currently aflame and enables it to be used during combat-->
+							<helpsVsHeat>true</helpsVsHeat><!--enables it to care about prospective targets w insufficient max comfy temp-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Sniper"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Sniper">
+							<defense>true</defense>
+							<aoe>3</aoe><!--Word castrange but way shorter. Rarely worth the added travel time and risk to dap up a faraway ally-->
+							<avoidTargetsWithHediff>SLP_Psycast_Sniper</avoidTargetsWithHediff>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Frostbite"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_TemperatureAttack">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+							<avoidExtant>Hypothermia</avoidExtant>
+							<avoidExtantIfThisSevere>0.25</avoidExtantIfThisSevere><!--these abilities have long cast times, and they set the severity to 50% regardless of what it was before. Therefore, I think pawns who already have 25% of the relevant health condition are a waste to target-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ThermalShock"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_TemperatureAttack">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+							<avoidExtant>Heatstroke</avoidExtant>
+							<avoidExtantIfThisSevere>0.25</avoidExtantIfThisSevere>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Huntersmark"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_DurabilityNerf">
+							<debuff>true</debuff>
+							<mfds><li>Morbid</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_HuntersMark</avoidTargetsWithHediff>
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Hypervelocity"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Hypervelocity">
+							<defense>true</defense>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<aoe>3</aoe><!--Word castrange but way shorter. Rarely worth the added travel time and risk to dap up a faraway ally-->
+							<avoidTargetsWithHediff>SLP_Psycast_Hypervelocity</avoidTargetsWithHediff>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_MassHex"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_MassHex">
+							<debuff>true</debuff>
+							<aoe>2.5</aoe>
+							<avoidTargetsWithHediff>SLP_Psycast_Hex</avoidTargetsWithHediff>
+							<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less Blinding Pulsing friendly fire. does mean you also see slightly less use of it in tight melees-->
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ParalysingPunch"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_VulcanNervePinch">
+							<debuff>true</debuff>
+							<aoe>5</aoe><!--much shorter than Word castrange. RimWorld combat is like WWI, and you are not the 1917 guy. You aren't. If you get up to go somewhere it better be a short effin trip-->
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Minimal</li></mfds>
+							<chance>0.2</chance><!--only applies if baby mode is on-->
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Firestorm"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_FIYAH">
+							<damage>true</damage>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<aoe>4.5</aoe>
+							<ignoreAllPawnsFasterThan>9</ignoreAllPawnsFasterThan>
+							<trapPower>4</trapPower>
 						</li>
 					</value>
 				</li>
@@ -2389,7 +2652,7 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="FSFDisarm"]</xpath>
 					<value>
-						<li Class="HVPAA_FSF.UseCaseTags_Disarm">
+						<li Class="HVPAA.UseCaseTags_Disarm">
 							<debuff>true</debuff>
 							<mfds><li>Minimal</li></mfds>
 							<trapPower>2</trapPower>
@@ -2414,10 +2677,14 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="FSFElementalShield"]</xpath>
 					<value>
-						<li Class="HVPAA_FSF.UseCaseTags_ElementalShield">
+						<li Class="HVPAA.UseCaseTags_ElementalShield">
 							<healing>true</healing>
 							<avoidTargetsWithHediff>FSFElementalShield</avoidTargetsWithHediff>
 							<usableWhileAsleep>true</usableWhileAsleep>
+							<helpsVsFire>true</helpsVsFire><!--makes it heavily prioritize anyone currently aflame and enables it to be used during combat-->
+							<helpsVsHeat>true</helpsVsHeat><!--enables it to care about prospective targets w insufficient max comfy temp-->
+							<helpsVsChill>true</helpsVsChill><!--for min comfy temp-->
+							<helpsVsTox>true</helpsVsTox><!--anyone suffering tox buildup-->
 						</li>
 					</value>
 				</li>

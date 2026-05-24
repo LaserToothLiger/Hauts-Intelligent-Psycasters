@@ -10,40 +10,6 @@ using Verse.AI;
 namespace HVPAA_Sleepy
 {
     //see comments in Psycasts_Patch_Royalty.xml, as well as comments in UCT_0Basic.xml
-    public class UseCaseTags_ComfortShield : UseCaseTags
-    {
-        public override float PriorityScoreHealing(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
-        {
-            if (situationCase == 1)
-            {
-                return 0f;
-            }
-            return base.PriorityScoreHealing(psycast, situationCase, pacifist, niceToEvil, usableFoci);
-        }
-        public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 4, out Dictionary<Pawn, float> pawnTargets);
-            if (pawn != null)
-            {
-                psycast.lti = pawn;
-                return pawnTargets.TryGetValue(pawn);
-            }
-            return 0f;
-        }
-        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
-        {
-            return !p.RaceProps.IsFlesh || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || !p.Map.reachability.CanReach(psycast.pawn.Position, p.Position, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false, false, false));
-        }
-        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
-        {
-            return Math.Min(p.GetStatValue(StatDefOf.PsychicSensitivity), 2f) * Math.Max(p.GetStatValue(StatDefOf.ComfyTemperatureMin) - p.AmbientTemperature,p.AmbientTemperature - p.GetStatValue(StatDefOf.ComfyTemperatureMax));
-        }
-        public override float Range(Psycast psycast)
-        {
-            return this.aoe * psycast.pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving);
-        }
-        public float painOffset;
-    }
     public class UseCaseTags_Dash : UseCaseTags
     {
         public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)

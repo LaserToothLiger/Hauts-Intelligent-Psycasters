@@ -10,13 +10,16 @@ using Verse.AI;
 namespace HVPAA
 {
     /*see comments in Psycasts_Patch_Royalty.xml, as well as comments in UCT_0Basic.xml
-     * ArcticPinhole: Sleepy's More Psycasts (Arctic and Endothermic Pinhole), [FSF] More Psycast Powers (Arctic Pinhole)
+     * ArcticPinhole: [FSF] More Psycast Powers (Arctic Pinhole), Sleepy's More Psycasts (Arctic and Endothermic Pinhole)
      * BloodStaunch: Sleepy's and FSF's Haemostasis
-     * Dart: Sleepy's Dart, Cooler Psycasts' Meteor
+     * Dart: Cooler Psycasts' Meteor, Sleepy's Dart
+     * Disarm: FSF's Disarm, Sleepy's Vol 2's Command
      * DurabilityBuff: Extra Psycasts' Fortitude, FSF's Steelskin
-     * EMPPulse: Sleepy's Static Burst, FSF's EMP Pulse
+     * ElementalShield: FSF's Elemental Shield, Sleepy's Comfort Shield, Sleepy's Vol 3's Fire Shield (the latter two use a Word-like melee derivative)
+     * EMPPulse: FSF's EMP Pulse, Sleepy's Static Burst
      * Entomb: More Psycasts' Entomb, FSF's Entomb
-     * FIYAH: Sleepy's Engulf, FSF's Flamebolt
+     * FIYAH: FSF's Flamebolt, Sleepy's Engulf, Sleepy's Vol 3's Firestorm
+     * MyStrengthIsYours: HOP's Sensitize, Sleepy's Vol 2's Resonance (uses a Word-like melee derivative)
      * SinkholeSkip: Cooler Psycasts' Trapraise, HOP's Sinkhole Skip
      * XavierAttack: Extra Psycasts' Psychic Lance, FSF's Psychic Shock*/
     public class UseCaseTags_ArcticPinhole : UseCaseTags
@@ -333,6 +336,55 @@ namespace HVPAA
         }
         public int minFertilizableCells;
     }
+    public class UseCaseTags_Disarm : UseCaseTags
+    {
+        public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            return p.stances.stunner.Stunned || p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.equipment == null || p.equipment.Primary == null;
+        }
+        public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            float app = 0f;
+            Pawn_EquipmentTracker pet = p.equipment;
+            if (pet != null && pet.Primary != null)
+            {
+                bool melee = !pet.Primary.def.IsRangedWeapon;
+                foreach (Pawn p2 in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, 1.42f, true).OfType<Pawn>().Distinct<Pawn>())
+                {
+                    if (p2.HostileTo(p))
+                    {
+                        melee = true;
+                    }
+                }
+                List<VerbProperties> list = pet.Primary.def.Verbs;
+                List<Tool> list2 = pet.Primary.def.tools;
+                if (!melee)
+                {
+                    app = pet.Primary.MarketValue * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) * p.GetStatValue(StatDefOf.AimingDelayFactor) * p.GetStatValue(StatDefOf.RangedCooldownFactor) / 100f;
+                } else if (list != null && list2 != null) {
+                    app = (from x in VerbUtility.GetAllVerbProperties(list, list2)
+                           where x.verbProps.IsMeleeAttack
+                           select x).AverageWeighted((VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, p, pet.Primary, null, false), (VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeDamageAmount(x.tool, p, pet.Primary, null));
+                    float cd = (from x in VerbUtility.GetAllVerbProperties(list, list2)
+                                where x.verbProps.IsMeleeAttack
+                                select x).AverageWeighted((VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, p, pet.Primary, null, false), (VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedCooldown(x.tool, p, pet.Primary));
+                    app /= cd;
+                }
+                app *= (p.CurJob != null && p.CurJob.verbToUse != null ? 0.5f : 0.25f);
+            }
+            return p.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation) * app;
+        }
+        public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
+            if (pawn != null)
+            {
+                psycast.lti = pawn;
+                return pawnTargets.TryGetValue(pawn);
+            }
+            return 0f;
+        }
+    }
     public class UseCaseTags_DurabilityBuff : UseCaseTags
     {
         public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
@@ -365,6 +417,71 @@ namespace HVPAA
                 return pawnTargets.TryGetValue(pawn);
             }
             return 0f;
+        }
+    }
+    public class UseCaseTags_ElementalShield : UseCaseTags
+    {
+        public override float PriorityScoreHealing(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            if (!this.helpsVsFire && situationCase == 1)
+            {
+                return 0f;
+            }
+            return base.PriorityScoreHealing(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+        }
+        public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 4, out Dictionary<Pawn, float> pawnTargets);
+            if (pawn != null)
+            {
+                psycast.lti = pawn;
+                return pawnTargets.TryGetValue(pawn);
+            }
+            return 0f;
+        }
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            return !p.RaceProps.IsFlesh || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
+        }
+        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            float worstCondition = 0f;
+            if (this.helpsVsChill)
+            {
+                worstCondition = Math.Max(worstCondition, p.GetStatValue(StatDefOf.ComfyTemperatureMin) - p.AmbientTemperature);
+            }
+            if (this.helpsVsHeat)
+            {
+                worstCondition = Math.Max(worstCondition, p.AmbientTemperature - p.GetStatValue(StatDefOf.ComfyTemperatureMax));
+            }
+            if (this.helpsVsTox)
+            {
+                p.health.hediffSet.TryGetHediff(HediffDefOf.ToxicBuildup, out Hediff tb);
+                if (tb != null)
+                {
+                    worstCondition += tb.Severity * 10f;
+                }
+            }
+            if (this.helpsVsFire && p.IsBurning())
+            {
+                worstCondition += 1000;
+            }
+            return Math.Min(p.GetStatValue(StatDefOf.PsychicSensitivity), 2f) * worstCondition;
+        }
+        bool helpsVsFire;
+        bool helpsVsHeat;
+        bool helpsVsChill;
+        bool helpsVsTox;
+    }
+    public class UseCaseTags_ElementalShield_Melee : UseCaseTags_ElementalShield
+    {
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            return base.OtherAllyDisqualifiers(psycast, p, useCase, initialTarget) || !p.Map.reachability.CanReach(psycast.pawn.Position, p.Position, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false, false, false));
+        }
+        public override float Range(Psycast psycast)
+        {
+            return this.aoe * psycast.pawn.health.capacities.GetLevel(PawnCapacityDefOf.Moving);
         }
     }
     public class UseCaseTags_EMPPulse : UseCaseTags
@@ -564,6 +681,103 @@ namespace HVPAA
             return 0f;
         }
         public float ignoreAllPawnsFasterThan;
+    }
+    public class UseCaseTags_MyStrengthIsYours : UseCaseTags
+    {
+        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
+        {
+            if ((useCase == 2 || useCase == 5) && !p.HasPsylink)
+            {
+                return true;
+            }
+            return p.Downed;
+        }
+        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            if (useCase == 2)
+            {
+                return this.SumNHcosts(p) - this.sumNeuralHeatCosts;
+            }
+            if (useCase == 5)
+            {
+                float result = this.SumUtilityCosts(p) - this.sumPsyfocusCosts;
+                return result;
+            }
+            return 0f;
+        }
+        public float SumNHcosts(Pawn pawn)
+        {
+            float sum = -this.ownEntropyCost;
+            if (pawn.abilities != null && pawn.psychicEntropy != null)
+            {
+                foreach (Ability a in pawn.abilities.abilities)
+                {
+                    if (a is Psycast pc && pc.def.PsyfocusCost <= pawn.psychicEntropy.CurrentPsyfocus + 0.0005f)
+                    {
+                        sum += a.def.EntropyGain;
+                    }
+                }
+            }
+            return sum;
+        }
+        public float SumUtilityCosts(Pawn pawn)
+        {
+            float sum = 0f;
+            if (pawn.abilities != null && pawn.psychicEntropy != null)
+            {
+                foreach (Ability a in pawn.abilities.abilities)
+                {
+                    if (a.def.HasModExtension<SensitizeScalar>() && a is Psycast pc && pc.def.PsyfocusCost <= pawn.psychicEntropy.CurrentPsyfocus + 0.0005f)
+                    {
+                        sum += a.def.PsyfocusCost;
+                    }
+                }
+            }
+            return sum;
+        }
+        public override float PriorityScoreDefense(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            if (this.dontCastIfSufferingFrom != null && psycast.pawn.health.hediffSet.HasHediff(this.dontCastIfSufferingFrom))
+            {
+                return 0f;
+            }
+            this.sumNeuralHeatCosts = this.SumNHcosts(psycast.pawn)*this.ownValueMultiplier;
+            return base.PriorityScoreDefense(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+        }
+        public override float ApplicabilityScoreDefense(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 2, out Dictionary<Pawn, float> pawnTargets);
+            if (pawn != null)
+            {
+                psycast.lti = pawn;
+                return pawnTargets.TryGetValue(pawn) * 5f;
+            }
+            return 0f;
+        }
+        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            if (this.dontCastIfSufferingFrom != null && psycast.pawn.health.hediffSet.HasHediff(this.dontCastIfSufferingFrom))
+            {
+                return 0f;
+            }
+            this.sumPsyfocusCosts = this.SumUtilityCosts(psycast.pawn)*this.ownValueMultiplier;
+            return base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+        }
+        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Pawn, float> pawnTargets);
+            if (pawn != null)
+            {
+                psycast.lti = pawn;
+                return pawnTargets.TryGetValue(pawn) * 5f;
+            }
+            return 0f;
+        }
+        public HediffDef dontCastIfSufferingFrom;
+        public float sumNeuralHeatCosts = 0f;
+        public float sumPsyfocusCosts = 0f;
+        public float ownEntropyCost;
+        public float ownValueMultiplier = 1f;
     }
     public class UseCaseTags_SinkholeSkip : UseCaseTags
     {

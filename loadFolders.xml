@@ -27,5 +27,7 @@
 		<li IfModActive="sleepy068.morepsycasts">1.6/Mods/SleepysMorePsycasts</li>
 		<li IfModActive="Mlie.MeleePsycasts">1.6/Mods/MeleePsycasts</li>
 		<li IfModActive="FrozenSnowFox.MorePsycastPowers">1.6/Mods/FSF_Psycasts</li>
+		<li IfModActive="sleepy068.morepsycastsvol2">1.6/Mods/SleepysV2</li>
+		<li IfModActive="sleepy068.morepsycastsvol3">1.6/Mods/SleepysV3</li>
 	</v1.6>
 </loadFolders>

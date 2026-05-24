@@ -27,16 +27,12 @@ namespace HVPAA
                     return app *= (p.skills.GetSkill(p.jobs.curDriver.ActiveSkill).Level - minUtilitySkillLevel);
                 }
                 return 0f;
-            }
-            else
-            {
+            } else {
                 app *= 2.5f;
                 if (p.equipment == null || p.equipment.Primary == null || !p.equipment.Primary.def.IsRangedWeapon)
                 {
                     app *= p.GetStatValue(StatDefOf.MeleeDPS);
-                }
-                else
-                {
+                } else {
                     app *= 10 * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
                 }
             }

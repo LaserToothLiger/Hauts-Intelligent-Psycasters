@@ -210,6 +210,31 @@ namespace HVPAA_EPC
         }
         public float ignoreAllPawnsFasterThan;
     }
+    public class UseCaseTags_Precog : UseCaseTags
+    {
+        public override float PriorityScoreDefense(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
+        {
+            if (psycast.pawn.WorkTagIsDisabled(WorkTags.Violent) || psycast.pawn.health.hediffSet.HasHediff(this.avoidTargetsWithHediff))
+            {
+                return 0f;
+            }
+            return base.PriorityScoreDefense(psycast, situationCase, pacifist, niceToEvil, usableFoci);
+        }
+        public override float ApplicabilityScoreDefense(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
+        {
+            float targets = 0f;
+            foreach (Pawn p in intPsycasts.foes)
+            {
+                if (p.Position.DistanceTo(intPsycasts.Pawn.Position) <= this.foeScanRange)
+                {
+                    targets += 0.1f;
+                }
+            }
+            psycast.lti = intPsycasts.Pawn;
+            return targets;
+        }
+        public float foeScanRange;
+    }
     public class UseCaseTags_SootheMind : UseCaseTags
     {
         public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
@@ -301,31 +326,6 @@ namespace HVPAA_EPC
             return 1f;
         }
         public float chanceToUtilityCast;
-    }
-    public class UseCaseTags_Precog : UseCaseTags
-    {
-        public override float PriorityScoreDefense(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
-        {
-            if (psycast.pawn.WorkTagIsDisabled(WorkTags.Violent) || psycast.pawn.health.hediffSet.HasHediff(this.avoidTargetsWithHediff))
-            {
-                return 0f;
-            }
-            return base.PriorityScoreDefense(psycast, situationCase, pacifist, niceToEvil, usableFoci);
-        }
-        public override float ApplicabilityScoreDefense(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            float targets = 0f;
-            foreach (Pawn p in intPsycasts.foes)
-            {
-                if (p.Position.DistanceTo(intPsycasts.Pawn.Position) <= this.foeScanRange)
-                {
-                    targets += 0.1f;
-                }
-            }
-            psycast.lti = intPsycasts.Pawn;
-            return targets;
-        }
-        public float foeScanRange;
     }
     public class UseCaseTags_Stasis : UseCaseTags
     {

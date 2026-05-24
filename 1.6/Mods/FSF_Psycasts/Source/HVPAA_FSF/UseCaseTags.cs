@@ -6,62 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using VEF;
 
 namespace HVPAA_FSF
 {
     //level 2
-    public class UseCaseTags_Disarm : UseCaseTags
-    {
-        public override bool OtherEnemyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
-        {
-            return p.stances.stunner.Stunned || p.Downed || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.equipment == null || p.equipment.Primary == null;
-        }
-        public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
-        {
-            float app = 0f;
-            Pawn_EquipmentTracker pet = p.equipment;
-            if (pet != null && pet.Primary != null)
-            {
-                bool melee = !pet.Primary.def.IsRangedWeapon;
-                foreach (Pawn p2 in GenRadial.RadialDistinctThingsAround(p.Position, p.Map, 1.42f, true).OfType<Pawn>().Distinct<Pawn>())
-                {
-                    if (p2.HostileTo(p))
-                    {
-                        melee = true;
-                    }
-                }
-                List<VerbProperties> list = pet.Primary.def.Verbs;
-                List<Tool> list2 = pet.Primary.def.tools;
-                if (!melee)
-                {
-                    app = pet.Primary.MarketValue * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) * p.GetStatValue(StatDefOf.AimingDelayFactor) * p.GetStatValue(StatDefOf.RangedCooldownFactor) / 100f;
-                }
-                else if (list != null && list2 != null)
-                {
-                    app = (from x in VerbUtility.GetAllVerbProperties(list, list2)
-                           where x.verbProps.IsMeleeAttack
-                           select x).AverageWeighted((VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, p, pet.Primary, null, false), (VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeDamageAmount(x.tool, p, pet.Primary, null));
-                    float cd = (from x in VerbUtility.GetAllVerbProperties(list, list2)
-                                where x.verbProps.IsMeleeAttack
-                                select x).AverageWeighted((VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedMeleeSelectionWeight(x.tool, p, pet.Primary, null, false), (VerbUtility.VerbPropertiesWithSource x) => x.verbProps.AdjustedCooldown(x.tool, p, pet.Primary));
-                    app /= cd;
-                }
-                app *= (p.CurJob != null && p.CurJob.verbToUse != null ? 0.5f : 0.25f);
-            }
-            return p.health.capacities.GetLevel(PawnCapacityDefOf.Manipulation)*app;
-        }
-        public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn pawn = this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
-            if (pawn != null)
-            {
-                psycast.lti = pawn;
-                return pawnTargets.TryGetValue(pawn);
-            }
-            return 0f;
-        }
-    }
     public class UseCaseTags_Frostbite : UseCaseTags
     {
         public override float PriorityScoreDamage(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
@@ -95,38 +43,6 @@ namespace HVPAA_FSF
         public float chanceToCastColonist;
         private bool canHitHumanlike;
         private bool canHitColonist;
-    }
-    //level 4
-    public class UseCaseTags_ElementalShield : UseCaseTags
-    {
-        public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 4, out Dictionary<Pawn, float> pawnTargets);
-            if (pawn != null)
-            {
-                psycast.lti = pawn;
-                return pawnTargets.TryGetValue(pawn);
-            }
-            return 0f;
-        }
-        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
-        {
-            return !p.RaceProps.IsFlesh || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
-        }
-        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
-        {
-            float worstCondition = Math.Max(0f,Math.Max(p.GetStatValue(StatDefOf.ComfyTemperatureMin) - p.AmbientTemperature, p.AmbientTemperature - p.GetStatValue(StatDefOf.ComfyTemperatureMax)));
-            p.health.hediffSet.TryGetHediff(HediffDefOf.ToxicBuildup, out Hediff tb);
-            if (tb != null)
-            {
-                worstCondition += tb.Severity * 10f;
-            }
-            if (p.IsBurning())
-            {
-                worstCondition += 1000;
-            }
-            return Math.Min(p.GetStatValue(StatDefOf.PsychicSensitivity), 2f) * worstCondition;
-        }
     }
     //level 5
     public class UseCaseTags_Fracture : UseCaseTags
@@ -288,26 +204,18 @@ namespace HVPAA_FSF
                     if (niceToEvil > 0f)
                     {
                         return 1f;
-                    }
-                    else if (niceToEvil < 0f)
-                    {
+                    } else if (niceToEvil < 0f) {
                         return 2f;
-                    }
-                    else
-                    {
+                    } else {
                         return 1.7f;
                     }
                 case 3:
                     if (niceToEvil > 0f)
                     {
                         return 1f;
-                    }
-                    else if (niceToEvil < 0f)
-                    {
+                    } else if (niceToEvil < 0f) {
                         return 2f;
-                    }
-                    else
-                    {
+                    } else {
                         return 1.7f;
                     }
                 default:
