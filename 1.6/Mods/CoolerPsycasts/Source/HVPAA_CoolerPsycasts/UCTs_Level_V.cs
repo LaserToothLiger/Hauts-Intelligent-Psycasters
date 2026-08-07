@@ -32,23 +32,17 @@ namespace HVPAA_CoolerPsycasts
                     if (t.HostileTo(psycast.pawn))
                     {
                         foeShooters.Add(t);
-                    }
-                    else if (HVPAA_DecisionMakingUtility.IsAlly(intPsycasts.niceToAnimals <= 0, psycast.pawn, t, niceToEvil))
-                    {
+                    } else if (HVPAA_DecisionMakingUtility.IsAlly(intPsycasts.niceToAnimals <= 0, psycast.pawn, t, niceToEvil)) {
                         allyShooters.Add(t);
                     }
-                }
-                else if (t is Pawn p)
-                {
+                } else if (t is Pawn p) {
                     if (intPsycasts.allies.Contains(p))
                     {
                         if (p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
                         {
                             allyShooters.Add(t);
                         }
-                    }
-                    else if (intPsycasts.foes.Contains(p))
-                    {
+                    } else if (intPsycasts.foes.Contains(p)) {
                         if (p.equipment != null && p.equipment.Primary != null && p.equipment.Primary.def.IsRangedWeapon)
                         {
                             foeShooters.Add(p);
@@ -179,9 +173,7 @@ namespace HVPAA_CoolerPsycasts
                         if (goNext)
                         {
                             continue;
-                        }
-                        else
-                        {
+                        } else {
                             return spot;
                         }
                     }
@@ -350,9 +342,7 @@ namespace HVPAA_CoolerPsycasts
                                     {
                                         pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2, false);
                                     }
-                                }
-                                else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                                {
+                                } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2)) {
                                     pTargetHits += this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2, false);
                                 }
                             }
@@ -476,9 +466,7 @@ namespace HVPAA_CoolerPsycasts
                 {
                     return 999999f;
                 }
-            }
-            else if (intPsycasts.Pawn.health.hediffSet.HasHediff(this.avoidTargetsWithHediff))
-            {
+            } else if (intPsycasts.Pawn.health.hediffSet.HasHediff(this.avoidTargetsWithHediff)) {
                 return 999999f;
             }
             return 0f;

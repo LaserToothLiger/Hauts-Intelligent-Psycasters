@@ -64,15 +64,11 @@ namespace HVPAA_CoolerPsycasts
                         {
                             return pawn.GetStatValue(StatDefOf.MeleeDPS);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         return CoverUtility.TotalSurroundingCoverScore(pawn.pather.curPath.LastNode, pawn.Map);
                     }
                 }
-            }
-            else if (pawn.health.hediffSet.HasHediff(this.avoidTargetsWithHediff))
-            {
+            } else if (pawn.health.hediffSet.HasHediff(this.avoidTargetsWithHediff)) {
                 return 999998f;
             }
             return 0f;

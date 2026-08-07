@@ -70,13 +70,9 @@ namespace HVPAA
             if (useCase == 3)
             {
                 return p.MarketValue;
-            }
-            else if (useCase == 4)
-            {
+            } else if (useCase == 4) {
                 return p.AmbientTemperature - p.GetStatValue(StatDefOf.ComfyTemperatureMax);
-            }
-            else if (useCase == 5)
-            {
+            } else if (useCase == 5) {
                 return 1f;
             }
             return 1f;
@@ -110,15 +106,11 @@ namespace HVPAA
                                 if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 3))
                                 {
                                     pTargetHits++;
-                                }
-                                else if (intPsycasts.foes.Contains(p2))
-                                {
+                                } else if (intPsycasts.foes.Contains(p2)) {
                                     if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 3))
                                     {
                                         pTargetHits++;
-                                    }
-                                    else if (p2.pather.Moving && HVPAA_DecisionMakingUtility.MovesFasterInLight(p2))
-                                    {
+                                    } else if (p2.pather.Moving && HVPAA_DecisionMakingUtility.MovesFasterInLight(p2)) {
                                         pTargetHits--;
                                     }
                                 }
@@ -280,16 +272,12 @@ namespace HVPAA
                                 {
                                     tryNewScore = 0f;
                                     break;
-                                }
-                                else if (psycast.pawn.Faction != null)
-                                {
+                                } else if (psycast.pawn.Faction != null) {
                                     if (thing is Building && (thing.Faction == null || !psycast.pawn.Faction.HostileTo(thing.Faction)))
                                     {
                                         tryNewScore = 0f;
                                         break;
-                                    }
-                                    else if (thing is Plant)
-                                    {
+                                    } else if (thing is Plant) {
                                         Zone zone = thing.Map.zoneManager.ZoneAt(thing.Position);
                                         if (zone != null && zone is Zone_Growing && !psycast.pawn.Faction.HostileTo(Faction.OfPlayerSilentFail))
                                         {
@@ -297,9 +285,7 @@ namespace HVPAA
                                             break;
                                         }
                                     }
-                                }
-                                else if (thing is Pawn p && !psycast.pawn.HostileTo(p))
-                                {
+                                } else if (thing is Pawn p && !psycast.pawn.HostileTo(p)) {
                                     tryNewScore = 0f;
                                 }
                             }
@@ -507,74 +493,7 @@ namespace HVPAA
             this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
             if (pawnTargets.Count > 0)
             {
-                List<Pawn> topTargets = this.TopTargets(5, pawnTargets);
-                if (topTargets.Count > 0)
-                {
-                    Pawn bestTarget = topTargets.First();
-                    IntVec3 bestTargetPos = bestTarget.Position;
-                    float bestTargetHits = 0f;
-                    foreach (Pawn p in topTargets)
-                    {
-                        float pTargetHits = 0f;
-                        foreach (Pawn p2 in (List<Pawn>)p.Map.mapPawns.AllPawnsSpawned)
-                        {
-                            if (p2.Position.DistanceTo(p.Position) <= this.aoe)
-                            {
-                                if (intPsycasts.foes.Contains(p2))
-                                {
-                                    if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 2))
-                                    {
-                                        pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                    }
-                                }
-                                else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                                {
-                                    pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                }
-                            }
-                        }
-                        if (pTargetHits > bestTargetHits)
-                        {
-                            bestTarget = p;
-                            bestTargetHits = pTargetHits;
-                        }
-                    }
-                    if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
-                    {
-                        bestTargetPos = bestTarget.Position;
-                        CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1.IsValid)
-                        {
-                            float pTargetHits = 0f;
-                            foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
-                            {
-                                if (p2.Position.DistanceTo(randAoE1) <= this.aoe)
-                                {
-                                    if (intPsycasts.foes.Contains(p2))
-                                    {
-                                        if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 2))
-                                        {
-                                            pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                        }
-                                    }
-                                    else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                                    {
-                                        pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                    }
-                                }
-                            }
-                            if (pTargetHits > bestTargetHits)
-                            {
-                                bestTargetPos = randAoE1;
-                                bestTargetHits = pTargetHits;
-                                psycast.lti = bestTargetPos;
-                                return bestTargetHits;
-                            }
-                        }
-                        psycast.lti = bestTarget;
-                        return bestTargetHits / 300f;
-                    }
-                }
+                return this.FindPulseTarget(intPsycasts, psycast, niceToEvil, pawnTargets) / 300f;
             }
             return 0f;
         }
@@ -606,9 +525,7 @@ namespace HVPAA
             if (p.equipment == null || p.equipment.Primary == null || !p.equipment.Primary.def.IsRangedWeapon)
             {
                 return p.GetStatValue(StatDefOf.MeleeDPS);
-            }
-            else
-            {
+            } else {
                 return 10 * p.GetStatValue(StatDefOf.ShootingAccuracyPawn) * p.GetStatValue(VEFDefOf.VEF_RangeAttackDamageFactor) / (p.GetStatValue(StatDefOf.RangedCooldownFactor) * p.equipment.Primary.GetStatValue(StatDefOf.RangedWeapon_Cooldown));
             }
         }
@@ -823,9 +740,7 @@ namespace HVPAA
                         if (goNext)
                         {
                             continue;
-                        }
-                        else
-                        {
+                        } else {
                             return spot;
                         }
                     }

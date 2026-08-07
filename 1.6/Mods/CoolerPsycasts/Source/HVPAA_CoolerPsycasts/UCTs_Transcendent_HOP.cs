@@ -202,74 +202,7 @@ namespace HVPAA_CoolerPsycasts
             this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
             if (pawnTargets.Count > 0)
             {
-                List<Pawn> topTargets = this.TopTargets(5, pawnTargets);
-                if (topTargets.Count > 0)
-                {
-                    Pawn bestTarget = topTargets.First();
-                    IntVec3 bestTargetPos = bestTarget.Position;
-                    float bestTargetHits = 0f;
-                    foreach (Pawn p in topTargets)
-                    {
-                        float pTargetHits = 0f;
-                        foreach (Pawn p2 in (List<Pawn>)p.Map.mapPawns.AllPawnsSpawned)
-                        {
-                            if (p2.Position.DistanceTo(p.Position) <= this.aoe)
-                            {
-                                if (intPsycasts.foes.Contains(p2))
-                                {
-                                    if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 2))
-                                    {
-                                        pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                    }
-                                }
-                                else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                                {
-                                    pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                }
-                            }
-                        }
-                        if (pTargetHits > bestTargetHits)
-                        {
-                            bestTarget = p;
-                            bestTargetHits = pTargetHits;
-                        }
-                    }
-                    if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
-                    {
-                        bestTargetPos = bestTarget.Position;
-                        CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1.IsValid)
-                        {
-                            float pTargetHits = 0f;
-                            foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
-                            {
-                                if (p2.Position.DistanceTo(randAoE1) <= this.aoe)
-                                {
-                                    if (intPsycasts.foes.Contains(p2))
-                                    {
-                                        if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 2))
-                                        {
-                                            pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                        }
-                                    }
-                                    else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                                    {
-                                        pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                    }
-                                }
-                            }
-                            if (pTargetHits > bestTargetHits)
-                            {
-                                bestTargetPos = randAoE1;
-                                bestTargetHits = pTargetHits;
-                                psycast.lti = bestTargetPos;
-                                return bestTargetHits;
-                            }
-                        }
-                        psycast.lti = bestTarget;
-                        return bestTargetHits;
-                    }
-                }
+                return this.FindPulseTarget(intPsycasts, psycast, niceToEvil, pawnTargets);
             }
             return 0f;
         }
@@ -367,26 +300,18 @@ namespace HVPAA_CoolerPsycasts
                             {
                                 tryNewScore += this.TornadoThingScore(plant);
                             }
-                        }
-                        else if (thing is Building b && b.Faction != null)
-                        {
+                        } else if (thing is Building b && b.Faction != null) {
                             if (f != b.Faction && f.HostileTo(b.Faction))
                             {
                                 tryNewScore += this.TornadoThingScore(b);
-                            }
-                            else if (niceToEvil > 0 || f == b.Faction || f.RelationKindWith(b.Faction) == FactionRelationKind.Ally)
-                            {
+                            } else if (niceToEvil > 0 || f == b.Faction || f.RelationKindWith(b.Faction) == FactionRelationKind.Ally) {
                                 tryNewScore -= this.TornadoThingScore(b);
                             }
-                        }
-                        else if (thing is Pawn p)
-                        {
+                        } else if (thing is Pawn p) {
                             if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast, p, 1))
                             {
                                 tryNewScore -= this.TornadoThingScore(p) * 1.5f;
-                            }
-                            else if (intPsycasts.foes.Contains(p) && !this.OtherEnemyDisqualifiers(psycast, p, 1))
-                            {
+                            } else if (intPsycasts.foes.Contains(p) && !this.OtherEnemyDisqualifiers(psycast, p, 1)) {
                                 tryNewScore += this.TornadoThingScore(p);
                             }
                         }
@@ -502,26 +427,18 @@ namespace HVPAA_CoolerPsycasts
                     if (niceToEvil > 0f)
                     {
                         return 1f;
-                    }
-                    else if (niceToEvil < 0f)
-                    {
+                    } else if (niceToEvil < 0f) {
                         return 2f;
-                    }
-                    else
-                    {
+                    } else {
                         return 1.7f;
                     }
                 case 3:
                     if (niceToEvil > 0f)
                     {
                         return 1f;
-                    }
-                    else if (niceToEvil < 0f)
-                    {
+                    } else if (niceToEvil < 0f) {
                         return 2f;
-                    }
-                    else
-                    {
+                    } else {
                         return 1.7f;
                     }
                 default:
@@ -542,9 +459,7 @@ namespace HVPAA_CoolerPsycasts
                         if (ModsConfig.AnomalyActive && (p.IsMutant || p.RaceProps.IsAnomalyEntity))
                         {
                             score += p.MarketValue / 250f;
-                        }
-                        else if (!p.kindDef.isBoss && p.GetStatValue(StatDefOf.PsychicSensitivity) > float.Epsilon)
-                        {
+                        } else if (!p.kindDef.isBoss && p.GetStatValue(StatDefOf.PsychicSensitivity) > float.Epsilon) {
                             score -= p.MarketValue / (niceToEvil > 0f ? 250f : 1000f);
                         }
                     }
@@ -554,9 +469,7 @@ namespace HVPAA_CoolerPsycasts
                     if (ModsConfig.AnomalyActive && (p.IsMutant || p.RaceProps.IsAnomalyEntity))
                     {
                         score -= p.MarketValue / 250f;
-                    }
-                    else if (!p.kindDef.isBoss && p.GetStatValue(StatDefOf.PsychicSensitivity) > float.Epsilon)
-                    {
+                    } else if (!p.kindDef.isBoss && p.GetStatValue(StatDefOf.PsychicSensitivity) > float.Epsilon) {
                         score += p.MarketValue / (niceToEvil > 0f ? 250f : 1000f);
                     }
                 }

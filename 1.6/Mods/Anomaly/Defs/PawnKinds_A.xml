@@ -151,6 +151,7 @@
         <Neanderthal MayRequire="Ludeon.RimWorld.Biotech">0.025</Neanderthal>
         <Pigskin MayRequire="Ludeon.RimWorld.Biotech">0.025</Pigskin>
         <OldOne MayRequire="ellit.IlkoftheOldOnes">0.025</OldOne>
+        <AV_Kosmian MayRequire="Veltaris.Kosmian">0.02</AV_Kosmian>
       </xenotypeChances>
     </xenotypeSet>
   </PawnKindDef>

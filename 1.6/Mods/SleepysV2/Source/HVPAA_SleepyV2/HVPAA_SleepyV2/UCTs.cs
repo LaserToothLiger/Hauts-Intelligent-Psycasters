@@ -132,70 +132,7 @@ namespace HVPAA_SleepyV2
             this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
             if (pawnTargets.Count > 0)
             {
-                List<Pawn> topTargets = this.TopTargets(5, pawnTargets);
-                if (topTargets.Count > 0)
-                {
-                    Pawn bestTarget = topTargets.First();
-                    IntVec3 bestTargetPos = bestTarget.Position;
-                    float bestTargetHits = 0f;
-                    foreach (Pawn p in topTargets)
-                    {
-                        float pTargetHits = 0f;
-                        foreach (Pawn p2 in (List<Pawn>)p.Map.mapPawns.AllPawnsSpawned)
-                        {
-                            if (p2.Position.DistanceTo(p.Position) <= this.aoe)
-                            {
-                                if (intPsycasts.foes.Contains(p2))
-                                {
-                                    if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 1))
-                                    {
-                                        pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 1);
-                                    }
-                                } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 1)) {
-                                    pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 1);
-                                }
-                            }
-                        }
-                        if (pTargetHits > bestTargetHits)
-                        {
-                            bestTarget = p;
-                            bestTargetHits = pTargetHits;
-                        }
-                    }
-                    if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
-                    {
-                        bestTargetPos = bestTarget.Position;
-                        CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1.IsValid)
-                        {
-                            float pTargetHits = 0f;
-                            foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
-                            {
-                                if (p2.Position.DistanceTo(randAoE1) <= this.aoe)
-                                {
-                                    if (intPsycasts.foes.Contains(p2))
-                                    {
-                                        if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, 1))
-                                        {
-                                            pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 1);
-                                        }
-                                    } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 1)) {
-                                        pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 1);
-                                    }
-                                }
-                            }
-                            if (pTargetHits > bestTargetHits)
-                            {
-                                bestTargetPos = randAoE1;
-                                bestTargetHits = pTargetHits;
-                                psycast.lti = bestTargetPos;
-                                return bestTargetHits;
-                            }
-                        }
-                        psycast.lti = bestTarget;
-                        return bestTargetHits / 300f;
-                    }
-                }
+                return this.FindPulseTarget(intPsycasts, psycast, niceToEvil, pawnTargets,1)/300f;
             }
             return 0f;
         }
@@ -233,63 +170,16 @@ namespace HVPAA_SleepyV2
             }
             return Math.Min(p.GetStatValue(StatDefOf.PsychicSensitivity), 2f) * iNeedHealing;
         }
+        public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            return 0f;
+        }
         public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
             this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 4, out Dictionary<Pawn, float> pawnTargets);
             if (pawnTargets.Count > 0)
             {
-                List<Pawn> topTargets = this.TopTargets(5, pawnTargets);
-                if (topTargets.Count > 0)
-                {
-                    Pawn bestTarget = topTargets.First();
-                    IntVec3 bestTargetPos = bestTarget.Position;
-                    float bestTargetHits = 0f;
-                    foreach (Pawn p in topTargets)
-                    {
-                        float pTargetHits = 0f;
-                        foreach (Pawn p2 in (List<Pawn>)p.Map.mapPawns.AllPawnsSpawned)
-                        {
-                            if (p2.Position.DistanceTo(p.Position) <= this.aoe)
-                            {
-                                if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2)) {
-                                    pTargetHits += this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                }
-                            }
-                        }
-                        if (pTargetHits > bestTargetHits)
-                        {
-                            bestTarget = p;
-                            bestTargetHits = pTargetHits;
-                        }
-                    }
-                    if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
-                    {
-                        bestTargetPos = bestTarget.Position;
-                        CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1.IsValid)
-                        {
-                            float pTargetHits = 0f;
-                            foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
-                            {
-                                if (p2.Position.DistanceTo(randAoE1) <= this.aoe)
-                                {
-                                    if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2)) {
-                                        pTargetHits += this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                    }
-                                }
-                            }
-                            if (pTargetHits > bestTargetHits)
-                            {
-                                bestTargetPos = randAoE1;
-                                bestTargetHits = pTargetHits;
-                                psycast.lti = bestTargetPos;
-                                return bestTargetHits;
-                            }
-                        }
-                        psycast.lti = bestTarget;
-                        return bestTargetHits / 300f;
-                    }
-                }
+                return this.FindPulseTarget(intPsycasts, psycast, niceToEvil, pawnTargets, 4, false);
             }
             return 0f;
         }

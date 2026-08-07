@@ -42,59 +42,16 @@ namespace HVPAA_HOP
             }
             return iNeedHealing > 0f ? iNeedHealing + 1f : 0f;
         }
+        public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
+        {
+            return 0f;
+        }
         public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
             this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 4, out Dictionary<Pawn, float> pawnTargets, this.Range(psycast.ability) + this.aoe);
             if (pawnTargets.Count > 0)
             {
-                List<Pawn> topTargets = this.TopTargets(5, pawnTargets);
-                if (topTargets.Count > 0)
-                {
-                    Pawn bestTarget = topTargets.First();
-                    IntVec3 bestTargetPos = bestTarget.Position;
-                    float bestTargetHits = 0f;
-                    foreach (Pawn p in topTargets)
-                    {
-                        float pTargetHits = 0f;
-                        foreach (Pawn p2 in intPsycasts.allies)
-                        {
-                            if (p2.Position.DistanceTo(p.Position) <= this.aoe && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                            {
-                                pTargetHits += pawnTargets.TryGetValue(p2);
-                            }
-                        }
-                        if (pTargetHits > bestTargetHits)
-                        {
-                            bestTarget = p;
-                            bestTargetHits = pTargetHits;
-                        }
-                    }
-                    if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
-                    {
-                        bestTargetPos = bestTarget.Position;
-                        CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
-                        if (randAoE1.IsValid)
-                        {
-                            float pTargetHits = 0f;
-                            foreach (Pawn p2 in intPsycasts.allies)
-                            {
-                                if (p2.Position.DistanceTo(randAoE1) <= this.aoe && !this.OtherAllyDisqualifiers(psycast.ability, p2, 2))
-                                {
-                                    pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, 2);
-                                }
-                            }
-                            if (pTargetHits > bestTargetHits)
-                            {
-                                bestTargetPos = randAoE1;
-                                bestTargetHits = pTargetHits;
-                                psycast.lti = bestTargetPos;
-                                return bestTargetHits;
-                            }
-                        }
-                        psycast.lti = bestTarget;
-                        return bestTargetHits;
-                    }
-                }
+                return this.FindPulseTarget(intPsycasts, psycast, niceToEvil, pawnTargets, 4, false);
             }
             return 0f;
         }

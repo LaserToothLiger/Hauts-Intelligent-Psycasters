@@ -94,9 +94,7 @@ namespace HVPAA_CoolerPsycasts
                                 if (intPsycasts.allies.Contains(pawn))
                                 {
                                     tryNewScore -= this.allyMultiplier * p.DamageAmount;
-                                }
-                                else if (intPsycasts.foes.Contains(pawn))
-                                {
+                                } else if (intPsycasts.foes.Contains(pawn)) {
                                     tryNewScore += p.DamageAmount;
                                 }
                             }

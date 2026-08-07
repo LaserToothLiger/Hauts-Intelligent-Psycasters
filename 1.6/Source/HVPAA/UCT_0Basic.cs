@@ -273,6 +273,81 @@ namespace HVPAA
             positionTargets = new Dictionary<IntVec3, float>();
             return IntVec3.Invalid;
         }
+        /*a very specific algorithm for finding the best target of a 'Pulse'-type AoE ability.
+         * has arguments identical to an ApplicabilityScore method, since it's intended to be plugged into one.
+         * pawnTargets: a list of pawns (e.g. FindEnemyPawnTarget result) who will then undergo a second round of evaluation
+         * topTargetCutoff: AoE checks are obviously costly, so we bottleneck the number of pawnTargets that actually get pulse-evaluated to just the topTargetCutoff highest-applicability-scored.
+         * Each pulse-evaluation happens on one of these pawns, trying to sum the net applicability of everything that would be hit in an AoE centered on that pawn.
+         * A final pulse-evaluation happens on a random in-range point, which could plausibly yield a better result than centering the AoE on a single target.
+         * hitFoesNotAllies: if true, foes contribute to a pulse-eval's applicability and allies detract from it. If false, the reverse occurs*/
+        public virtual float FindPulseTarget(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil, Dictionary<Pawn,float> pawnTargets, int useCase = 3, bool hitFoesNotAllies = true, int topTargetCutoff = 5)
+        {
+            List<Pawn> topTargets = this.TopTargets(topTargetCutoff, pawnTargets);
+            if (topTargets.Count > 0)
+            {
+                Pawn bestTarget = topTargets.First();
+                IntVec3 bestTargetPos = bestTarget.Position;
+                float bestTargetHits = 0f;
+                foreach (Pawn p in topTargets)
+                {
+                    float pTargetHits = 0f;
+                    foreach (Pawn p2 in (List<Pawn>)p.Map.mapPawns.AllPawnsSpawned)
+                    {
+                        if (p2.Position.DistanceTo(p.Position) <= this.aoe)
+                        {
+                            if (intPsycasts.foes.Contains(p2))
+                            {
+                                if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, useCase))
+                                {
+                                    pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, useCase) *(hitFoesNotAllies?1f:-1f);
+                                }
+                            } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, useCase)) {
+                                pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, useCase) * (hitFoesNotAllies ? 1f : -1f);
+                            }
+                        }
+                    }
+                    if (pTargetHits > bestTargetHits)
+                    {
+                        bestTarget = p;
+                        bestTargetHits = pTargetHits;
+                    }
+                }
+                if (bestTarget != null && pawnTargets.TryGetValue(bestTarget) > 0f)
+                {
+                    bestTargetPos = bestTarget.Position;
+                    CellFinder.TryFindRandomCellNear(topTargets.RandomElement().Position, bestTarget.Map, (int)this.aoe, null, out IntVec3 randAoE1);
+                    if (randAoE1.IsValid)
+                    {
+                        float pTargetHits = 0f;
+                        foreach (Pawn p2 in (List<Pawn>)bestTarget.Map.mapPawns.AllPawnsSpawned)
+                        {
+                            if (p2.Position.DistanceTo(randAoE1) <= this.aoe)
+                            {
+                                if (intPsycasts.foes.Contains(p2))
+                                {
+                                    if (!this.OtherEnemyDisqualifiers(psycast.ability, p2, useCase))
+                                    {
+                                        pTargetHits += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, useCase) * (hitFoesNotAllies ? 1f : -1f);
+                                    }
+                                } else if (intPsycasts.allies.Contains(p2) && !this.OtherAllyDisqualifiers(psycast.ability, p2, useCase)) {
+                                    pTargetHits -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p2, niceToEvil, useCase) * (hitFoesNotAllies ? 1f : -1f);
+                                }
+                            }
+                        }
+                        if (pTargetHits > bestTargetHits)
+                        {
+                            bestTargetPos = randAoE1;
+                            bestTargetHits = pTargetHits;
+                            psycast.lti = bestTargetPos;
+                            return bestTargetHits;
+                        }
+                    }
+                    psycast.lti = bestTarget;
+                    return bestTargetHits;
+                }
+            }
+            return 0f;
+        }
         //returns a pawn from the given dictionary, weighted by its corresponding value. Used by FindEnemy|AllyPawnTarget
         public virtual Pawn BestPawnFound(Dictionary<Pawn, float> pawnTargets)
         {

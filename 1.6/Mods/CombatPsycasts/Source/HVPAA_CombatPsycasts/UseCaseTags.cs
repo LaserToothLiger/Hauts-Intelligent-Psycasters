@@ -122,9 +122,7 @@ namespace HVPAA_CombatPsycasts
                             {
                                 tryNewScore -= this.ThingApplicability(psycast, b, niceToEvil, 1);
                             }
-                        }
-                        else if (thing is Pawn p)
-                        {
+                        } else if (thing is Pawn p) {
                             if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast, p, 1))
                             {
                                 tryNewScore -= this.PawnEnemyApplicability(intPsycasts, psycast, p, niceToEvil, 1);

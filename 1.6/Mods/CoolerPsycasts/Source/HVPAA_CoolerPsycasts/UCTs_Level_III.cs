@@ -12,8 +12,7 @@ using Verse.AI.Group;
 namespace HVPAA_CoolerPsycasts
 {
     /*see comments in Psycasts_Patch_Royalty.xml, as well as comments in UCT_0Basic.xml
-     * SpawnWithHediffAI is for Illusion, endowing the created pawn with a Lord AI to escort its creator. Of course, this only triggers if the Illusion isn't of the player faction
-     */
+     * SpawnWithHediffAI is for Illusion, endowing the created pawn with a Lord AI to escort its creator. Of course, this only triggers if the Illusion isn't of the player faction*/
     public class UseCaseTags_ChunkSkip : UseCaseTags
     {
         public override float MetaApplicability(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, List<PotentialPsycast> psycasts, int situationCase, float niceToEvil)
@@ -74,9 +73,7 @@ namespace HVPAA_CoolerPsycasts
                         return 0f;
                     }
                     return allyOrFoe * t.MarketValue * HautsMiscUtility.DamageFactorFor(this.damageType, t) / 200f;
-                }
-                else if (this.canTargetHB)
-                {
+                } else if (this.canTargetHB) {
                     return allyOrFoe * t.MarketValue * HautsMiscUtility.DamageFactorFor(this.damageType, t) / 1000f;
                 }
             }
@@ -150,14 +147,10 @@ namespace HVPAA_CoolerPsycasts
                                     {
                                         applicability += this.PawnEnemyApplicability(intPsycasts, psycast.ability, p, niceToEvil, 2);
                                     }
-                                }
-                                else if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast.ability, p, 2))
-                                {
+                                } else if (intPsycasts.allies.Contains(p) && !this.OtherAllyDisqualifiers(psycast.ability, p, 2)) {
                                     applicability -= this.PawnAllyApplicability(intPsycasts, psycast.ability, p, niceToEvil, 2);
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 applicability += this.ThingApplicability(psycast.ability, t3, niceToEvil, 1);
                             }
                         }
@@ -323,9 +316,7 @@ namespace HVPAA_CoolerPsycasts
                             if (intPsycasts.foes.Contains(p2))
                             {
                                 multi += p2.GetStatValue(StatDefOf.IncomingDamageFactor) * HautsMiscUtility.DamageFactorFor(this.damageDef, p2);
-                            }
-                            else if (intPsycasts.allies.Contains(p2))
-                            {
+                            } else if (intPsycasts.allies.Contains(p2)) {
                                 multi -= this.allyMultiplier * p2.GetStatValue(StatDefOf.IncomingDamageFactor) * HautsMiscUtility.DamageFactorFor(this.damageDef, p2);
                             }
                         }
