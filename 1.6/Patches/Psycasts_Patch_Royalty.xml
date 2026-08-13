@@ -117,7 +117,7 @@ Level 1 psycasts-->
 		<value>
 			<li Class="HVPAA.UseCaseTags_Waterskip">
 				<healing>true</healing>
-				<mfds><li>Natural</li></mfds>
+				<mfds><li>Natural</li><li MayRequire="Arquebus.StagzMerfolk">Stagz_Water</li></mfds>
 				<antiFlame>true</antiFlame>
 				<aoe>1.9</aoe>
 				<usableWhileAsleep>true</usableWhileAsleep><!--you should wake up to help put out fires-->
@@ -2002,7 +2002,7 @@ Level 1 psycasts-->
 					<value>
 						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_InduceRain">
 							<healing>true</healing>
-							<mfds><li>Natural</li></mfds>
+							<mfds><li>Natural</li><li MayRequire="Arquebus.StagzMerfolk">Stagz_Water</li></mfds>
 							<antiFlame>true</antiFlame>
 							<usableWhileAsleep>true</usableWhileAsleep><!--you should wake up to help put out fires-->
 						</li>
