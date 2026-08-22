@@ -165,7 +165,7 @@ namespace HVPAA
         //Self-directed trait prevents you from issuing direct orders to a pawn. Not from giving them schedules, restrictions, etc. though
         public static void HVPAA_IsColonistPlayerControlledPostfix(Pawn __instance, ref bool __result)
         {
-            if (__result == true && SellcastUtility.IsSelfDirected(__instance))
+            if (__result && SellcastUtility.IsSelfDirected(__instance))
             {
                 __result = false;
             }

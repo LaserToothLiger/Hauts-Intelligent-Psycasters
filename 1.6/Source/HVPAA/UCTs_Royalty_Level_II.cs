@@ -143,7 +143,7 @@ namespace HVPAA
                                 }
                                 if ((t is Pawn p && intPsycasts.foes.Contains(p)) || (f != null && ((t.Faction != null && f.HostileTo(t.Faction)) || (t is Plant p2 && HVPAA_DecisionMakingUtility.IsPlantInHostileFactionGrowZone(p2, f)))))
                                 {
-                                    numFires--;
+                                    numFires -= 4;
                                 }
                             }
                         }
