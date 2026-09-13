@@ -33,6 +33,7 @@ Level 1 psycasts-->
 				<debuff>true</debuff>
 				<mfds><li>Morbid</li></mfds>
 				<trapPower>2</trapPower>
+				<marketValueDivisor>500</marketValueDivisor><!--although this is applied equally to all candidate targets w/in Stun's target selection, it is helpful to scale Stun's final candidate's juiciness vs the final candidates of other psycasts-->
 			</li>
 		</value>
 	</Operation>
@@ -484,7 +485,7 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="HVP_Surestep"]</xpath>
 					<value>
-						<li Class="HVPAA_HOP.UseCaseTags_Surestep">
+						<li Class="HVPAA.UseCaseTags_SpeedBuff">
 							<defense>true</defense>
 							<utility>true</utility>
 							<avoidTargetsWithHediff>HVP_SurestepBuff</avoidTargetsWithHediff>
@@ -1102,7 +1103,7 @@ Level 1 psycasts-->
 				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Stasis"]</xpath>
 					<value>
-						<li Class="HVPAA_EPC.UseCaseTags_Stasis">
+						<li Class="HVPAA.UseCaseTags_LifeSavingComa">
 							<healing>true</healing>
 							<mfds><li>Minimal</li></mfds>
 							<avoidTargetsWithHediff>ExtraPsycasts_StasisTorpor</avoidTargetsWithHediff>
@@ -2873,6 +2874,197 @@ Level 1 psycasts-->
 								<li MayRequire="ludeon.rimworld.ideology">Dryad_Clawer</li>
 								<li MayRequire="ludeon.rimworld.ideology">Dryad_Barkskin</li>
 							</excludeRaces>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Cybranian - Psionic+</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Dash"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_SpeedBuff">
+							<defense>true</defense>
+							<utility>true</utility>
+							<avoidTargetsWithHediff>Dash</avoidTargetsWithHediff>
+							<usableWhileFleeing>true</usableWhileFleeing><!--to GTFO-->
+							<chanceToUtilityCast>0.075</chanceToUtilityCast><!--half that of Surestep because it costs more and lasts for shorter, even if its raw buff is stronger-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="PainImpulse"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PainImpulse">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>PainWave</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<painOffset>0.3</painOffset>
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="BreathOfLife"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_BreathOfLife">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<mfds><li>Dignified</li><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>BreathOfLife</avoidTargetsWithHediff>
+							<ticksToFatalBloodLossCutoff>10000</ticksToFatalBloodLossCutoff><!--only used to reduce blood loss, and only for people about to die since it kneecaps them for 1d per 100% psysens-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationRemove"><!--freed up for use by NPCs the same way Neural Heat Dump was-->
+					<xpath>/Defs/AbilityDef[defName="BreathOfLife"]/verbProperties/targetParams/onlyTargetColonists</xpath>
+				</li>
+				<li Class="PatchOperationConditional">
+					<xpath>/Defs/AbilityDef[defName="BreathOfLife"]/comps</xpath>
+					<match Class="PatchOperationAdd">
+						<xpath>/Defs/AbilityDef[defName="BreathOfLife"]/comps</xpath>
+						<value>
+						  <li Class="HVPAA.CompProperties_AbilityPlayerOnlyTargetColonist">
+							<compClass>HVPAA.CompAbilityEffect_PlayerOnlyTargetColonist</compClass>
+						  </li>
+						</value>
+					</match>
+					<nomatch Class="PatchOperationAdd">
+						<xpath>/Defs/AbilityDef[defName="BreathOfLife"]</xpath>
+						<value>
+							<comps>
+							  <li Class="HVPAA.CompProperties_AbilityPlayerOnlyTargetColonist">
+								<compClass>HVPAA.CompAbilityEffect_PlayerOnlyTargetColonist</compClass>
+							  </li>
+							</comps>
+						</value>
+					</nomatch>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="WordOfConfidence"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_WordOfConfidence">
+							<utility>true</utility>
+							<aoe>20</aoe>
+							<mfds><li>Dignified</li></mfds>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<avoidTargetsWithHediff>WordOfConfidence</avoidTargetsWithHediff>
+							<sightCutoff>0.9</sightCutoff><!--see Focus for notes, as this is a derivative that uses Word targeting-->
+							<movingCutoff>0.9</movingCutoff>
+							<chanceToUtilityCast>0.2</chanceToUtilityCast><!--at 40% psyfocus cost, this is p expensive, esp in the context of NPC casting-->
+							<minUtilitySkillLevel>8</minUtilitySkillLevel>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Concentration"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_Concentration">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>Concentration</avoidTargetsWithHediff>
+							<flatValue>1500</flatValue><!--just use it in combat whenever you don't have it. it's so good and lasts over 4h PER 100pct psysens-->
+							<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="PainWave"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PainPulse">
+							<damage>true</damage>
+							<aoe>3</aoe>
+							<avoidTargetsWithHediff>PainWave</avoidTargetsWithHediff>
+							<painOffset>0.3</painOffset>
+							<mfds><li>Morbid</li></mfds>
+							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="PanicScream"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicScream">
+							<damage>true</damage>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>3</trapPower>
+							<marketValueDivisor>250</marketValueDivisor>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EchoOfPanic"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicPulse">
+							<damage>true</damage>
+							<aoe>3</aoe>
+							<mfds><li>Natural</li></mfds>
+							<allyMultiplier>1.4</allyMultiplier>
+							<trapPower>4</trapPower>
+							<marketValueDivisor>250</marketValueDivisor>
+							<chanceToCast>1</chanceToCast>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="PanicScream" or defName="EchoOfPanic"]/comps/li[@Class="CompProperties_AbilityGiveMentalState"]</xpath>
+					<value>
+						<canTargetBosses>false</canTargetBosses>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EnergyBlast"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_EnergyBlast">
+							<damage>true</damage>
+							<aoe>10</aoe>
+							<requiresLoS>false</requiresLoS>
+							<chanceToCast>0.6</chanceToCast>
+							<sendLetter>true</sendLetter>
+							<letterLabel>HVPAA_ComaNova_label</letterLabel>
+							<letterText>HVPAA_ComaNova_text</letterText>
+							<letterLabelF>HVPAA_ComaNova_label</letterLabelF>
+							<letterTextF>HVPAA_ComaNova_text</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="EnergyBlast" or defName="EnergyCharge"]/comps/li[@Class="CompProperties_AbilityGiveHediff"]</xpath>
+					<value>
+						<canTargetBosses>false</canTargetBosses>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EnergyCharge"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicPulse"><!--yes they're the same on purpose-->
+							<damage>true</damage>
+							<aoe>3</aoe>
+							<mfds><li>Minimal</li></mfds>
+							<allyMultiplier>2.5</allyMultiplier>
+							<trapPower>8</trapPower>
+							<marketValueDivisor>250</marketValueDivisor>
+							<chanceToCast>0.6</chanceToCast>
+							<sendLetter>true</sendLetter>
+							<letterLabel>HVPAA_ComaBlast_label</letterLabel>
+							<letterText>HVPAA_ComaBlast_text</letterText>
+							<letterLabelF>HVPAA_ComaBlast_label</letterLabelF>
+							<letterTextF>HVPAA_ComaBlast_text</letterTextF>
+							<letterDef>ThreatBig</letterDef>
 						</li>
 					</value>
 				</li>

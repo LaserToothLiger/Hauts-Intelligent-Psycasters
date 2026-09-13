@@ -73,7 +73,7 @@ namespace HVPAA
         }
         public override float PawnEnemyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
         {
-            return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.MarketValue / 1000f;
+            return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.MarketValue / this.marketValueDivisor;
         }
         public override float ApplicabilityScoreDebuff(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
         {
@@ -81,10 +81,11 @@ namespace HVPAA
             if (pawn != null)
             {
                 psycast.lti = pawn;
-                return 2f * pawnTargets.TryGetValue(pawn);
+                return pawnTargets.TryGetValue(pawn);
             }
             return 0f;
         }
+        public float marketValueDivisor = 500f;
     }
     public class UseCaseTags_SolarPinhole : UseCaseTags
     {

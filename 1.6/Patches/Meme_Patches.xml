@@ -143,6 +143,16 @@
 						</li>
 					</value>
 				</li>
+				<!--PiD is like PiV, plus some evil-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/MemeDef[defName="AM_PainIsDivine"]</xpath>
+					<value>
+						<li Class="HVPAA.CasterPersonality">
+							<proPain>true</proPain><!--and propain accessories-->
+							<niceOrEvil>-2</niceOrEvil>
+						</li>
+					</value>
+				</li>
 			</operations>
 		</match>
 	</Operation>

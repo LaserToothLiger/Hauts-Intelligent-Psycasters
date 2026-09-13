@@ -332,9 +332,7 @@ namespace HVPAA
                             this.bestDestDeb = pawn.Position;
                             return Math.Max(0f, ((p.GetStatValue(StatDefOf.MeleeDPS) * cover) - pawn.GetStatValue(StatDefOf.MeleeDPS)) * (pawn.Position.DistanceTo(p.Position) / (float)Math.Sqrt(p.GetStatValue(StatDefOf.MoveSpeed))));
                         }
-                    }
-                    else
-                    {
+                    } else {
                         return p.GetStatValue(StatDefOf.MeleeDPS);
                     }
                     break;
@@ -347,9 +345,7 @@ namespace HVPAA
                             if (p2.HostileTo(p))
                             {
                                 netFoeMeleeDPS += p2.GetStatValue(StatDefOf.MeleeDPS);
-                            }
-                            else if (intPsycasts.allies.Contains(p2))
-                            {
+                            } else if (intPsycasts.allies.Contains(p2)) {
                                 netFoeMeleeDPS -= p2.GetStatValue(StatDefOf.MeleeDPS);
                             }
                         }
@@ -440,9 +436,7 @@ namespace HVPAA
                             this.bestDestDeb = pawn.Position;
                             return Math.Max(0f, ((pawnTargets.TryGetValue(pawn) * cover) - p.GetStatValue(StatDefOf.MeleeDPS)) * (pawn.Position.DistanceTo(p.Position) / (float)Math.Sqrt(pawn.GetStatValue(StatDefOf.MoveSpeed))));
                         }
-                    }
-                    else
-                    {
+                    } else {
                         return 1f / p.GetStatValue(StatDefOf.MeleeDPS);
                     }
                     break;
@@ -457,9 +451,7 @@ namespace HVPAA
                             {
                                 anyNearbyAllies = true;
                                 netFoeMeleeDPS -= p2.GetStatValue(StatDefOf.MeleeDPS);
-                            }
-                            else if (intPsycasts.foes.Contains(p2))
-                            {
+                            } else if (intPsycasts.foes.Contains(p2)) {
                                 netFoeMeleeDPS += p2.GetStatValue(StatDefOf.MeleeDPS);
                             }
                         }
@@ -492,18 +484,12 @@ namespace HVPAA
                     {
                         num = 0.2f;
                         num *= bpt.def.building.trapPeacefulWildAnimalsSpringChanceFactor;
-                    }
-                    else
-                    {
+                    } else {
                         num = 0.3f;
                     }
-                }
-                else if (p.Faction == bpt.Faction)
-                {
+                } else if (p.Faction == bpt.Faction) {
                     num = 0.005f;
-                }
-                else
-                {
+                } else {
                     num = 0f;
                 }
             }
@@ -543,9 +529,7 @@ namespace HVPAA
                     psycast.ltiDest = (this.bestDestDeb.IsValid ? this.bestDestDeb : psycast.Caster.Position);
                     return 3f * pawnTargets.TryGetValue(pawn) * this.scoreFactor;
                 }
-            }
-            else
-            {
+            } else {
                 Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 2, out Dictionary<Pawn, float> pawnTargets);
                 if (pawn != null)
                 {
@@ -577,9 +561,7 @@ namespace HVPAA
                     psycast.ltiDest = (this.bestDestDef.IsValid ? this.bestDestDef : psycast.Caster.Position);
                     return pathDistance * this.scoreFactor;
                 }
-            }
-            else
-            {
+            } else {
                 if (Rand.Chance(0.5f))
                 {
                     Pawn pawn = this.FindEnemyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
@@ -589,9 +571,7 @@ namespace HVPAA
                         psycast.ltiDest = this.bestDestDef;
                         return 3f * pawnTargets.TryGetValue(pawn) * this.scoreFactor;
                     }
-                }
-                else
-                {
+                } else {
                     Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 3, out Dictionary<Pawn, float> pawnTargets);
                     if (pawn != null)
                     {

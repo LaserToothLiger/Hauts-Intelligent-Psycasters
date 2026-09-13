@@ -3,7 +3,6 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VEF.AnimalBehaviours;
 using Verse;
 using Verse.AI;
 
@@ -287,47 +286,6 @@ namespace HVPAA_HOP
         public float curPower;
         public float selfApplicabilityFactor;
         public HediffDef hediff;
-    }
-    public class UseCaseTags_Surestep : UseCaseTags
-    {
-        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
-        {
-            return p.Downed || p.pather == null || p.pather.curPath == null || !p.pather.nextCell.IsValid || p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon;
-        }
-        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
-        {
-            float pathCost = 1f;
-            if (!StaticCollectionsClass.floating_animals.Contains(p))
-            {
-                pathCost *= p.pather.nextCell.GetTerrain(p.Map) != null ? p.pather.nextCell.GetTerrain(p.Map).pathCost : 1f;
-            }
-            return p.GetStatValue(StatDefOf.PsychicSensitivity) * p.GetStatValue(StatDefOf.MoveSpeed) * pathCost * ((useCase <= 4 && !p.WorkTagIsDisabled(WorkTags.Violent) && (p.equipment == null || p.equipment.Primary == null || !p.equipment.Primary.def.IsRangedWeapon)) ? 2.5f : 1f) * (p == psycast.pawn && intPsycasts.GetSituation() == 3 ? 2.5f : 1f);
-        }
-        public override float ApplicabilityScoreDefense(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 2, out Dictionary<Pawn, float> pawnTargets);
-            if (pawn != null)
-            {
-                psycast.lti = pawn;
-                return pawnTargets.TryGetValue(pawn);
-            }
-            return 0f;
-        }
-        public override float PriorityScoreUtility(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
-        {
-            return Rand.Chance(this.chanceToUtilityCast) ? base.PriorityScoreUtility(psycast, situationCase, pacifist, niceToEvil, usableFoci) : 0f;
-        }
-        public override float ApplicabilityScoreUtility(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 5, out Dictionary<Pawn, float> pawnTargets);
-            if (pawn != null)
-            {
-                psycast.lti = pawn;
-                return pawnTargets.TryGetValue(pawn);
-            }
-            return 0f;
-        }
-        public float chanceToUtilityCast;
     }
     public class UseCaseTags_WordOfWarning : UseCaseTags
     {

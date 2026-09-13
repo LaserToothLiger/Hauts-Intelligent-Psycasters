@@ -327,30 +327,4 @@ namespace HVPAA_EPC
         }
         public float chanceToUtilityCast;
     }
-    public class UseCaseTags_Stasis : UseCaseTags
-    {
-        public override bool OtherAllyDisqualifiers(Psycast psycast, Pawn p, int useCase, bool initialTarget = true)
-        {
-            return p.GetStatValue(StatDefOf.PsychicSensitivity) <= float.Epsilon || p.RaceProps.IsMechanoid;
-        }
-        public override float PriorityScoreHealing(Psycast psycast, int situationCase, bool pacifist, float niceToEvil, List<MeditationFocusDef> usableFoci)
-        {
-            return situationCase == 1 ? 0f : base.PriorityScoreHealing(psycast, situationCase, pacifist, niceToEvil, usableFoci);
-        }
-        public override float PawnAllyApplicability(HediffComp_IntPsycasts intPsycasts, Psycast psycast, Pawn p, float niceToEvil, int useCase = 1, bool initialTarget = true)
-        {
-            return (this.ticksToFatalBloodLossCutoff - HealthUtility.TicksUntilDeathDueToBloodLoss(p))/1250f;
-        }
-        public override float ApplicabilityScoreHealing(HediffComp_IntPsycasts intPsycasts, PotentialPsycast psycast, float niceToEvil)
-        {
-            Pawn pawn = this.FindAllyPawnTarget(intPsycasts, psycast.ability, niceToEvil, 4, out Dictionary<Pawn, float> pawnTargets);
-            if (pawn != null)
-            {
-                psycast.lti = pawn;
-                return pawnTargets.TryGetValue(pawn);
-            }
-            return 0f;
-        }
-        public int ticksToFatalBloodLossCutoff;
-    }
 }

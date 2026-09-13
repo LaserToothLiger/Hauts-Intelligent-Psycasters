@@ -72,6 +72,10 @@
 <HVPAA_FSF_FS_label>Firestorm</HVPAA_FSF_FS_label>
 <HVPAA_FSF_FS_text>A psycaster is about to unleash a firestorm! After casting for 12 seconds, a massive wave of fire will emanate out from the caster, reaching an area far wider than even the explosion of an antigrain warhead. Move out of range, get into the safe zone, or disable the psycaster.</HVPAA_FSF_FS_text>
 <HVPAA_FSF_FS_textF>A magician is conjuring a firestorm! After casting for 12 seconds, a massive wave of fire will emanate out from the caster, searing a monstrously wide area. Move out of range, get into the safe zone, or disable the spellcaster.</HVPAA_FSF_FS_textF>
+<HVPAA_ComaNova_label>Energy blast</HVPAA_ComaNova_label>
+<HVPAA_ComaNova_text>A caster is unleashing an energy blast! After casting for 8 seconds, volatile powers will erupt from the caster, knocking out everyone in range for days. Move out of range or disable the caster.</HVPAA_ComaNova_text>
+<HVPAA_ComaBlast_label>Energy charge</HVPAA_ComaBlast_label>
+<HVPAA_ComaBlast_text>A caster is projecting an energy charge at one of your own! After casting for 3 seconds, volatile powers will render everyone in the targeted area unconscious. Move out of range or disable the caster.</HVPAA_ComaBlast_text>
 <HVPAA_Annihilation_label>Psychic annihilation</HVPAA_Annihilation_label>
 <HVPAA_Annihilation_text>A psycaster is about to unleash annihilation! After casting for 8 seconds, the targeted 3x3 area will be permanently removed from existence, to the point that it will be impossible to move into that area at any time afterward. Evacuate the area or disable the psycaster.</HVPAA_Annihilation_text>
 <HVPAA_Annihilation_labelF>Astral annihilation</HVPAA_Annihilation_labelF>
