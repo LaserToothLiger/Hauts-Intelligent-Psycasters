@@ -2956,7 +2956,6 @@ Level 1 psycasts-->
 							<utility>true</utility>
 							<aoe>20</aoe>
 							<mfds><li>Dignified</li></mfds>
-							<usableWhileFleeing>true</usableWhileFleeing>
 							<avoidTargetsWithHediff>WordOfConfidence</avoidTargetsWithHediff>
 							<sightCutoff>0.9</sightCutoff><!--see Focus for notes, as this is a derivative that uses Word targeting-->
 							<movingCutoff>0.9</movingCutoff>
@@ -2997,7 +2996,7 @@ Level 1 psycasts-->
 					<xpath>/Defs/AbilityDef[defName="PanicScream"]</xpath>
 					<value>
 						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicScream">
-							<damage>true</damage>
+							<debuff>true</debuff>
 							<mfds><li>Natural</li></mfds>
 							<trapPower>3</trapPower>
 							<marketValueDivisor>250</marketValueDivisor>
@@ -3009,7 +3008,7 @@ Level 1 psycasts-->
 					<xpath>/Defs/AbilityDef[defName="EchoOfPanic"]</xpath>
 					<value>
 						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicPulse">
-							<damage>true</damage>
+							<debuff>true</debuff>
 							<aoe>3</aoe>
 							<mfds><li>Natural</li></mfds>
 							<allyMultiplier>1.4</allyMultiplier>
