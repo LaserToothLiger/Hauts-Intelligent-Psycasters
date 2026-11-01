@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Patch>
-	<!--Rogue Psycasters use deserter armor, 'cause they're deserters-->
+	<!--appends tags so that Anima Speakers can get these via normal pawngen processes-->
 	<Operation Class="PatchOperationFindMod">
 		<mods>
 			<li>Anima Bionics - Forked</li>
@@ -18,6 +18,17 @@
 				  <value>
 					  <li>AnimaBionics</li>
 				  </value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>The Secret of Anima - Arsenal</li>
+					</mods>
+					<nomatch Class="PatchOperationAdd">
+					  <xpath>/Defs/PawnKindDef[defName="HVPAA_AnimaSpeaker"]/apparelRequired</xpath>
+					  <value>
+						  <li>Apparel_PlateArmor</li>
+					  </value>
+					</nomatch>
 				</li>
 			</operations>
 		</match>

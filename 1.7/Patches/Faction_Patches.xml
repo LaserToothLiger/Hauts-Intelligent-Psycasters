@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+
+	<!--part of an attempt to improve performance in cases where many psycasters were on the map at the same time. it ended up leading to a lot of missing value errors as targets were killed off or disappeared-->
+	<Operation Class="PatchOperationAdd">
+		<xpath>/Defs/HautsFramework.Hauts_FactionCompDef[defName="Hauts_FCHolder"]/comps</xpath>
+		<value>
+			<li Class="HVPAA.HautsFactionCompProperties_AlliesAndAdversaries" />
+		</value>
+	</Operation>
+	<!--these factions have bespoke psycaster generation rules-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/FactionDef[defName="Empire"]</xpath>
+		<value>
+			<li Class="HVPAA.SpecificPsycasterRules">
+				<fprd>HVPAA_ShatteredEmpire</fprd>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/FactionDef[defName="Ancients"]</xpath>
+		<value>
+			<li Class="HVPAA.SpecificPsycasterRules">
+				<fprd>HVPAA_Ancients</fprd>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/FactionDef[defName="AncientsHostile"]</xpath>
+		<value>
+			<li Class="HVPAA.SpecificPsycasterRules">
+				<fprd>HVPAA_Ancients</fprd>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Anomaly</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/FactionDef[defName="HoraxCult"]</xpath>
+					<value>
+						<li Class="HVPAA.SpecificPsycasterRules">
+							<fprd>HVPAA_Cultists</fprd>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<!--lets Empire do templar squad strikes-->
+	<Operation Class="PatchOperationConditional">
+		<xpath>/Defs/FactionDef[defName="Empire"]/pawnGroupMakers</xpath>
+		<nomatch Class="PatchOperationAdd">
+			<xpath>/Defs/FactionDef[defName="Empire"]</xpath>
+			<value>
+				<pawnGroupMakers>
+					<li>
+						<kindDef>Combat</kindDef>
+						<commonality>2</commonality>
+						<options>
+						  <HVPAA_PersonaTemplar>6</HVPAA_PersonaTemplar>
+						  <HVPAA_Archotemplar>1</HVPAA_Archotemplar>
+						</options>
+				    </li>
+				</pawnGroupMakers>
+			</value>
+		</nomatch>
+		<match Class="PatchOperationAdd">
+			<xpath>/Defs/FactionDef[defName="Empire"]/pawnGroupMakers</xpath>
+			<value>
+			 <li>
+				<kindDef>Combat</kindDef>
+				<commonality>2</commonality>
+				<options>
+				  <HVPAA_PersonaTemplar>6</HVPAA_PersonaTemplar>
+				  <HVPAA_Archotemplar>1</HVPAA_Archotemplar>
+				</options>
+			  </li>
+			</value>
+		</match>
+	</Operation>
+	<!--Adding more content to some psycaster generation rules based on the presence of other mods-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Hauts' Utility Bionics</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/randCasterHediffs</xpath>
+				  <value>
+					  <li><key>HVB_PsychicTrepanation</key><value>0.1</value></li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_ShatteredEmpire"]/randCasterHediffs</xpath>
+				  <value>
+					  <li><key>HVB_PsychicTrepanation</key><value>0.05</value></li>
+					  <li><key>HVB_WarlocksEye</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksRictus</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksTongue</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksCollum</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksHeart</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksEntrails</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksHand</key><value>0.03</value></li>
+					  <li><key>HVB_WarlocksFoot</key><value>0.03</value></li>
+				  </value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Anima Bionics - Forked</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/randCasterHediffs</xpath>
+				  <value>
+					  <li><key>AnimaLeg</key><value>0.08</value></li>
+					  <li><key>AnimaWarArm</key><value>0.045</value></li>
+					  <li><key>AnimaEntArm</key><value>0.045</value></li>
+					  <li><key>AnimaHorn</key><value>0.03</value></li>
+					  <li><key>AnimaNose</key><value>0.08</value></li>
+					  <li><key>AnimaJaw</key><value>0.08</value></li>
+					  <li><key>AnimaPlate</key><value>0.06</value></li>
+					  <li><key>AnimaLiver</key><value>0.06</value></li>
+					  <li><key>AnimaKidney</key><value>0.06</value></li>
+					  <li><key>AnimaLung</key><value>0.06</value></li>
+					  <li><key>AnimaEye</key><value>0.06</value></li>
+					  <li><key>AnimaStomach</key><value>0.06</value></li>
+					  <li><key>AnimaSpine</key><value>0.06</value></li>
+					  <li><key>AnimaHeart</key><value>0.03</value></li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/domesticSpecCasters</xpath>
+				  <value>
+					  <li>HVPAA_AnimaSpeaker</li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/raidSpecCasters</xpath>
+				  <value>
+					  <li>HVPAA_AnimaSpeaker</li>
+				  </value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Anima Gear</li>
+			<li>Anima Gear - Continued</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/randCasterEquipment</xpath>
+				  <value>
+					  <li><key>Apparel_AnimaCrown</key><value>0.05</value></li>
+					  <li><key>Apparel_AnimaWarMask</key><value>0.05</value></li>
+					  <li><key>Apparel_AnimaWarVeil</key><value>0.075</value></li>
+					  <li><key>Apparel_AnimaTribal</key><value>0.1</value></li>
+					  <li><key>MeleeWeapon_AnimaStaff</key><value>0.1</value></li>
+				  </value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>The Secret of Anima - Arsenal</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/randCasterHediffs</xpath>
+				  <value>
+					  <li><key>TSOA_AnimaLiverThree</key><value>0.06</value></li>
+					  <li><key>TSOA_AnimaKidneyThree</key><value>0.06</value></li>
+					  <li><key>TSOA_AnimaLungThree</key><value>0.06</value></li>
+					  <li><key>TSOA_AnimaEyeThree</key><value>0.06</value></li>
+					  <li><key>TSOA_AnimaStomachThree</key><value>0.06</value></li>
+					  <li><key>TSOA_AnimaHeartThree</key><value>0.03</value></li>
+					  <li><key>TSOA_MentorCrown</key><value>0.01</value></li>
+					  <li><key>TSOA_InheritorCrown</key><value>0.03</value></li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_TribalAnima"]/randCasterEquipment</xpath>
+				  <value>
+					  <li><key>TSOA_AnimaShamanArmor</key><value>0.05</value></li>
+					  <li><key>TSOA_AnimaShamanHeaddress</key><value>0.075</value></li>
+					  <li><key>TSOA_AnimaAcolyteArmor</key><value>0.075</value></li>
+					  <li><key>TSOA_AnimaAcolyteHelmet</key><value>0.1</value></li>
+					  <li><key>TSOA_AnimaTomahawk</key><value>0.1</value></li>
+					  <li><key>TSOA_AnimaClub</key><value>0.1</value></li>
+					  <li><key>TSOA_AnimaMacuahuitl</key><value>0.1</value></li>
+					  <li><key>TSOA_ShamanDagger</key><value>0.06</value></li>
+					  <li><key>TSOA_ShamanSword</key><value>0.06</value></li>
+					  <li><key>TSOA_ShamanSpear</key><value>0.06</value></li>
+					  <li><key>TSOA_ShamanGreatsword</key><value>0.06</value></li>
+					  <li><key>TSOA_AnimaBow</key><value>0.05</value></li>
+				  </value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Anomaly</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAdd">
+							  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_Cultists"]/randCasterHediffs</xpath>
+							  <value>
+								  <li><key>TSOA_BioferriteArmThree</key><value>0.07</value></li>
+								  <li><key>TSOA_BioferriteLegThree</key><value>0.07</value></li>
+								  <li><key>TSOA_BioferriteEyeThree</key><value>0.07</value></li>
+								  <li><key>TSOA_BioferriteSkinThree</key><value>0.07</value></li>
+								  <li><key>TSOA_SovereignCrown</key><value>0.01</value></li>
+								  <li><key>TSOA_ThrallCrown</key><value>0.04</value></li>
+							  </value>
+							</li>
+							<li Class="PatchOperationAdd">
+							  <xpath>/Defs/HVPAA.FactionPsycasterRuleDef[defName="HVPAA_Cultists"]/randCasterEquipment</xpath>
+							  <value>
+								  <li><key>TSOA_VoidInitiateArmor</key><value>0.25</value></li>
+								  <li><key>TSOA_VoidInitiateHelm</key><value>0.25</value></li>
+								  <li><key>TSOA_BioferriteVirionArmor</key><value>0.25</value></li>
+								  <li><key>TSOA_BioferriteVirionHelm</key><value>0.25</value></li>
+								  <li><key>TSOA_VoidKhopesh</key><value>0.5</value></li>
+								  <li><key>TSOA_VoidAxe</key><value>0.5</value></li>
+								  <li><key>TSOA_VoidKanabo</key><value>0.5</value></li>
+							  </value>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

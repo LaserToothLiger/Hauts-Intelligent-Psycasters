@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch><!--if you're using Links, you don't want them to get cut off prematurely because you incurred too much entropy from other casts-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Hauts' Offbeat Psycasts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/HediffDef[defName="HVP_HiddenParalysisMaintainer" or defName="HVP_HiddenBoostMaintainer"]</xpath>
+					<value>
+						<li Class="HVPAA.LimitsHVPAACasting"><percent>0.6</percent></li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

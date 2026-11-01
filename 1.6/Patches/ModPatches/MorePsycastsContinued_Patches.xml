@@ -17,7 +17,7 @@
 				<li Class="PatchOperationAdd">
 					<xpath>/Defs/AbilityDef[defName="MorePsycasts_AwakenMechanites"]/statBases</xpath>
 					<value>
-					  <Ability_PsyfocusCost>0.05</Ability_PsyfocusCost>
+					  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
 					</value>
 				</li>
 				<!--level 4-->

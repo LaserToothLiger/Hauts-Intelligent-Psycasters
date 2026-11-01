@@ -156,19 +156,21 @@
     <defName>HVPAA_Cultists</defName>
     <randCastersPerCapita>0.01</randCastersPerCapita>
 	<maxDomesticPower>40</maxDomesticPower>
+	<randCasterHediffs/>
+	<randCasterEquipment/>
 	<domesticSpecCasters>
 	  <li>HVPAA_Voidcaster</li>
 	  <li>HVPAA_Transgressor</li>
-	  <li MayRequire="quad.forsakens">HVPAA_ForsakenGorgon</li>
-	  <li MayRequire="sarg.alphagenes">HVPAA_ForsakenGorgon</li>
+	  <li MayRequireAnyOf="quad.forsakens,sarg.alphagenes">HVPAA_ForsakenGorgon</li>
+	  <li MayRequire="tsoa.arsenal">HVPAA_Virionclad</li>
 	</domesticSpecCasters>
 	<specChanceInRaids>0.25</specChanceInRaids>
 	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
 	<raidSpecCasters>
 	  <li>HVPAA_Voidcaster</li>
 	  <li>HVPAA_Transgressor</li>
-	  <li MayRequire="quad.forsakens">HVPAA_ForsakenGorgon</li>
-	  <li MayRequire="sarg.alphagenes">HVPAA_ForsakenGorgon</li>
+	  <li MayRequireAnyOf="quad.forsakens,sarg.alphagenes">HVPAA_ForsakenGorgon</li>
+	  <li MayRequire="tsoa.arsenal">HVPAA_Virionclad</li>
 	</raidSpecCasters>
   </HVPAA.FactionPsycasterRuleDef>
   

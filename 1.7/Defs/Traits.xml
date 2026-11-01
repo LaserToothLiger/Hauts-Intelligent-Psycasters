@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  
+  <TraitDef>
+	<defName>HVPAA_SellcastTrait</defName>
+	<commonality>0</commonality>
+	<degreeDatas>
+	  <li>
+		<degree>0</degree>
+		<label>self-directed</label>
+		<description>{PAWN_nameDef} is not responsive to direct commands. However, {PAWN_pronoun} will still respect zoning, policies, scheduling, and work priorities.</description>
+	  </li>
+	</degreeDatas>
+	<modExtensions>
+		<li Class="HautsFramework.ExciseTraitExempt" />
+	</modExtensions>
+  </TraitDef>
+  
+</Defs>

@@ -1,0 +1,3082 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch><!--first, Word psycasts can be used on pawns who belong to factions hostile to the player. While this opens up some options for players that may not be intended, actually meaningfully using them on foes in combat is difficult, niche, and interesting to execute, so that's fine imo.
+	more importantly, it lets hostile-faction NPCs use Word psycasts to their benefit-->
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/AbilityDef[@Name="WordOfBase"]/verbProperties/targetParams/neverTargetHostileFaction</xpath>
+		<value>
+		  <neverTargetHostileFaction>false</neverTargetHostileFaction>
+		</value>
+	</Operation>
+<!--NOW ONTO BUSINESS PROPER. these govern the AI for each ability
+	Level 1 psycasts-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Burden"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Burden">
+				<debuff>true</debuff>
+				<avoidTargetsWithHediff>PsychicBurden</avoidTargetsWithHediff>
+				<imposedMovingCap>0.4</imposedMovingCap><!--change this if you change the moving setMax of the debuff inflicted by Burden. It's here in the XML rather than automatically reading it in the code for performance's sake.
+																All this does is help psycasters figure out which victims would be most debilitated by Burden; it does not change how the debuff works in any way.-->
+				<trapPower>1</trapPower><!--relevant to Cooler Psycasts' "Embed Psycast" psycast-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Painblock"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Painblock">
+				<defense>true</defense>
+				<healing>true</healing>
+				<painkiller>true</painkiller>
+				<avoidTargetsWithHediff>PsychicAnesthesia</avoidTargetsWithHediff>
+				<mfds><li>Minimal</li></mfds>
+				<healingMulti>2</healingMulti><!--healing use is potent enough it should be weighted higher even out of combat-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Stun"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Stun">
+				<debuff>true</debuff>
+				<mfds><li>Morbid</li></mfds>
+				<trapPower>2</trapPower>
+				<marketValueDivisor>500</marketValueDivisor><!--although this is applied equally to all candidate targets w/in Stun's target selection, it is helpful to scale Stun's final candidate's juiciness vs the final candidates of other psycasts-->
+			</li>
+		</value>
+	</Operation>
+	<!--chunk skip is too imprecise, too weak, and its four combat uses (remove ranged cover, grant ranged cover, slow incoming melee, clear the path for melee) are too complicated to justify giving it an AI-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="SolarPinhole"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_SolarPinhole">
+				<defense>true</defense>
+				<healing>true</healing>
+				<aoe>15</aoe><!--just like Burden, this is supposed to mirror a property of the psycast; namely, the 15c glow radius of a solar pinhole.-->
+				<avoidMakingTooMuchOfThing>SolarPinhole</avoidMakingTooMuchOfThing><!--stops them from draining all their psyfocus spamming solar pinholes inside cold rooms-->
+				<thingLimit>2</thingLimit><!--stops making them for healing purposes if there are already 2 in half the cast-range of the caster-->
+				<mfds><li>Natural</li></mfds>
+				<light>true</light><!--stops Darkness-adherent psycasters from EVER using this psycast-->
+				<usableWhileAsleep>true</usableWhileAsleep><!--potentially a time-sensitive life-saver-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="WordOfTrust"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_WordOfTrust">
+				<utility>true</utility>
+				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
+				<mfds><li>Dignified</li></mfds>
+			</li>
+		</value>
+	</Operation>
+	<!--level 2-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="BlindingPulse"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_BlindingPulse">
+				<debuff>true</debuff>
+				<aoe>3.9</aoe>
+				<avoidTargetsWithHediff>PsychicBlindness</avoidTargetsWithHediff>
+				<sightReduction>0.5</sightReduction><!--should mirror the sight postFactor that Blinding Pulse inflicts-->
+				<mfds><li>Minimal</li><li>Morbid</li></mfds>
+				<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less Blinding Pulsing friendly fire. does mean you also see slightly less use of it in tight melees-->
+				<trapPower>3</trapPower>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="EntropyDump"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_NHD">
+				<healing>true</healing>
+				<mfds><li>Dignified</li></mfds>
+				<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationRemove">
+		<xpath>/Defs/AbilityDef[defName="EntropyDump"]/verbProperties/targetParams/onlyTargetColonists</xpath>
+	</Operation>
+	<Operation Class="PatchOperationConditional">
+		<xpath>/Defs/AbilityDef[defName="EntropyDump"]/comps</xpath>
+		<match Class="PatchOperationAdd">
+			<xpath>/Defs/AbilityDef[defName="EntropyDump"]/comps</xpath>
+			<value>
+			  <li Class="HVPAA.CompProperties_AbilityPlayerOnlyTargetColonist">
+			    <compClass>HVPAA.CompAbilityEffect_PlayerOnlyTargetColonist</compClass>
+			  </li>
+			</value>
+		</match>
+		<nomatch Class="PatchOperationAdd">
+			<xpath>/Defs/AbilityDef[defName="EntropyDump"]</xpath>
+			<value>
+				<comps>
+				  <li Class="HVPAA.CompProperties_AbilityPlayerOnlyTargetColonist">
+					<compClass>HVPAA.CompAbilityEffect_PlayerOnlyTargetColonist</compClass>
+				  </li>
+				</comps>
+			</value>
+		</nomatch>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Waterskip"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Waterskip">
+				<healing>true</healing>
+				<mfds><li>Natural</li><li MayRequire="Arquebus.StagzMerfolk">Stagz_Water</li></mfds>
+				<antiFlame>true</antiFlame>
+				<aoe>1.9</aoe>
+				<usableWhileAsleep>true</usableWhileAsleep><!--you should wake up to help put out fires-->
+				<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="WordOfJoy"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_WordOfJoy">
+				<healing>true</healing>
+				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
+				<avoidTargetsWithHediff>Joyfuzz</avoidTargetsWithHediff>
+				<brainEfficiencyOffset>-0.4</brainEfficiencyOffset><!--twice as big as the brain part efficiency offset inflicted by WoJ because I don't want 'casters to decaffeinate their allies just for being sad-->
+				<mfds><li>Dignified</li></mfds>
+			</li>
+		</value>
+	</Operation>
+	<!--level 3-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Beckon"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Beckon">
+				<debuff>true</debuff>
+				<mfds><li>Dignified</li><li>Morbid</li></mfds>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="ChaosSkip"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_ChaosSkip">
+				<debuff>true</debuff>
+				<maxBodySize>3.5</maxBodySize><!--mirrors the threshold of body size beyond which a pawn cannot be skipped. Despite not appearing in the XML, it is an actual property of CompProperties_AbilityTeleport and can be modified. It simply isn't listed since it has a default 3.5 value anyways-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="VertigoPulse"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_VertigoPulse">
+				<debuff>true</debuff>
+				<aoe>3.9</aoe>
+				<avoidTargetsWithHediff>PsychicVertigo</avoidTargetsWithHediff>
+				<mfds><li>Morbid</li></mfds>
+				<allyMultiplier>6</allyMultiplier><!--makes allies MUCH more important than foes so you see less Vertigo Pulsing friendly fire. does mean you also see slightly less use of it in tight melees-->
+				<trapPower>4</trapPower>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="WordOfLove"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_WordOfLove">
+				<utility>true</utility>
+				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
+				<avoidTargetsWithHediff>PsychicLove</avoidTargetsWithHediff>
+				<mfds><li>Dignified</li></mfds>
+				<minAge>16</minAge>
+				<mustMatchOrientation>true</mustMatchOrientation>
+				<prisonerRelationOffset>25</prisonerRelationOffset>
+			</li>
+		</value>
+	</Operation>
+	<!--level 4-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Focus"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Focus">
+				<defense>true</defense>
+				<utility>true</utility>
+				<usableWhileFleeing>true</usableWhileFleeing>
+				<avoidTargetsWithHediff>PsychicFocus</avoidTargetsWithHediff>
+				<sightCutoff>0.9</sightCutoff><!--utility version won't cast on anyone w/ less than this amount of sight-->
+				<movingCutoff>0.9</movingCutoff><!--or this amount of moving-->
+				<chanceToUtilityCast>1</chanceToUtilityCast><!--if you'd prefer psycasters not dump all their psyfocus out of combat on Focus, turn this down-->
+				<minUtilitySkillLevel>8</minUtilitySkillLevel><!--won't cast it out of combat on laborers whose relevant skill for the current job is <= this value-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Smokepop"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Smokepop">
+				<defense>true</defense>
+				<debuff>true</debuff>
+				<aoe>3.5</aoe><!--will not consider casting defensively if any ally within this range is a shooter-->
+				<mfds><li>Natural</li></mfds>
+				<rangeOffset>35</rangeOffset><!--in this case this is more of a 'range override' than an offset. This is the radius in which it can 'see' hostile shooters-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="WordOfSerenity"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_WordOfSerenity">
+				<healing>true</healing>
+				<utility>true</utility>
+				<aoe>20</aoe><!--Word psycasts will only be cast on valid targets within [this value*the caster's moving]cells-->
+				<requiresLoS>false</requiresLoS>
+				<mfds><li>Dignified</li></mfds>
+				<usableWhileAsleep>true</usableWhileAsleep><!--potentially a time-sensitive life-saver-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Skip"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Skip">
+				<damage>true</damage>
+				<debuff>true</debuff>
+				<defense>true</defense>
+				<healing>true</healing>
+				<utility>true</utility>
+				<usableWhileFleeing>true</usableWhileFleeing>
+				<skipRange>27.9</skipRange><!--mirrors "range" in CompProperties_AbilityTeleport-->
+				<maxBodySize>3.5</maxBodySize><!--see Chaos Skip-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationConditional"><!--stores the 'doctor' and 'patient' targeted by HVPAA's healing use of the Skip psycast, then tells the doctor to tend the patient-->
+		<xpath>/Defs/AbilityDef[defName="Skip"]/comps</xpath>
+		<match Class="PatchOperationAdd">
+			<xpath>/Defs/AbilityDef[defName="Skip"]/comps</xpath>
+			<value>
+			  <li Class="HVPAA.CompProperties_AbilityGiveToDoctor">
+			    <compClass>HVPAA.CompAbilityEffect_GiveToDoctor</compClass>
+			  </li>
+			</value>
+		</match>
+		<nomatch Class="PatchOperationAdd">
+			<xpath>/Defs/AbilityDef[defName="Skip"]</xpath>
+			<value>
+				<comps>
+				  <li Class="HVPAA.CompProperties_AbilityGiveToDoctor">
+					<compClass>HVPAA.CompAbilityEffect_GiveToDoctor</compClass>
+				  </li>
+				</comps>
+			</value>
+		</nomatch>
+	</Operation>
+	<!--level 5-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Berserk"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Berserk">
+				<damage>true</damage>
+				<mfds><li>Morbid</li></mfds>
+				<trapPower>4</trapPower>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Flashstorm"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Flashstorm">
+				<damage>true</damage>
+				<aoe>13.9</aoe>
+				<mfds><li>Flame</li><li>Natural</li></mfds>
+				<ignoreAllPawnsFasterThan>1.5</ignoreAllPawnsFasterThan><!--since it's possible to walk through a Flashstorm w/o getting hit once, we only care about pawn targets if they move really slow or are downed-->
+				<trapPower>8</trapPower>
+				<trapPlacementWorker>HVPAA.TrapPlacementWorker_NoRoof</trapPlacementWorker><!--can't be used as an embedded psycast in a roofed cell, unless the AI has committed to using Embed Psycast there and has literally no other embeddable psycasts-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Invisibility"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Invisibility">
+				<defense>true</defense>
+				<!--doesn't bother ignoring if potential targets have the hediff, because it already ignores anyone who is invisible-->
+				<mfds><li>Minimal</li></mfds>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Farskip"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Farskip">
+				<defense>true</defense>
+				<utility>true</utility>
+				<usableWhileFleeing>true</usableWhileFleeing>
+				<rallyRadius>4</rallyRadius><!--helps nearby same-faction pawns decide whether they have enough time to try joining the circle; is a little smaller than the actual circle radius since the calculation doesn't take obstacles or non-linear paths into account-->
+				<maxRallyTicks>350</maxRallyTicks>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationReplace"><!--the base game's code for Farskip is very heavily contaminated with the idea that only a colonist can/will cast it. Thus, I needed to replace it entirely; the code is identical if a colonist casts it, but also has an alternative branch that enables non-colonists to cast it with intuitive results-->
+	  <xpath>Defs/AbilityDef[defName="Farskip"]/comps/li[@Class="CompProperties_AbilityFarskip"]</xpath>
+	  <value>
+		<li Class="HVPAA.CompProperties_AbilityHVPAAFarskip">
+          <stunTicks>18~60</stunTicks>
+          <clamorType>Ability</clamorType>
+          <clamorRadius>10</clamorRadius>
+        </li>
+	  </value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="WordOfInspiration"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_WordOfInspiration">
+				<utility>true</utility>
+				<aoe>20</aoe>
+				<requiresLoS>false</requiresLoS>
+				<mfds><li>Dignified</li></mfds>
+			</li>
+		</value>
+	</Operation>
+	<!--level 6-->
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="BerserkPulse"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_BerserkPulse">
+				<damage>true</damage>
+				<aoe>2.9</aoe>
+				<mfds><li>Morbid</li></mfds>
+				<allyMultiplier>2.5</allyMultiplier>
+				<trapPower>6</trapPower>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="MassChaosSkip"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_MassChaosSkip">
+				<debuff>true</debuff>
+				<aoe>7.9</aoe>
+				<maxBodySize>3.5</maxBodySize>
+				<scoreOffset>-1</scoreOffset><!--net foe minus ally applicability must exceed this to be eligible for casting. Don't make this a positive value, or the AI will become very trigger-happy with MC Skip. More than it already is, I mean-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="ManhunterPulse"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_MHPulse">
+				<damage>true</damage>
+				<aoe>27.9</aoe>
+				<mfds><li>Morbid</li><li>Natural</li></mfds>
+				<animalRightsViolation>true</animalRightsViolation>
+				<trapPower>4</trapPower>
+				<trapPlacementWorker>HVPAA.TrapPlacementWorker_NearWildAnimals</trapPlacementWorker><!--can't be used as an embedded psycast if there are no wildmen/animals in 27.9c and there are less than 25 such pawns in the whole map-->
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="Neuroquake"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Neuroquake">
+				<damage>true</damage>
+				<utility>true</utility>
+				<usableWhileFleeing>true</usableWhileFleeing>
+				<aoe>60</aoe>
+				<requiresLoS>false</requiresLoS>
+				<rallyRadius>5</rallyRadius><!--helps nearby allied pawns decide whether they have enough time to get into the safe zone; is a little smaller than the actual safe zone radius since the calculation doesn't take obstacles or non-linear paths into account-->
+				<maxRallyTicks>750</maxRallyTicks>
+				<minEvil>2.5</minEvil><!--a psycaster that is this evil or less can't cast Neuroquake.-->
+				<chancePerEvil>0.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
+				<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
+				<letterLabel>HVPAA_NQ_label</letterLabel>
+				<letterText>HVPAA_NQ_text</letterText>
+				<letterLabelF>HVPAA_NQ_labelF</letterLabelF>
+				<letterTextF>HVPAA_NQ_textF</letterTextF>
+				<letterDef>ThreatBig</letterDef>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAddModExtension">
+		<xpath>/Defs/AbilityDef[defName="BulletShield"]</xpath>
+		<value>
+			<li Class="HVPAA.UseCaseTags_Skipshield">
+				<defense>true</defense>
+				<aoe>45</aoe><!--this is the radius in which the caster "detects" ally and foe shooters (including ranged pawns and turrets), as well as ally and foe melee pawns-->
+				<avoidMakingTooMuchOfThing>BulletShieldPsychic</avoidMakingTooMuchOfThing>
+			</li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Hauts' Offbeat Psycasts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Agonize"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Agonize">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>HVP_PsychicAgony</avoidTargetsWithHediff>
+							<alsoCantHave>HVP_PsychicAgonyMech</alsoCantHave>
+							<mfds><li>Morbid</li></mfds>
+							<consciousnessMalus>0.1</consciousnessMalus><!--the effect on mechanoids-->
+							<painOffset>0.2</painOffset><!--magnitude of the effect on flesh and bloods-->
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_EnergyTransfer"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_EnergyTransfer">
+							<debuff>true</debuff>
+							<utility>true</utility>
+							<mfds><li>Minimal</li></mfds>
+							<affectedNeeds>
+							  <li><key>Rest</key><value>1</value></li>
+							  <!--<li MayRequire="Ludeon.RimWorld.Biotech"><key>MechEnergy</key><value>2.325</value></li>-->
+							</affectedNeeds>
+							<relevantFallRateStats>
+							  <li>RestFallRateFactor</li>
+							  <li MayRequire="Ludeon.RimWorld.Biotech">MechEnergyUsageFactor</li>
+							</relevantFallRateStats><!--allies that have to go to sleep or recharge more frequently are a priority-->
+							<baseFractionTransferred>0.5</baseFractionTransferred><!--mirror from actual psycast-->
+							<donorIsUnusableBelow>0.2</donorIsUnusableBelow><!--won't take energy from someone who is at this value or below-->
+							<donorToRecipientRange>29.9</donorToRecipientRange><!--ditto-->
+							<missingEnergyThresholdForUtility>0.8</missingEnergyThresholdForUtility><!--you must be missing at least this much energy in order for Utility usage to consider you a valid recipient-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Biotech</li>
+					</mods><!--since a lack of mech energy is waaaaaay more consequential than a lack of sleep it gets a higher weighting. the values for each key are a multiplier when considering the donor's energies, but a power when considering the
+												recipient's. X to the 2.325 is approximately enough that a mech energy of 50% will meet the 'missing energy threshold for utility' below, but 51% won't-->
+					<match Class="PatchOperationAdd">
+						<xpath>/Defs/AbilityDef[defName="HVP_EnergyTransfer"]/modExtensions/li[@Class="HVPAA_HOP.UseCaseTags_EnergyTransfer"]/affectedNeeds</xpath>
+						<value>
+						  <li><key>MechEnergy</key><value>2.325</value></li>
+						</value>
+					</match>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_SinkholeSkip"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_SinkholeSkip">
+							<utility>true</utility>
+							<mfds><li>Minimal</li><li>Natural</li></mfds>
+							<avoidMakingTooMuchOfThing>HVP_TrapSinkhole</avoidMakingTooMuchOfThing><!--the thingDef spawned-->
+							<thingLimit>20</thingLimit><!--don't use a target spot if there are already this many sinkhole traps in range of the target spot-->
+							<aoe>34.9</aoe><!--does not correspond to the ability's radius (since it has none), instead this is the range of the thingLimit check...-->
+							<spontaneousCastChance>0.1</spontaneousCastChance><!--can only cast IF there are foes on the map, OR if this chance is beat-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Stifle"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Stifle">
+							<debuff>true</debuff>
+							<utility>true</utility>
+							<mfds><li>Dignified</li><li>Minimal</li></mfds>
+							<usableWhileAsleep>true</usableWhileAsleep><!--potentially a time-sensitive insanity-preventer-->
+							<hediff>HVP_StifleBuff</hediff>
+							<canReplaceCastsThisRelativelyWeak>0.33</canReplaceCastsThisRelativelyWeak><!--if the hediff is detected on a target, but its power does not exceed the power THIS caster would have when applying it times this value, then disregard that target-->
+							<psysensPenaltyPerCasters>0.5</psysensPenaltyPerCasters><!--per 100% caster's psysens, the target loses 50%, so.-->
+							<selfApplicabilityFactor>0.4</selfApplicabilityFactor><!--when using it on an ally, applicability of self as target is multiplied by this amount (<1 since they'd weaken their future Stifles if they apply to self)-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Surestep"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_SpeedBuff">
+							<defense>true</defense>
+							<utility>true</utility>
+							<avoidTargetsWithHediff>HVP_SurestepBuff</avoidTargetsWithHediff>
+							<usableWhileFleeing>true</usableWhileFleeing><!--to GTFO-->
+							<chanceToUtilityCast>0.15</chanceToUtilityCast><!--otherwise you will hear trading caravans use it ALL the time, it is SO annoying-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_WordOfWarning"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_WordOfWarning">
+							<utility>true</utility>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>HVP_AndSoForewarned</avoidTargetsWithHediff>
+							<mfds><li>Dignified</li></mfds>
+							<flatApplicability>5</flatApplicability><!--the applicability of the best target is this fixed value-->
+							<nonHumanMarketValueCutoff>1500</nonHumanMarketValueCutoff><!--non-humanlikes below this market value can never be targeted-->
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Carezone"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Carezone">
+							<healing>true</healing>
+							<aoe>3.5</aoe>
+							<avoidMakingTooMuchOfThing>HVP_CarezoneActual</avoidMakingTooMuchOfThing><!--don't count allies who are already in range of one, since they don't stack-->
+							<thingLimit>1</thingLimit>
+							<antiDisease>true</antiDisease><!--if you have VIEMS, Holy Disease adherents will not cast any ability w the potential to cure a disease-->
+							<usableWhileAsleep>true</usableWhileAsleep><!--every second of injury healing and immunity gain counts-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_ParalysisLink"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_ParalysisLink">
+							<debuff>true</debuff>
+							<disabledAtPercentEntropy>0.3</disabledAtPercentEntropy><!--don't cast if already beyond this proportion of ur neural heat bar-->
+							<avoidTargetsWithHediff>HVP_ParalyzingBuildup</avoidTargetsWithHediff>
+							<mfds><li>Minimal</li></mfds>
+							<severityPerDay>60000</severityPerDay>
+							<dontUseIfHave>
+							  <li>HVP_HiddenParalysisMaintainer</li>
+							  <li>HVP_HiddenBoostMaintainer</li>
+							  <li MayRequire="metalocif.coolerpsycasts">HVP_HiddenTornadoMaintainer</li>
+							</dontUseIfHave><!--essentially, won't cast another Paralsyis Link while already maintaining at least one other Link (Psyphon Link excepted)-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Sensitize"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_MyStrengthIsYours">
+							<defense>true</defense>
+							<utility>true</utility>
+							<avoidTargetsWithHediff>HVP_SensitizeBuff</avoidTargetsWithHediff>
+							<dontCastIfSufferingFrom>HVP_SensitizeNerf</dontCastIfSufferingFrom>
+							<ownEntropyCost>10</ownEntropyCost><!--when calculating how much neural heat the caster has, deduct this much.-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_SkillTransfer"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_SkillTransfer">
+							<utility>true</utility>
+							<mfds><li>Morbid</li></mfds>
+							<donorToRecipientRange>19.9</donorToRecipientRange><!--property mirror-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_TetherSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_TetherSkip">
+							<debuff>true</debuff>
+							<avoidTargetsWithHediff>HVP_TetherSkipbound</avoidTargetsWithHediff>
+							<maxBodySize>3.5</maxBodySize>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_WordOfContemplation"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_WordOfConte">
+							<utility>true</utility>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>HVP_ContemplateThis</avoidTargetsWithHediff>
+							<brainEfficiencyFactor>0.6</brainEfficiencyFactor><!--slightly more severe than the actual 0.7x because safety never hurt anyone-->
+							<mfds><li>Dignified</li></mfds>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_DropPodCall"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_DPC">
+							<utility>true</utility>
+							<mfds><li>Dignified</li></mfds>
+							<spontaneousCastChance>0.1</spontaneousCastChance><!--chance to use if factionless or in faction-owned map-->
+							<spontaneousCastChanceAway>0.001</spontaneousCastChanceAway><!--chance to use otherwise-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_LightningStrike"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Lightning">
+							<damage>true</damage>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<trapPower>5</trapPower>
+							<trapPlacementWorker>HVPAA.TrapPlacementWorker_NoRoof</trapPlacementWorker>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_PsyphonLink"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_PsyphonLink">
+							<debuff>true</debuff>
+							<healing>true</healing>
+							<avoidTargetsWithHediff>HVP_PsyphonSucker</avoidTargetsWithHediff>
+							<mfds><li>Dignified</li></mfds>
+							<canDebuffBelowPsyfocusLvl>0.8</canDebuffBelowPsyfocusLvl><!--only cast as debuff if psyfocus below this level-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Shield"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Shield">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>HVP_PsychicShield</avoidTargetsWithHediff>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<scanForShootersDistance>65</scanForShootersDistance><!--the caster only senses hostile shooters w/in this range, which is the same range as pawns' AI is supposed to detect hostiles...-->
+							<aoe>40</aoe><!--...but for each possible target that could receive a Shield, only those sensed shooters w/in this range of the possible target are factored into whether or not it is the ideal target-->
+							<spontaneousCastChance>0.25</spontaneousCastChance><!--can only cast IF there are foes on the map, AND if this chance is beat. It's not that Shield is OP, it's that evaluating its applicability takes a LOT of calculation for a low/mid-tier psycast-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Tremorzone"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Tremorzone">
+							<debuff>true</debuff>
+							<aoe>5.9</aoe>
+							<mfds><li>Natural</li></mfds>
+							<avoidMakingTooMuchOfThing>HVP_TremorzoneActual</avoidMakingTooMuchOfThing><!--don't count allies who are already in range of one, since they don't stack-->
+							<speedMax>9</speedMax><!--you want to catch faster foes in Tremorzone, but if they're too fast they might be able to escape it easily. So, we stop affording extra applicability to those over this value of move speed-->
+							<tickPeriodicity>100</tickPeriodicity>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_VaultSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_VaultSkip">
+							<utility>true</utility>
+							<aoe>4.9</aoe>
+							<mfds><li>Minimal</li></mfds>
+							<minNetValueToSteal>1000</minNetValueToSteal><!--only cast if it would pocket at least this much market value...-->
+							<minCountToSteal>20</minCountToSteal><!--...or if there's this many distinct items nearby. each stack counts as one item.-->
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_BoosterLink"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_BoosterLink">
+							<defense>true</defense>
+							<utility>true</utility>
+							<disabledAtPercentEntropy>0.3</disabledAtPercentEntropy><!--don't cast if already beyond this proportion of ur neural heat bar-->
+							<avoidTargetsWithHediff>HVP_BoosterBuff</avoidTargetsWithHediff>
+							<dontUseIfHave>
+							  <li>HVP_HiddenParalysisMaintainer</li>
+							  <li>HVP_HiddenBoostMaintainer</li>
+							  <li MayRequire="metalocif.coolerpsycasts">HVP_HiddenTornadoMaintainer</li>
+							</dontUseIfHave>
+							<manipCutoff>0.9</manipCutoff><!--same ideas as Focus-->
+							<movingCutoff>0.9</movingCutoff>
+							<chanceToUtilityCast>1</chanceToUtilityCast>
+							<minUtilitySkillLevel>8</minUtilitySkillLevel>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_DropPodCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Flare"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Flare">
+							<meta>true</meta>
+							<avoidTargetsWithHediff>HVP_FlareBuff</avoidTargetsWithHediff>
+							<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+							<minCombatPsyfocusCost>0.04</minCombatPsyfocusCost>
+							<minUtilityPsyfocusCost>0.1</minUtilityPsyfocusCost>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Replicate"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Replicate">
+							<utility>true</utility>
+							<allowedItemCategories><!--property mirrors-->
+							  <li>FoodRaw</li>
+							  <li>Manufactured</li>
+							  <li>ResourcesRaw</li>
+							</allowedItemCategories>
+							<marketValueLimitItem>350</marketValueLimitItem>
+							<marketValueLimitStack>500</marketValueLimitStack>
+							<chanceToUtilityCast>0.05</chanceToUtilityCast>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Skiptheft"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Skiptheft">
+							<debuff>true</debuff>
+							<minApparelArmor>0.4</minApparelArmor><!--apparel that provides less than this much sharp + blunt + (0.4*heat) armor is not considered desirable to steal, and may even inflict a slight malus to applicability-->
+							<inventoryLimit>3</inventoryLimit><!--won't use Skiptheft if there's already this many items in own inventory-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_TurretSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_TurretSkip">
+							<damage>true</damage>
+							<aoe>45.9</aoe>
+							<trapPower>6</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_FluxPulse"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_FluxPulse">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>HVP_PsychicThermalFlux</avoidTargetsWithHediff>
+							<aoe>4</aoe>
+							<mfds><li>Flame</li></mfds>
+							<minComfyTempMod>180</minComfyTempMod><!--a little lower than the actual effect since it decays fast-->
+							<maxComfyTempMod>-180</maxComfyTempMod>
+							<trapPower>6</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_MeteoroidSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_MeteoroidSkip">
+							<damage>true</damage>
+							<aoe>3</aoe>
+							<mfds><li>Natural</li></mfds>
+							<damageType>Bomb</damageType>
+							<ignoreAllPawnsFasterThan>1.5</ignoreAllPawnsFasterThan><!--ignores currently moving pawns faster than this since they'll almost certainly be outside the blast radius by the time the meteoroid lands-->
+							<chanceCanTargetPawns>0.2</chanceCanTargetPawns><!--because this ability's direct damage is very potent and lethal, it needs some artificially enforced stupidity to occasionally not target pawns...-->
+							<chanceCanTargetHarmlessBuildings>0.5</chanceCanTargetHarmlessBuildings><!--...and to sometimes favor firing at walls, bridges, and furniture instead-->
+							<allyMultiplier>2.75</allyMultiplier><!--please stop dropping meteors on yourselves.-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_ReavingSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Reave">
+							<damage>true</damage>
+							<damageType>Hauts_SkipFrag</damageType>
+							<chanceCanTargetPawns>0.2</chanceCanTargetPawns>
+							<chanceCanTargetHarmlessBuildings>0.5</chanceCanTargetHarmlessBuildings>
+							<trapPower>5</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_ThermalPinhole"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_ThermoPinhole">
+							<healing>true</healing>
+							<utility>true</utility>
+							<avoidMakingTooMuchOfThing>HVP_ThermoPinhole</avoidMakingTooMuchOfThing><!--doubling up does very little-->
+							<aoe>5.8</aoe>
+							<thingLimit>2</thingLimit><!--stops making them for healing purposes if there are already 2 in half the cast-range of the caster-->
+							<mfds><li>Natural</li></mfds>
+							<antiFlame>true</antiFlame>
+							<light>true</light><!--stops Darkness-adherent psycasters from EVER using this psycast-->
+							<usableWhileAsleep>true</usableWhileAsleep><!--potentially a time-sensitive life-saver-->
+							<stableTempRange>19~23</stableTempRange>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_WordOfSafety"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_WordOfSafety">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>HVP_GetToSafety</avoidTargetsWithHediff>
+							<alsoAvoid>HVP_Intervened</alsoAvoid>
+							<mfds><li>Dignified</li></mfds>
+							<antiDisease>true</antiDisease>
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_WordOfSterility"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_WordOfSterility">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<antiDisease>true</antiDisease>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<minSeverityToBeCured>0.15</minSeverityToBeCured><!--curable conditions w less than this severity are not considered-->
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_EvictionSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Evict">
+							<damage>true</damage>
+							<mfds><li>Dignified</li><li>Minimal</li></mfds>
+							<chanceToCast>0.65</chanceToCast><!--this shouldn't always be pulled out as the weapon of choice-->
+							<additionalCastingTicks>420</additionalCastingTicks><!--adds an additional 7 seconds to the cast time-->
+							<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP...-->
+							<letterOnlyIfPlayerTarget>true</letterOnlyIfPlayerTarget><!--...but only if you'd care about the target-->
+							<letterLabel>HVPAA_Evict_label</letterLabel>
+							<letterText>HVPAA_Evict_text</letterText>
+							<letterLabelF>HVPAA_Evict_labelF</letterLabelF>
+							<letterTextF>HVPAA_Evict_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+							<bodySizeThreshold>3.5</bodySizeThreshold><!--anything below this size must have a market value over 5000 to be a valid target-->
+							<psyfocusCostPerVictimSize><!--property mirror-->
+							  <points>
+								<li>(0.1, 0.025)</li>
+								<li>(1, 0.075)</li>
+								<li>(4, 0.2)</li>
+								<li>(10, 0.6)</li>
+							  </points>
+							</psyfocusCostPerVictimSize>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_FortuneCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_HiveCall"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_HiveCall">
+							<damage>true</damage>
+							<mfds><li>Natural</li></mfds>
+							<allyBuildingScore>5</allyBuildingScore><!--Hive Call targeting evaluates up to 5 random points it could be cast at; each point has a score based on the presence of allied/foe buildings and pawns around it-->
+							<allyPawnScore>5</allyPawnScore>
+							<foeBuildingScore>0.1</foeBuildingScore>
+							<foePawnScore>1</foePawnScore>
+							<minScoreToCast>0</minScoreToCast><!--only if the best random point has a [foe score minus ally score] greater than this value can Hive Call be cast-->
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="HVP_HiveCall"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_RejuvenationSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_RJSkip">
+							<healing>true</healing>
+							<antiScar>true</antiScar>
+							<usableWhileAsleep>true</usableWhileAsleep><!--is a lifesaver-->
+							<avoidTargetsWithHediff>HVP_Rejuvenation</avoidTargetsWithHediff>
+							<ticksToFatalBloodLossCutoff>10000</ticksToFatalBloodLossCutoff><!--targets anyone w <4h til fatal exsanguination...-->
+							<minInjurySeverity>40</minInjurySeverity><!--or at least 40 injury damage...-->
+							<minMissingPartSeverity>10.1</minMissingPartSeverity><!--or at least 10hp of missing body parts...-->
+							<bonusBrainInjurySeverity>10</bonusBrainInjurySeverity><!--and brain injuries count for +10 injury points-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="HVP_Stuporzone"]</xpath>
+					<value>
+						<li Class="HVPAA_HOP.UseCaseTags_Stuporzone">
+							<debuff>true</debuff>
+							<aoe>5.9</aoe>
+							<mfds><li>Morbid</li></mfds>
+							<avoidMakingTooMuchOfThing>HVP_StuporzoneActual</avoidMakingTooMuchOfThing><!--don't count allies who are already in range of one, since they don't stack-->
+							<consciousnessCurve>
+							  <points>
+								<li>0, 1</li>
+								<li>1, 0.5</li>
+							  </points>
+							</consciousnessCurve>
+							<allyMultiplier>2.75</allyMultiplier>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Combat Psycasts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CP_LightPsychicSlug"]</xpath>
+					<value>
+						<li Class="HVPAA_CombatPsycasts.UseCaseTags_SlugPellet">
+							<damage>true</damage>
+							<damageType>Blunt</damageType>
+							<baseApplicability>0.4</baseApplicability><!--ideally psycasters should use anything OTHER than this, because if you aren't armored raiders will shred you with this, and if you are armored they should use something more effective instead-->
+							<incomingDamageResistCutoff>1</incomingDamageResistCutoff><!--won't target anyone w/ less than 100% incoming damage factor-->
+							<specificDamageResistCutoff>1</specificDamageResistCutoff><!--or blunt damage factor-->
+							<disabledAtPercentEntropy>0.75</disabledAtPercentEntropy><!--doesn't stop it from continuing to be cast, but does stop it from being newly cast if most of the neural heat bar is already used up-->
+							<chanceCanTargetHarmlessBuildings>0.2</chanceCanTargetHarmlessBuildings><!--can sometimes pick on random non-turret non-trap buildings, though even when this chance check is passed it should be somewhat rare if there are actual targets in range-->
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CP_MediumPsychicSlug"]</xpath>
+					<value>
+						<li Class="HVPAA_CombatPsycasts.UseCaseTags_SlugPellet">
+							<damage>true</damage>
+							<damageType>Blunt</damageType>
+							<baseApplicability>0.4</baseApplicability>
+							<incomingDamageResistCutoff>0.1</incomingDamageResistCutoff>
+							<specificDamageResistCutoff>0.1</specificDamageResistCutoff>
+							<disabledAtPercentEntropy>0.75</disabledAtPercentEntropy>
+							<chanceCanTargetHarmlessBuildings>0.1</chanceCanTargetHarmlessBuildings>
+						</li>
+					</value>
+				</li>
+				<!--level 5: psychic choke is disabled because ONE, it requires me to do the same super-invasive reflection-heavy patch I did for the slugs and pellets except I was fine with those since they were all handled by 1 patch, and TWO it's super duper op.-->
+				<li Class="PatchOperationAddModExtension"><!--fym this is level 5... it kinda sucks. You get Berserk at this level!-->
+					<xpath>/Defs/AbilityDef[defName="CP_PsychicGrenade"]</xpath><!--save me Bruno Mars-->
+					<value>
+						<li Class="HVPAA_CombatPsycasts.UseCaseTags_Grenada">
+							<damage>true</damage>
+							<damageType>Blunt</damageType>
+							<aoe>1.5</aoe>
+							<chanceCanTargetBuildings>0.75</chanceCanTargetBuildings><!--likes casting it on buildings-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CP_PsychicPellets"]</xpath>
+					<value>
+						<li Class="HVPAA_CombatPsycasts.UseCaseTags_SlugPellet">
+							<damage>true</damage>
+							<damageType>Blunt</damageType>
+							<baseApplicability>1</baseApplicability>
+							<incomingDamageResistCutoff>0.75</incomingDamageResistCutoff>
+							<specificDamageResistCutoff>0.75</specificDamageResistCutoff>
+							<disabledAtPercentEntropy>0.75</disabledAtPercentEntropy>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CP_BrainExploder"]</xpath>
+					<value>
+						<li Class="HVPAA_CombatPsycasts.UseCaseTags_DeathAttack">
+							<damage>true</damage>
+							<mfds><li>Morbid</li></mfds>
+							<chanceToCast>0.65</chanceToCast>
+							<minMarketValue>5000</minMarketValue><!--only employed against pawns at or over this value-->
+							<additionalCastingTicks>420</additionalCastingTicks><!--cast needs to be longer if you want to be able to stop it-->
+							<sendLetter>true</sendLetter>
+							<letterOnlyIfPlayerTarget>true</letterOnlyIfPlayerTarget><!--you GOTTA know if this is happening to you-->
+							<letterLabel>HVPAA_BExploder_label</letterLabel>
+							<letterText>HVPAA_BExploder_text</letterText>
+							<letterLabelF>HVPAA_BExploder_labelF</letterLabelF>
+							<letterTextF>HVPAA_BExploder_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CP_HeavyPsychicSlug"]</xpath>
+					<value>
+						<li Class="HVPAA_CombatPsycasts.UseCaseTags_SlugPellet">
+							<damage>true</damage>
+							<damageType>Blunt</damageType>
+							<baseApplicability>1</baseApplicability>
+							<incomingDamageResistCutoff>-1</incomingDamageResistCutoff><!--you may hit anyone with this-->
+							<specificDamageResistCutoff>-1</specificDamageResistCutoff>
+							<chanceCanTargetPawns>0.35</chanceCanTargetPawns><!--but only sometimes. this thing can oneshot, and even if blocked by armor it can still almost oneshot if it hits the torso-->
+							<chanceCanTargetHarmlessBuildings>0.025</chanceCanTargetHarmlessBuildings><!--very rare chance to warp in, Yamato a single Supply Depot, and die-->
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>More Psycasts (Continued)</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_AwakenMechanites"]</xpath>
+					<value>
+						<li Class="HVPAA_MorePsycasts.UseCaseTags_MechDisease">
+							<utility>true</utility>
+							<avoidTargetsWithHediff>FibrousMechanites</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<manipCutoff>0.9</manipCutoff><!--the comparison was  to Focus, right?-->
+							<movingCutoff>0.9</movingCutoff>
+							<painOffset>0.3</painOffset><!--1.5x as much as the actual pain initially inflicted by the disease. It's not perfect, but it acts as a soft safety net for anticipating the increase in pain later-->
+							<chanceToUtilityCast>1</chanceToUtilityCast>
+							<minUtilitySkillLevel>8</minUtilitySkillLevel>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_HeartAttack"]</xpath>
+					<value>
+						<li Class="HVPAA_MorePsycasts.UseCaseTags_HeartAttack"><!--so then this mfer whips out ANOTHER STAND, that was INSIDE the hand of his Stand-->
+							<damage>true</damage>
+							<avoidTargetsWithHediff>HeartAttack</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<painOffset>0.4</painOffset>
+							<consciousnessFactor>0.5</consciousnessFactor>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="MorePsycasts_Entomb"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Entomb">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Extra Psycasts (Continued)</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_AccelerateHealing"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_XLR8Dheal">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>ExtraPsycasts_AcceleratedHealing</avoidTargetsWithHediff>
+							<antiDisease>true</antiDisease>
+							<combatApplicabilityFactor>0.1</combatApplicabilityFactor><!--useless in the heat of combat, but if there's literally nothing else to do w your psycasts you might as well start using it-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Pyrokinesis"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_Pyrokinesis">
+							<damage>true</damage>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<ignoreAllPawnsFasterThan>1.5</ignoreAllPawnsFasterThan><!--they'll dodge if they're moving and are faster than this-->
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Precognition"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_Precog">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>ExtraPsycasts_Precognitating</avoidTargetsWithHediff>
+							<foeScanRange>29.9</foeScanRange><!--arbitrarily only start precogging out if there's a foe in this radius-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SoothingThoughts"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_SootheMind">
+							<debuff>true</debuff>
+							<healing>true</healing>
+							<avoidTargetsWithHediff>HVPAA_MindSoothe</avoidTargetsWithHediff>
+							<movingFactor>0.6</movingFactor>
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Stasis"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_LifeSavingComa">
+							<healing>true</healing>
+							<mfds><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>ExtraPsycasts_StasisTorpor</avoidTargetsWithHediff>
+							<ticksToFatalBloodLossCutoff>10000</ticksToFatalBloodLossCutoff><!--only targets pawns who have this long to live or less before blood loss gets them, since Stasis is only used by the AI to reduce blood loss-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_Fortitude"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_DurabilityBuff">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>ExtraPsycasts_Fortified</avoidTargetsWithHediff>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_BrainBooster"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_BrainBooster">
+							<utility>true</utility>
+							<avoidTargetsWithHediff>ExtraPsycasts_BrainBoost</avoidTargetsWithHediff>
+							<chanceToUtilityCast>1</chanceToUtilityCast>
+							<baseApplicability>5</baseApplicability>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_BodyBooster"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_BodyBooster">
+							<defense>true</defense>
+							<utility>true</utility>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<avoidTargetsWithHediff>ExtraPsycasts_BodyBoost</avoidTargetsWithHediff>
+							<manipCutoff>0.9</manipCutoff>
+							<moveSpeedCutoff>1.5</moveSpeedCutoff>
+							<chanceToUtilityCast>1</chanceToUtilityCast>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_SenseThoughts"]</xpath>
+					<value>
+						<li Class="HVPAA_EPC.UseCaseTags_SenseThoughts">
+							<utility>true</utility>
+							<avoidTargetsWithHediff>ExtraPsycasts_SensingThoughts</avoidTargetsWithHediff>
+							<chanceToUtilityCast>0.01</chanceToUtilityCast><!--traders and hirable sellcasts ignore this chance, but everyone else must pass this chance check in order to use Sense Thoughts-->
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ExtraPsycasts_PsyLance"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_XavierAttack">
+							<damage>true</damage>
+							<mfds><li>Morbid</li></mfds>
+							<chanceToCastHumanlike>0.35</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
+							<chanceToCastColonist>0.05</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
+							<additionalCastingTicks>75</additionalCastingTicks><!--adds an additional 1.25 seconds to the cast time-->
+							<trapPower>5</trapPower>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Sleepy's More Psycasts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ArcticPinhole"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ArcticPinhole">
+							<defense>true</defense>
+							<healing>true</healing>
+							<aoe>15</aoe>
+							<avoidMakingTooMuchOfThing>SLP_ETH_ArcticPinhole</avoidMakingTooMuchOfThing>
+							<thingLimit>2</thingLimit>
+							<mfds><li>Natural</li></mfds>
+							<light>true</light>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<scoreFactor>1</scoreFactor><!--see supernova pinhole-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Haemostasis"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_BloodStaunch">
+							<healing>true</healing>
+							<mfds><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_Haemostasis</avoidTargetsWithHediff>
+							<ticksToFatalBloodLossCutoff>20000</ticksToFatalBloodLossCutoff><!--only targets pawns who have this long to live or less before blood loss gets them, since Haemostasis is so psyfocus-expensive-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<scalesOffPsysens>true</scalesOffPsysens>
+							<aoe>20</aoe><!--since it has the same range as a Word psycast, we do the same check-->
+							<requiresLoS>false</requiresLoS>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Ignite"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Ignite">
+							<utility>true</utility>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_StaticBurst"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_EMPPulse">
+							<debuff>true</debuff>
+							<aoe>4.5</aoe>
+							<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less EMP friendly fire. does mean you also see slightly less use of it in tight melees-->
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Chemskip"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Chemskip">
+							<damage>true</damage>
+							<mfds><li>Morbid</li></mfds>
+							<chance>0.2</chance>
+							<minMarketValue>700</minMarketValue>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_HealingBoost"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_ThisIsHowWeHeal">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>SLP_Psycast_HealingBoost</avoidTargetsWithHediff>
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ImmunityBoost"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Immunize">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>SLP_Psycast_ImmunityBoost</avoidTargetsWithHediff>
+							<antiDisease>true</antiDisease>
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Calm"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_WordOfCalm">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>SLP_Calm</avoidTargetsWithHediff>
+							<mfds><li>Dignified</li></mfds>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_WordOfFriendship"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_WordOfLove">
+							<utility>true</utility>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<avoidTargetsWithHediff>SLP_PsychicFriendship</avoidTargetsWithHediff>
+							<mfds><li>Dignified</li></mfds>
+							<minAge>3</minAge>
+							<mustMatchOrientation>false</mustMatchOrientation>
+							<prisonerRelationOffset>25</prisonerRelationOffset>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_WordOfVigor"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_WordOfVigor">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<restCutoff>0.1</restCutoff><!--how low your rest bar needs to be for the AI to consider you for Vigoration. I can't imagine spending 35% psyfocus to alleviate 50% rest need for anything other than an emergency. If you disagree, raise this value-->
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ComfortShield"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ElementalShield_Melee">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>SLP_ComfortShield</avoidTargetsWithHediff>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<helpsVsHeat>true</helpsVsHeat><!--enables it to care about prospective targets w insufficient max comfy temp-->
+							<helpsVsChill>true</helpsVsChill><!--for min comfy temp-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Dart"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Dart">
+							<utility>true</utility>
+							<mfds><li>Dignified</li><li>Natural</li></mfds>
+							<aoe>9</aoe>
+							<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW before it lands on your dog or something-->
+							<letterLabel>HVPAA_Dart_label</letterLabel>
+							<letterText>HVPAA_Dart_text</letterText>
+							<letterLabelF>HVPAA_Dart_labelF</letterLabelF>
+							<letterTextF>HVPAA_Dart_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+							<trapPower>8</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Dash"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Dash">
+							<defense>true</defense>
+							<utility>true</utility>
+							<avoidTargetsWithHediff>SLP_Psycast_Dash</avoidTargetsWithHediff>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<chanceToUtilityCast>0.04</chanceToUtilityCast><!--it's expensive-->
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_EndoPinhole"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ArcticPinhole">
+							<healing>true</healing>
+							<aoe>15</aoe>
+							<avoidMakingTooMuchOfThing>SLP_ETH_EndothermicPinhole</avoidMakingTooMuchOfThing>
+							<thingLimit>5</thingLimit>
+							<mfds><li>Natural</li></mfds>
+							<light>false</light><!--doesn't give off light.-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<scoreFactor>0.03</scoreFactor>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Engulf"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_FIYAH">
+							<damage>true</damage>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<aoe>2.5</aoe>
+							<ignoreAllPawnsFasterThan>5</ignoreAllPawnsFasterThan>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_FlashHeal"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_FlashHeal">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>SLP_Psycast_FlashHeal</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<painOffset>0.2</painOffset>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Flashstep"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Flashstep">
+							<damage>true</damage>
+							<defense>true</defense>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<maxBodySize>3.5</maxBodySize>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_MassBurden"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_MassBurden">
+							<debuff>true</debuff>
+							<aoe>3.9</aoe>
+							<avoidTargetsWithHediff>PsychicBurden</avoidTargetsWithHediff>
+							<imposedMovingCap>0.4</imposedMovingCap>
+							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_StunPulse"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_MassBurden">
+							<debuff>true</debuff>
+							<aoe>2.9</aoe>
+							<mfds><li>Morbid</li></mfds>
+							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_RegenMinor"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_SupRegen">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>SLP_Psycast_SuperficialRegen</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<painOffset>0.2</painOffset>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<antiScar>true</antiScar>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_SupernovaPinhole"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_SupernovaPinhole">
+							<defense>true</defense>
+							<healing>true</healing>
+							<utility>true</utility>
+							<aoe>15</aoe>
+							<avoidMakingTooMuchOfThing>SLP_ETH_SupernovaPinhole</avoidMakingTooMuchOfThing>
+							<thingLimit>2</thingLimit>
+							<mfds><li>Natural</li></mfds>
+							<light>true</light>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<scoreFactor>0.03</scoreFactor><!--makes Endo less desirable to use compared to other light-making pinholes. If you have another one useful for the situation, you'll use it 'cause it's cheaper for the same effect-->
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_RegenMajor"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_DeepRegen">
+							<healing>true</healing>
+							<mfds><li>Morbid</li></mfds>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<painOffset>0.25</painOffset>
+							<consciousnessMalus>-0.15</consciousnessMalus>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<antiScar>true</antiScar>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Interdiction"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Interdict">
+							<damage>true</damage>
+							<defense>true</defense>
+							<maxBodySize>3.5</maxBodySize>
+							<mfds><li>Dignified</li></mfds>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Skipscreen"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Skipscreen">
+							<defense>true</defense>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Biotech</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="SLP_PSY_Energise"]</xpath>
+								<value>
+									<li Class="HVPAA_Sleepy.UseCaseTags_Energise">
+										<healing>true</healing>
+										<aoe>20</aoe>
+										<requiresLoS>false</requiresLoS>
+										<daysToRunOutOfEnergyCutoff>1</daysToRunOutOfEnergyCutoff>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_MassBeckon"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_MassBeckon">
+							<debuff>true</debuff>
+							<aoe>2.9</aoe>
+							<mfds><li>Dignified</li><li>Morbid</li></mfds>
+							<allyMultiplier>1.65</allyMultiplier>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_PotentialUnleashed"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_PU">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>SLP_Psycast_PU</avoidTargetsWithHediff>
+							<minDPSxPsysensToBoost>20</minDPSxPsysensToBoost><!--since it costs so much, takes so long to cast (by combat standards at least), and has a strong post-high downside, only pawns w at least this much melee DPS should be considered-->
+							<aoe>5</aoe>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Recondition"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Recondition">
+							<utility>true</utility>
+							<minMarketValue>100</minMarketValue><!--only uses it if the item has at least this much marketvalue-->
+							<minMaxHp>200</minMaxHp><!--or at least this much max hp-->
+							<minMissingPercentHp>0.9</minMissingPercentHp><!--also, it must be missing at least this much of its hp-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Anomaly</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="SLP_PSY_Revitalise"]</xpath>
+								<value>
+									<li Class="HVPAA_Sleepy.UseCaseTags_Revitalise">
+										<healing>true</healing>
+										<usableWhileAsleep>true</usableWhileAsleep>
+										<painOffset>0.25</painOffset>
+										<aoe>20</aoe>
+										<requiresLoS>false</requiresLoS>
+										<antiScar>true</antiScar>
+										<mfds><li>Void</li></mfds>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Resurrect"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_Resurrect">
+							<utility>true</utility>
+							<mfds><li>Dignified</li><li>Morbid</li></mfds>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_FertilitySkip"]</xpath>
+					<value>
+						<li Class="HVPAA_Sleepy.UseCaseTags_FertSkip">
+							<utility>true</utility>
+							<mfds><li>Natural</li></mfds>
+							<aoe>1.9</aoe>
+							<minFertilizableCells>2</minFertilizableCells><!--a single cell does not justify 80% psyfocus, but two might-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Superskip"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Skip">
+							<damage>true</damage>
+							<debuff>true</debuff>
+							<defense>true</defense>
+							<healing>true</healing>
+							<utility>true</utility>
+							<requiresLoS>false</requiresLoS>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<scoreFactor>0.65</scoreFactor><!--we want this to be marginally less lucrative than Skip (the level 6 to 4 differential means this is 150% as valuable), but it's like 3x as expensive so it should only be used over Skip when doing things Skip can't-->
+							<skipRange>38.9</skipRange><!--mirrors "range" in CompProperties_AbilityTeleport-->
+							<maxBodySize>99</maxBodySize>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Sleepy's More Psycasts - Volume 2</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Guidance"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV2.UseCaseTags_Guidance">
+							<utility>true</utility>
+							<aoe>20</aoe><!--Word castrange-->
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_Guidance</avoidTargetsWithHediff>
+							<dontCastBelowThisPsyfocus>0.6</dontCastBelowThisPsyfocus><!--this thing is reasonably expensive for player casting, but for NPCs it has basically no worth other than pissing their (largely non-regenerating) psyfocus down the drain
+																							for your POSSIBLE benefit. since it costs 25%, this ensures they can basically only cast it once, and it'll leave most of their other psycasts castable thereafter-->
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Resonance"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV2.UseCaseTags_MyStrengthIsYours_Melee">
+							<defense>true</defense>
+							<utility>true</utility>
+							<aoe>20</aoe><!--Word castrange-->
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_ResonanceTarget</avoidTargetsWithHediff>
+							<ownValueMultiplier>3</ownValueMultiplier><!--since this thing costs an obscene amount of psyfocus, a candidate must have over this times the net neural heat and psyfocus costs of their own psycasts to be a good target-->
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Command"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Disarm">
+							<debuff>true</debuff>
+							<mfds><li>Minimal</li></mfds>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Extinguish"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Waterskip">
+							<healing>true</healing>
+							<antiFlame>true</antiFlame>
+							<aoe>4.9</aoe>
+							<usableWhileAsleep>true</usableWhileAsleep><!--you should wake up to help put out fires-->
+							<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_HealingBloom"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV2.UseCaseTags_HealAoE">
+							<healing>true</healing>
+							<aoe>3.9</aoe>
+							<avoidTargetsWithHediff>SLP_Psycast_HealingBloom</avoidTargetsWithHediff>
+							<antiDisease>true</antiDisease>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Biotech</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<!--level 2-->
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="SLP_PSY_BeastBond"]</xpath>
+								<value>
+									<li Class="HVPAA_SleepyV2.UseCaseTags_BeastBond">
+										<defense>true</defense>
+										<mfds><li>Natural</li></mfds>
+										<!--<animalRightsViolation>true</animalRightsViolation> yttakin use the non-psycast version all the time, and they're typically Animal Personhood believers, so this should be fine?-->
+										<canTargetTameAnimals>false</canTargetTameAnimals><!--it can't target NPC animals, but the vanilla mechanism can for some reason theoretically target player animals. I target ANY faction-owned pawn please and thank you-->
+									</li>
+								</value>
+							</li>
+							<!--level 4-->
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="SLP_PSY_GasPop"]</xpath>
+								<value>
+									<li Class="HVPAA_SleepyV2.UseCaseTags_Gaspop">
+										<damage>true</damage>
+										<mfds><li>Morbid</li><li>Natural</li></mfds>
+										<aoe>3.5</aoe>
+										<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less EMP friendly fire. does mean you also see slightly less use of it in tight melees-->
+										<trapPower>4</trapPower>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Sleepy's More Psycasts - Volume 3</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Hex"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Hex">
+							<debuff>true</debuff>
+							<avoidTargetsWithHediff>SLP_Psycast_Hex</avoidTargetsWithHediff>
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Clairvoyance"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Clairvoyance">
+							<defense>true</defense>
+							<aoe>3</aoe><!--Word castrange but way shorter. Rarely worth the added travel time and risk to dap up a faraway ally-->
+							<avoidTargetsWithHediff>SLP_Psycast_Clairvoyance</avoidTargetsWithHediff>
+							<sufficientDodgeChanceToIgnore>0.3</sufficientDodgeChanceToIgnore><!--past this point, additional melee dodge chance has reduced effect, so we don't give the buff to people who already have this much-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Fireshield"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ElementalShield_Melee">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>SLP_Psycast_Fireshield</avoidTargetsWithHediff>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<helpsVsFire>true</helpsVsFire><!--makes it heavily prioritize anyone currently aflame and enables it to be used during combat-->
+							<helpsVsHeat>true</helpsVsHeat><!--enables it to care about prospective targets w insufficient max comfy temp-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Sniper"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Sniper">
+							<defense>true</defense>
+							<aoe>3</aoe><!--Word castrange but way shorter. Rarely worth the added travel time and risk to dap up a faraway ally-->
+							<avoidTargetsWithHediff>SLP_Psycast_Sniper</avoidTargetsWithHediff>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Frostbite"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_TemperatureAttack">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+							<avoidExtant>Hypothermia</avoidExtant>
+							<avoidExtantIfThisSevere>0.25</avoidExtantIfThisSevere><!--these abilities have long cast times, and they set the severity to 50% regardless of what it was before. Therefore, I think pawns who already have 25% of the relevant health condition are a waste to target-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ThermalShock"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_TemperatureAttack">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+							<avoidExtant>Heatstroke</avoidExtant>
+							<avoidExtantIfThisSevere>0.25</avoidExtantIfThisSevere>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Huntersmark"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_DurabilityNerf">
+							<debuff>true</debuff>
+							<mfds><li>Morbid</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_HuntersMark</avoidTargetsWithHediff>
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Hypervelocity"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_Hypervelocity">
+							<defense>true</defense>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<aoe>3</aoe><!--Word castrange but way shorter. Rarely worth the added travel time and risk to dap up a faraway ally-->
+							<avoidTargetsWithHediff>SLP_Psycast_Hypervelocity</avoidTargetsWithHediff>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_MassHex"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_MassHex">
+							<debuff>true</debuff>
+							<aoe>2.5</aoe>
+							<avoidTargetsWithHediff>SLP_Psycast_Hex</avoidTargetsWithHediff>
+							<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less Blinding Pulsing friendly fire. does mean you also see slightly less use of it in tight melees-->
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_ParalysingPunch"]</xpath>
+					<value>
+						<li Class="HVPAA_SleepyV3.UseCaseTags_VulcanNervePinch">
+							<debuff>true</debuff>
+							<aoe>5</aoe><!--much shorter than Word castrange. RimWorld combat is like WWI, and you are not the 1917 guy. You aren't. If you get up to go somewhere it better be a short effin trip-->
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Minimal</li></mfds>
+							<chance>0.2</chance><!--only applies if baby mode is on-->
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SLP_PSY_Firestorm"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_FIYAH">
+							<damage>true</damage>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<aoe>4.5</aoe>
+							<ignoreAllPawnsFasterThan>9</ignoreAllPawnsFasterThan>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Cooler Psycasts</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Despair"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Despair">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>CoolPsycasts_DespairHD</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<consciousnessMalus>0.2</consciousnessMalus>
+							<chanceToCast>0.1</chanceToCast><!--its long cast time and high psyfocus cost make it not something you want to cast in combat often-->
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_EaseGravity"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_EaseGravity">
+							<defense>true</defense>
+							<mfds><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>CoolPsycasts_EaseGravityHD</avoidTargetsWithHediff><!--uses it while fleeing, to get into melee combat, or to run to cover faster if doesn't already have this; casts to remove this hediff once not moving-->
+							<usableWhileFleeing>true</usableWhileFleeing>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Emesis"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Emesis">
+							<debuff>true</debuff>
+							<healing>true</healing>
+							<mfds><li>Morbid</li><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_FieldOfFlowers"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Flowers">
+							<utility>true</utility>
+							<mfds><li>Dignified</li><li>Natural</li></mfds>
+							<aoe>2.3</aoe>
+							<plant>Plant_Rose</plant>
+							<chanceToUtilityCast>0.2</chanceToUtilityCast><!--not terribly important; wasting 1.5% psyfocus every attempt will stack up quickly-->
+							<minBeautyForLikelierCasting>0.1</minBeautyForLikelierCasting><!--will cast regardless of factionality or map's faction if below this much Beauty need, but must still pass the chance check first-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_VanometricCharge"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_VC">
+							<damage>true</damage>
+							<healing>true</healing>
+							<utility>true</utility>
+							<damageType>Bomb</damageType><!--inflexible property mirror; damage type is hardcoded-->
+							<keepMechEnergyAbove>0.3</keepMechEnergyAbove><!--as in 30%-->
+							<keepBatteryEnergyAbove>200</keepBatteryEnergyAbove>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Anomaly</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/SkillDef[defName="Shooting"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.CombatRelevantSkill">
+										<toTarget>CoolPsycasts_SkillDrain_Shooting_Down</toTarget>
+										<toCaster>CoolPsycasts_SkillDrain_Shooting_Up</toCaster>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/SkillDef[defName="Melee"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.CombatRelevantSkill">
+										<toTarget>CoolPsycasts_SkillDrain_Melee_Down</toTarget>
+										<toCaster>CoolPsycasts_SkillDrain_Melee_Up</toCaster>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_SkillDrain"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_SkillDrain">
+										<debuff>true</debuff>
+										<mfds><li>Morbid</li></mfds>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Chemfuelskip"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_ChemfuelSkip">
+							<debuff>true</debuff>
+							<aoe>1.9</aoe>
+							<mfds><li>Flame</li></mfds>
+							<avoidTargetsWithHediff>ChemfuelDrenched</avoidTargetsWithHediff>
+							<allyMultiplier>1.25</allyMultiplier>
+							<ignoreAllPawnsFasterThan>1.5</ignoreAllPawnsFasterThan>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Distortion"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Distortion">
+							<debuff>true</debuff>
+							<aoe>7.9</aoe>
+							<mfds><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>CoolPsycasts_DistortionHD</avoidTargetsWithHediff>
+							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_InduceRain"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_InduceRain">
+							<healing>true</healing>
+							<mfds><li>Natural</li><li MayRequire="Arquebus.StagzMerfolk">Stagz_Water</li></mfds>
+							<antiFlame>true</antiFlame>
+							<usableWhileAsleep>true</usableWhileAsleep><!--you should wake up to help put out fires-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Timeshunt"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Timeshunt">
+							<debuff>true</debuff>
+							<mfds><li>Minimal</li></mfds>
+							<chanceToCast>0.1</chanceToCast><!--it's very powerful, but only lasts 6000 ticks and is quite expensive, so dont' use it all the time-->
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Trapraise"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_SinkholeSkip">
+							<utility>true</utility>
+							<mfds><li>Natural</li></mfds>
+							<avoidMakingTooMuchOfThing>CoolPsycasts_TrapSpike</avoidMakingTooMuchOfThing><!--the thingDef spawned-->
+							<thingLimit>20</thingLimit><!--JAWS OF THE WORLD WOLF-->
+							<aoe>34.9</aoe><!--does not correspond to the ability's radius (since it has none), instead this is the range of the thingLimit check...-->
+							<spontaneousCastChance>0</spontaneousCastChance><!--can only cast IF there are foes on the map, OR if this chance is beat-->
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_ChunkRain"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_ChunkRain">
+							<damage>true</damage>
+							<aoe>4.4</aoe><!--wider than the actual explosion radii bc the chunks can fall in a not entirely predictable pattern-->
+							<mfds><li>Natural</li></mfds>
+							<damageType>Bomb</damageType>
+							<ignoreAllPawnsFasterThan>2.5</ignoreAllPawnsFasterThan>
+							<chanceCanTargetPawns>0.2</chanceCanTargetPawns><!--less lethal than Meteoroid Skip per blast, but has more blasts and is lower-level, so similarly constrained by artificial stupidities-->
+							<chanceCanTargetHarmlessBuildings>0.5</chanceCanTargetHarmlessBuildings>
+							<allyMultiplier>2.75</allyMultiplier>
+							<chunkGetRadius>1.9</chunkGetRadius><!--only chunks in this radius can be used as ammo...-->
+							<chunkSkip>Chunkskip</chunkSkip>
+							<chunkGetRadiusIfChunkSkip>25</chunkGetRadiusIfChunkSkip><!--unless you have the Chunkskip ability, then you use this radius instead. (This limit is an arbitrary boundary established for scanning performance, as Chunk Skip actually has no maximum range on the 5 'closest' chunks)-->
+							<minPsyfocusAfterChunkSkipToCast>0.25</minPsyfocusAfterChunkSkipToCast><!--as a level 3 psycast, you need at least this much psyfocus to cast it. Since the AI can Chunk Skip to get ammo for Chunk Rain, it needs to know how much psyfocus it would have left over after skipping to try raining.-->
+							<trapPlacementWorker>HVPAA.TrapPlacementWorker_AdjacentToChunk</trapPlacementWorker><!--this can't actually be embedded. Nevertheless, in case that does become possible, this prevents it from being embedded in a cell that lacks adjacent chunks to rain-->
+						</li>
+					</value>
+				</li>
+					<li Class="PatchOperationAddModExtension">
+						<xpath>/Defs/AbilityDef[defName="Chunkskip"]</xpath><!--allows a pawn w/ both Chunk Skip and Chunk Rain to grab ammo using Chunk Skip. It uses Chunk Skip only if there are chunks in 25c radius but not 1.9c radius, targeting self-->
+						<value>
+							<li Class="HVPAA_CoolerPsycasts.UseCaseTags_ChunkSkip">
+								<meta>true</meta>
+								<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+								<chunkRain>CoolPsycasts_ChunkRain</chunkRain>
+								<mfds><li>Natural</li></mfds>
+							</li>
+						</value>
+					</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Illusion"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Illusion">
+							<debuff>true</debuff>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Illusion"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+				<li Class="PatchOperationReplace"><!--AI-spawned illusions need to engage in combat and such-->
+				  <xpath>Defs/AbilityDef[defName="CoolPsycasts_Illusion"]/comps/li[@Class="CoolPsycasts.CompProperties_AbilitySpawnWithHediff"]</xpath>
+				  <value>
+					<li Class="HVPAA_CoolerPsycasts.CompProperties_AbilitySpawnWithHediffAI">
+						<hediff>CoolPsycasts_IllusionHD</hediff>
+						<stat>PsychicSensitivity</stat>
+						<severity>1</severity>
+						<thingDef>CoolPsycasts_Illusion</thingDef>
+						<pawnKind>CoolPsycasts_Illusion</pawnKind>
+					</li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Phase"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Phase">
+							<defense>true</defense>
+							<mfds><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>CoolPsycasts_PhaseHD</avoidTargetsWithHediff>
+							<usableWhileFleeing>true</usableWhileFleeing>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_PsychicFeedback"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Feedback">
+							<damage>true</damage>
+							<mfds><li>Dignified</li><li>Morbid</li></mfds>
+							<aoe>1.49</aoe>
+							<chanceToCastHumanlike>0.35</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
+							<chanceToCastColonist>0.05</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
+							<additionalCastingTicks>180</additionalCastingTicks><!--adds an additional 3 seconds to the cast time-->
+							<damageDef>Bomb</damageDef>
+							<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP...-->
+							<letterOnlyIfPlayerTarget>true</letterOnlyIfPlayerTarget><!--...but only if you'd care about the target-->
+							<letterLabel>HVPAA_Feedback_label</letterLabel>
+							<letterText>HVPAA_Feedback_text</letterText>
+							<letterLabelF>HVPAA_Feedback_labelF</letterLabelF>
+							<letterTextF>HVPAA_Feedback_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+							<trapPower>5</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Awaken"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Awaken">
+							<healing>true</healing>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Strip"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Strip">
+							<debuff>true</debuff>
+							<mfds><li>Minimal</li></mfds>
+							<duration>4</duration>
+							<minArmorToCountAsArmor>0.3</minArmorToCountAsArmor><!--apparel w/ less than this amount of armor is not counted as armor. Heat armor counts for only half its value-->
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Embed"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Embed">
+							<utility>true</utility>
+							<mfds><li>Dignified</li></mfds>
+							<avoidMakingTooMuchOfThing>CoolPsycasts_TrapPsycast</avoidMakingTooMuchOfThing><!--the thingDef spawned-->
+							<thingLimit>10</thingLimit><!--stop making embedded casts if there are already this many in range-->
+							<aoe>24.9</aoe><!--does not correspond to the ability's radius (since it has none), instead this is the range at which to avoid non-hostile buildings and an overdensity of embedded casts...-->
+							<spontaneousCastChance>0.1</spontaneousCastChance><!--can only cast IF there are foes on the map, OR if this chance is beat-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationReplace">
+				  <xpath>Defs/AbilityDef[defName="CoolPsycasts_Embed"]/comps/li[@Class="CoolPsycasts.CompProperties_AbilitySpawnPsycastTrap"]</xpath>
+				  <value>
+					<li Class="HVPAA_CoolerPsycasts.CompProperties_AbilitySpawnPsycastTrap_AIFriendly">
+						<thingDef>CoolPsycasts_TrapPsycast</thingDef>
+					</li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Execute"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Execute">
+							<damage>true</damage>
+							<mfds><li>Dignified</li></mfds>
+							<aoe>4.9</aoe>
+							<chanceToCastColonist>0.35</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
+							<additionalCastingTicks>75</additionalCastingTicks><!--adds an additional 1.25 seconds to the cast time-->
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_OrganSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_OSkip">
+							<damage>true</damage>
+							<mfds><li>Morbid</li></mfds>
+							<chanceToCast>10.35</chanceToCast><!--don't use against humanlikes unless this chance check passes-->
+							<chanceToCastColonist>10.35</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
+							<additionalCastingTicks>90</additionalCastingTicks><!--adds an additional 1.5 seconds to the cast time-->
+							<intactOrganCountsFor>0.2</intactOrganCountsFor><!--each organ of the eligible target that can be skipped adds this much to its applicability-->
+							<bionicCountsFor>0.2</bionicCountsFor><!--ditto, for skippable bionics instead-->
+							<trapPower>5</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Ideology</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Enslave"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Enslave">
+										<damage>true</damage>
+										<mfds><li>Dignified</li><li>Morbid</li></mfds>
+										<minMarketValue>750</minMarketValue><!--anyone cheaper than this is a nogo-->
+										<minEvil>-1</minEvil><!--non-evil psycasters can't cast Enslave-->
+										<additionalCastingTicks>480</additionalCastingTicks><!--adds an additional 8 seconds to the cast time-->
+										<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
+										<letterLabel>HVPAA_Enslavement_label</letterLabel>
+										<letterText>HVPAA_Enslavement_text</letterText>
+										<letterLabelF>HVPAA_Enslavement_labelF</letterLabelF>
+										<letterTextF>HVPAA_Enslavement_textF</letterTextF>
+										<letterDef>ThreatBig</letterDef>
+										<trapPower>6</trapPower>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<!--jailbroken psylink casts-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Meteor"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Dart">
+							<utility>true</utility>
+							<mfds><li>Dignified</li><li>Natural</li></mfds>
+							<aoe>9</aoe>
+							<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW before it lands on your dog or something-->
+							<letterLabel>HVPAA_Dart_label</letterLabel>
+							<letterText>HVPAA_Dart_text</letterText>
+							<letterLabelF>HVPAA_Dart_labelF</letterLabelF>
+							<letterTextF>HVPAA_Dart_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+							<trapPower>8</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_GammaRay"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_GammaRay">
+							<damage>true</damage>
+							<allyMultiplier>1.75</allyMultiplier>
+							<damageDef>CoolPsycasts_GammaRadiation</damageDef>
+							<lineWidthEnd>7</lineWidthEnd>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_GravityPulse"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_GravityPulse">
+							<damage>true</damage>
+							<aoe>4.9</aoe>
+							<damageType>CoolPsycasts_GravityPulseDD</damageType>
+							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>6</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Annihilate"]</xpath><!--I'm wide awake, be very afraid/I'm in my own world give me space/I'm in my own universe give me space (space, yeah)-->
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Annihilate">
+							<damage>true</damage>
+							<aoe>1.9</aoe>
+							<mfds><li>Minimal</li><li>Morbid</li></mfds>
+							<allyMultiplier>4</allyMultiplier>
+							<marketValueMin>1000000</marketValueMin><!--anyone at or above this is eligible for spacescaping services-->
+							<lethalDamageMin>1000</lethalDamageMin><!--ditto. Thrumbos trigger this, and Devourers/Nociospheres/Revenants do too, but I don't think any other unmodded pawn does-->
+							<incomingDamageFactorMax>0.01</incomingDamageFactorMax><!--anyone at or BELOW this-->
+							<minEvil>0</minEvil><!--nice psycasters can't cast Annihilate-->
+							<additionalCastingTicks>420</additionalCastingTicks><!--adds an additional 7 seconds to the cast time-->
+							<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
+							<letterLabel>HVPAA_Annihilation_label</letterLabel>
+							<letterText>HVPAA_Annihilation_text</letterText>
+							<letterLabelF>HVPAA_Annihilation_labelF</letterLabelF>
+							<letterTextF>HVPAA_Annihilation_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_GrantPsycast"]</xpath>
+					<value>
+						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_GrantPsycast">
+							<utility>true</utility>
+							<aoe>20</aoe>
+							<requiresLoS>false</requiresLoS>
+							<mfds><li>Dignified</li></mfds>
+							<maxLevel>9</maxLevel>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Hauts' Offbeat Psycasts</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_PsyfocusTransfer"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_PsyfocusTransfer">
+										<debuff>true</debuff>
+										<utility>true</utility>
+										<mfds><li>Dignified</li></mfds>
+										<donorToRecipientRange>19.9</donorToRecipientRange><!--property mirror-->
+										<recipientMaxPsyfocusCutoff>0.81</recipientMaxPsyfocusCutoff><!--cannot donate from an ally to another ally whose psyfocus is above this amount-->
+										<donorMinPsyfocusCutoff>0.25</donorMinPsyfocusCutoff><!--generally not worth it if the victim is so psyfocus-poor they can't even cast level 3 psycasts-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_MarkingPulse"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_MarkingPulse">
+										<debuff>true</debuff>
+										<aoe>3.9</aoe>
+										<avoidTargetsWithHediff>HVP_MarkingDebuff</avoidTargetsWithHediff>
+										<allyMultiplier>1.5</allyMultiplier><!--more severely important not to hit allies, as anyone affected by Marking Pulse loses an entire layer of anti-mortality measures-->
+										<trapPower>3</trapPower>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_SquadronCall"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_SquadronCall">
+										<damage>true</damage>
+										<utility>true</utility>
+										<castChanceWhileNotInImmediateCombat>0.1</castChanceWhileNotInImmediateCombat><!--if there are foes in the map but the caster is not currently in combat, this is the chance squad call can be considered for use-->
+										<trapPower>6</trapPower>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_TornadoLink"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_TornadoLink">
+										<damage>true</damage>
+										<aoe>10</aoe>
+										<mfds><li>Natural</li></mfds>
+										<damageDef>TornadoScratch</damageDef>
+										<disabledAtPercentEntropy>0.3</disabledAtPercentEntropy>
+										<dontUseIfHave>
+										  <li>HVP_HiddenParalysisMaintainer</li>
+										  <li>HVP_HiddenBoostMaintainer</li>
+										</dontUseIfHave>
+										<avoidMakingTooMuchOfThing>HVP_LinkedTornado</avoidMakingTooMuchOfThing><!--can't target positions that would have another linked tornado in the aoe-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_WordOfBlessing"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_WordOfBlessing">
+										<utility>true</utility>
+										<aoe>20</aoe>
+										<requiresLoS>false</requiresLoS>
+										<mfds><li>Dignified</li></mfds>
+										<minMarketValue>1000</minMarketValue>
+										<grantableHediffs>
+											<li>HVP_BlessingSpirit</li>
+											<li>HVP_BlessingIntelligence</li>
+											<li>HVP_BlessingResilience</li>
+											<li>HVP_BlessingLongevity</li>
+											<li>HVP_BlessingCelerity</li>
+											<li>HVP_BlessingDexterity</li>
+											<li>HVP_BlessingAttunement</li>
+											<li>HVP_BlessingCharisma</li>
+											<li>HVP_BlessingStasis</li>
+										</grantableHediffs>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="HVP_Voidquake"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Voidquake">
+										<damage>true</damage>
+										<utility>true</utility>
+										<usableWhileFleeing>true</usableWhileFleeing>
+										<requiresLoS>false</requiresLoS>
+										<mfds><li>Morbid</li></mfds>
+										<rallyRadius>13</rallyRadius><!--helps nearby allied pawns decide whether they have enough time to get into the safe zone; is a little smaller than the actual safe zone radius since the calculation doesn't take obstacles or non-linear paths into account-->
+										<maxRallyTicks>750</maxRallyTicks>
+										<minEvil>2.5</minEvil><!--a psycaster that is this evil or less can't cast Neuroquake.-->
+										<chancePerEvil>10.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
+										<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
+										<letterLabel>HVPAA_VQ_label</letterLabel>
+										<letterText>HVPAA_VQ_text</letterText>
+										<letterLabelF>HVPAA_VQ_label</letterLabelF>
+										<letterTextF>HVPAA_VQ_textF</letterTextF>
+										<letterDef>ThreatBig</letterDef>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Combat Extended</li>
+					</mods>
+					<nomatch Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Duplicate"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Duplicate">
+										<defense>true</defense>
+										<utility>true</utility>
+										<chanceToUtilityCast>0.01</chanceToUtilityCast>
+										<flatApplicability>1</flatApplicability><!--multiplied by 6 due to the psycast's level. keep this low if you want it to be outweighed by more combat-practical psycasts-->
+										<aoe>10</aoe>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Duplicate"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Echo"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Echo">
+										<damage>true</damage>
+										<scanRadius>35</scanRadius><!--this is the radius in which the caster "detects" ally and foe shooters (including ranged pawns and turrets). if foes outnumber allies, the algorithm stops here instead of thinking about casting-->
+										<shooterScanRadius>13</shooterScanRadius><!--this is the radius in which allies can be considered valid targets-->
+										<aoe>3.9</aoe>
+										<avoidMakingTooMuchOfThing>CoolPsycasts_EchoThing</avoidMakingTooMuchOfThing>
+										<otherThingToAvoidBeingNear>BulletShieldPsychic</otherThingToAvoidBeingNear>
+										<otherThingAoE>8</otherThingAoE><!--targets are disqualified if they're in this range of an indestructible skipshield-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Jitterskip"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Jskip">
+										<defense>true</defense>
+										<disabledAtPercentEntropy>0.6</disabledAtPercentEntropy><!--don't cast if already beyond this proportion of ur neural heat bar-->
+										<avoidTargetsWithHediff>CoolPsycasts_JitterskipHD</avoidTargetsWithHediff>
+										<usableWhileFleeing>true</usableWhileFleeing>
+										<aoe>45</aoe><!--scans for foes in this radius-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_MassReflect"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_MassReflect">
+										<defense>true</defense>
+										<aoe>4.9</aoe>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skipblade"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Skipblade">
+										<defense>true</defense>
+										<avoidMakingTooMuchOfThing>CoolPsycasts_Skipblade</avoidMakingTooMuchOfThing>
+										<avgDamage>23</avgDamage>
+										<avgWeaponCooldown>1</avgWeaponCooldown>
+										<avgArmorPen>5</avgArmorPen>
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skiprifle"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Skiprifle">
+										<defense>true</defense>
+										<avoidMakingTooMuchOfThing>CoolPsycasts_Skiprifle</avoidMakingTooMuchOfThing>
+										<avgDamage>20</avgDamage><!--assume one in three bullets misses, or is overkill, or gets interrupted by closure to melee combat, or similar-->
+										<avgWeaponCooldown>2.5</avgWeaponCooldown><!--this also includes the ticks between burst shots-->
+										<avgArmorPen>2.35</avgArmorPen>
+										<aoe>3</aoe><!--any foe pawns w/in this range, don't make a skiprifle-->
+										<disallowingTraits><li>Brawler</li></disallowingTraits><!--why would a brawler want to receive a portal gun-->
+									</li>
+								</value>
+							</li>
+							<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skipblade"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+							<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Skiprifle"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+						</operations>
+					</nomatch>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Melee Psycasts (Continued)</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Slice"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Cut</damageType>
+							<armorPen>0.6</armorPen>
+							<moveAdjacentToTarget>true</moveAdjacentToTarget><!--so it should verify if there is a spot the caster CAN move to, as otherwise the ability cast fails after activation-->
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Claw"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Scratch</damageType>
+							<armorPen>0.3</armorPen>
+							<mustBeMelee>false</mustBeMelee>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="DisablingStrike"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Blunt</damageType>
+							<armorPen>0.2</armorPen>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Charge"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Cut</damageType>
+							<armorPen>0.1</armorPen>
+							<moveAdjacentToTarget>true</moveAdjacentToTarget>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EmpBlow"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_EMPBlow">
+							<debuff>true</debuff>
+							<mustBeMelee>false</mustBeMelee>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Skewer"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Stab</damageType>
+							<armorPen>0.9</armorPen>
+							<targetedBodyPart>Ribcage</targetedBodyPart>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="ChargeSkewer"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Stab</damageType>
+							<armorPen>0.9</armorPen>
+							<moveAdjacentToTarget>true</moveAdjacentToTarget>
+							<targetedBodyPart>Ribcage</targetedBodyPart>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="SpinCut"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_SpinCut">
+							<damage>true</damage>
+							<damageType>Cut</damageType>
+							<armorPen>0.4</armorPen>
+							<aoe>2</aoe>
+							<allyMultiplier>1.25</allyMultiplier>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FatalBlow"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Cut</damageType>
+							<armorPen>1</armorPen>
+							<targetedBodyPart>Neck</targetedBodyPart>
+							<chance>0.1</chance><!--sure would suck if you just... died-->
+							<minMarketValue>4000</minMarketValue><!--you must be THIS VALUABLE to die-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="LegCut"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_Slice">
+							<damage>true</damage>
+							<damageType>Cut</damageType>
+							<armorPen>1</armorPen>
+							<targetedBodyPart>Leg</targetedBodyPart><!--yeah, it can hit multiple legs, but we only need to valid you have at least one intact-->
+							<chance>0.5</chance>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="KO"]</xpath>
+					<value>
+						<li Class="HVPAA_MeleePsycasts.UseCaseTags_KO">
+							<debuff>true</debuff>
+							<chance>1</chance><!--it's not lethal and it's expensive, so no real need to throttle it even in baby mode I mean safety mode-->
+							<mustBeMelee>false</mustBeMelee>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>[FSF] More Psycast Powers</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFArcticPinhole"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ArcticPinhole">
+							<defense>true</defense>
+							<healing>true</healing>
+							<aoe>15</aoe>
+							<avoidMakingTooMuchOfThing>FSFArcticPinhole</avoidMakingTooMuchOfThing>
+							<thingLimit>2</thingLimit>
+							<mfds><li>Natural</li></mfds>
+							<light>true</light>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<scoreFactor>1</scoreFactor><!--see supernova pinhole-->
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFDisarm"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Disarm">
+							<debuff>true</debuff>
+							<mfds><li>Minimal</li></mfds>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFFrostbite"]</xpath>
+					<value>
+						<li Class="HVPAA_FSF.UseCaseTags_Frostbite">
+							<damage>true</damage>
+							<mfds><li>Natural</li></mfds>
+							<damageType>FSFFrostbite</damageType>
+							<chanceToCastHumanlike>0.75</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
+							<chanceToCastColonist>0.25</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
+							<additionalCastingTicks>30</additionalCastingTicks><!--adds an additional 0.5 seconds to the cast time-->
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFElementalShield"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_ElementalShield">
+							<healing>true</healing>
+							<avoidTargetsWithHediff>FSFElementalShield</avoidTargetsWithHediff>
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<helpsVsFire>true</helpsVsFire><!--makes it heavily prioritize anyone currently aflame and enables it to be used during combat-->
+							<helpsVsHeat>true</helpsVsHeat><!--enables it to care about prospective targets w insufficient max comfy temp-->
+							<helpsVsChill>true</helpsVsChill><!--for min comfy temp-->
+							<helpsVsTox>true</helpsVsTox><!--anyone suffering tox buildup-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFSteelskin"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_DurabilityBuff">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>FSFSteelskin</avoidTargetsWithHediff>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFEntomb"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_Entomb">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>2</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFFracture"]</xpath>
+					<value>
+						<li Class="HVPAA_FSF.UseCaseTags_Fracture">
+							<debuff>true</debuff>
+							<aoe>3.9</aoe>
+							<avoidTargetsWithHediff>FSFFracture</avoidTargetsWithHediff>
+							<mfds><li>Minimal</li><li>Morbid</li></mfds>
+							<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less Fracturing friendly fire. does mean you also see slightly less use of it in tight melees-->
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFPsyblade"]</xpath>
+					<value>
+						<li Class="HVPAA_FSF.UseCaseTags_Psyblade">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>FSFPsyblade</avoidTargetsWithHediff>
+							<avgDamage>30</avgDamage><!--mirror properties of the hediff's verb-giver's tools-->
+							<avgWeaponCooldown>2</avgWeaponCooldown>
+							<avgArmorPen>1</avgArmorPen>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFPsychicShock"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_XavierAttack">
+							<damage>true</damage>
+							<mfds><li>Morbid</li></mfds>
+							<chanceToCastHumanlike>0.35</chanceToCastHumanlike><!--don't use against humanlikes unless this chance check passes-->
+							<chanceToCastColonist>0.05</chanceToCastColonist><!--don't use against colonists unless the same chance check also passes this value-->
+							<additionalCastingTicks>75</additionalCastingTicks><!--adds an additional 1.25 seconds to the cast time-->
+							<trapPower>5</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFStasis"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_BloodStaunch">
+							<healing>true</healing>
+							<mfds><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>FSFStasis</avoidTargetsWithHediff>
+							<ticksToFatalBloodLossCutoff>20000</ticksToFatalBloodLossCutoff><!--only targets pawns who have this long to live or less before blood loss gets them, since Stasis is so psyfocus-expensive-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+							<aoe>20</aoe><!--since it has the same range as a Word psycast, we do the same check-->
+							<requiresLoS>false</requiresLoS>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFEMPPulse"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_EMPPulse">
+							<debuff>true</debuff>
+							<aoe>2.4</aoe>
+							<allyMultiplier>1.25</allyMultiplier><!--makes allies more important than foes so you see less EMP friendly fire. does mean you also see slightly less use of it in tight melees-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFFirestorm"]</xpath>
+					<value>
+						<li Class="HVPAA_FSF.UseCaseTags_Firestorm">
+							<damage>true</damage>
+							<utility>true</utility>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<aoe>50</aoe>
+							<minEvil>2.5</minEvil><!--a psycaster that is this evil or less can't cast Firestorm.-->
+							<chancePerEvil>0.2</chancePerEvil><!--the chance they CAN cast it is determined during each psycast attempt; at 4 minEvil and 0.2 chancePerEvil, a psycaster needs 5 evil to have a 20% chance to even consider casting it during each attempt.-->
+							<sendLetter>true</sendLetter><!--if some rando casts this, YOU NEED TO KNOW ASAP-->
+							<letterLabel>HVPAA_FSF_FS_label</letterLabel>
+							<letterText>HVPAA_FSF_FS_text</letterText>
+							<letterLabelF>HVPAA_FSF_FS_label</letterLabelF>
+							<letterTextF>HVPAA_FSF_FS_textF</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+							<ignoreAllPawnsFasterThan>2</ignoreAllPawnsFasterThan><!--we only care about pawns who can't escape the blast in time-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFFlamebolt"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_FIYAH">
+							<damage>true</damage>
+							<mfds><li>Flame</li><li>Natural</li></mfds>
+							<aoe>2.4</aoe>
+							<ignoreAllPawnsFasterThan>5</ignoreAllPawnsFasterThan>
+							<trapPower>4</trapPower>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFMassInvisibility"]</xpath>
+					<value>
+						<li Class="HVPAA_FSF.UseCaseTags_MassInvisibility">
+							<defense>true</defense>
+							<aoe>1.9</aoe>
+							<mfds><li>Minimal</li></mfds>
+							<allyMultiplier>1</allyMultiplier><!--hitting foes is a concern, but it won't end your day if one gets hit-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="FSFMassSkip"]</xpath>
+					<value>
+						<li Class="HVPAA_FSF.UseCaseTags_MassSkip">
+							<damage>true</damage>
+							<debuff>true</debuff>
+							<defense>true</defense>
+							<utility>true</utility>
+							<usableWhileFleeing>true</usableWhileFleeing>
+							<skipRange>27.9</skipRange>
+							<maxBodySize>3.5</maxBodySize>
+							<allyMultiplier>1.25</allyMultiplier><!--avoiding skipping allies into traps is more important than dropping foes into them-->
+							<aoe>2.4</aoe>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Torsion Psycast</li><!--I cast MEND BUTTCRACK-->
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="TP_CBT"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_CBT">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>TP_Torsion</avoidTargetsWithHediff>
+							<alsoCantHave>Sterilized</alsoCantHave>
+							<mfds><li>Morbid</li></mfds>
+							<painOffset>0.4</painOffset><!--magnitude of the initial effect-->
+							<excludeRaces><!--this is a little crude, but I'm not making another bespoke csharp assembly just for one psycast.-->
+								<li>Megascarab</li>
+								<li>Spelopede</li>
+								<li>Megaspider</li>
+								<li>Cassowary</li>
+								<li>Duck</li>
+								<li>Goose</li>
+								<li>Emu</li>
+								<li>Tortoise</li>
+								<li>Turkey</li>
+								<li>Ostrich</li>
+								<li>Iguana</li>
+								<li>Cobra</li>
+								<li>Chicken</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Basic</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Woodmaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Berrymaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Medicinemaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Gaumaker</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Carrier</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Clawer</li>
+								<li MayRequire="ludeon.rimworld.ideology">Dryad_Barkskin</li>
+							</excludeRaces>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Cybranian - Psionic+</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--level 1-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Dash"]</xpath>
+					<value>
+						<li Class="HVPAA.UseCaseTags_SpeedBuff">
+							<defense>true</defense>
+							<utility>true</utility>
+							<avoidTargetsWithHediff>Dash</avoidTargetsWithHediff>
+							<usableWhileFleeing>true</usableWhileFleeing><!--to GTFO-->
+							<chanceToUtilityCast>0.075</chanceToUtilityCast><!--half that of Surestep because it costs more and lasts for shorter, even if its raw buff is stronger-->
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="PainImpulse"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PainImpulse">
+							<damage>true</damage>
+							<avoidTargetsWithHediff>PainWave</avoidTargetsWithHediff>
+							<mfds><li>Morbid</li></mfds>
+							<painOffset>0.3</painOffset>
+							<trapPower>1</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 2-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="BreathOfLife"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_BreathOfLife">
+							<healing>true</healing>
+							<aoe>20</aoe>
+							<mfds><li>Dignified</li><li>Minimal</li></mfds>
+							<avoidTargetsWithHediff>BreathOfLife</avoidTargetsWithHediff>
+							<ticksToFatalBloodLossCutoff>10000</ticksToFatalBloodLossCutoff><!--only used to reduce blood loss, and only for people about to die since it kneecaps them for 1d per 100% psysens-->
+							<usableWhileAsleep>true</usableWhileAsleep>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationRemove"><!--freed up for use by NPCs the same way Neural Heat Dump was-->
+					<xpath>/Defs/AbilityDef[defName="BreathOfLife"]/verbProperties/targetParams/onlyTargetColonists</xpath>
+				</li>
+				<li Class="PatchOperationConditional">
+					<xpath>/Defs/AbilityDef[defName="BreathOfLife"]/comps</xpath>
+					<match Class="PatchOperationAdd">
+						<xpath>/Defs/AbilityDef[defName="BreathOfLife"]/comps</xpath>
+						<value>
+						  <li Class="HVPAA.CompProperties_AbilityPlayerOnlyTargetColonist">
+							<compClass>HVPAA.CompAbilityEffect_PlayerOnlyTargetColonist</compClass>
+						  </li>
+						</value>
+					</match>
+					<nomatch Class="PatchOperationAdd">
+						<xpath>/Defs/AbilityDef[defName="BreathOfLife"]</xpath>
+						<value>
+							<comps>
+							  <li Class="HVPAA.CompProperties_AbilityPlayerOnlyTargetColonist">
+								<compClass>HVPAA.CompAbilityEffect_PlayerOnlyTargetColonist</compClass>
+							  </li>
+							</comps>
+						</value>
+					</nomatch>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="WordOfConfidence"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_WordOfConfidence">
+							<utility>true</utility>
+							<aoe>20</aoe>
+							<mfds><li>Dignified</li></mfds>
+							<avoidTargetsWithHediff>WordOfConfidence</avoidTargetsWithHediff>
+							<sightCutoff>0.9</sightCutoff><!--see Focus for notes, as this is a derivative that uses Word targeting-->
+							<movingCutoff>0.9</movingCutoff>
+							<chanceToUtilityCast>0.2</chanceToUtilityCast><!--at 40% psyfocus cost, this is p expensive, esp in the context of NPC casting-->
+							<minUtilitySkillLevel>8</minUtilitySkillLevel>
+						</li>
+					</value>
+				</li>
+				<!--level 3-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="Concentration"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_Concentration">
+							<defense>true</defense>
+							<avoidTargetsWithHediff>Concentration</avoidTargetsWithHediff>
+							<flatValue>1500</flatValue><!--just use it in combat whenever you don't have it. it's so good and lasts over 4h PER 100pct psysens-->
+							<immediatelyPsycastAgain>true</immediatelyPsycastAgain>
+						</li>
+					</value>
+				</li>
+				<!--level 4-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="PainWave"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PainPulse">
+							<damage>true</damage>
+							<aoe>3</aoe>
+							<avoidTargetsWithHediff>PainWave</avoidTargetsWithHediff>
+							<painOffset>0.3</painOffset>
+							<mfds><li>Morbid</li></mfds>
+							<allyMultiplier>1.25</allyMultiplier>
+							<trapPower>3</trapPower>
+						</li>
+					</value>
+				</li>
+				<!--level 5-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="PanicScream"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicScream">
+							<debuff>true</debuff>
+							<mfds><li>Natural</li></mfds>
+							<trapPower>3</trapPower>
+							<marketValueDivisor>250</marketValueDivisor>
+						</li>
+					</value>
+				</li>
+				<!--level 6-->
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EchoOfPanic"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicPulse">
+							<debuff>true</debuff>
+							<aoe>3</aoe>
+							<mfds><li>Natural</li></mfds>
+							<allyMultiplier>1.4</allyMultiplier>
+							<trapPower>4</trapPower>
+							<marketValueDivisor>250</marketValueDivisor>
+							<chanceToCast>1</chanceToCast>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="PanicScream" or defName="EchoOfPanic"]/comps/li[@Class="CompProperties_AbilityGiveMentalState"]</xpath>
+					<value>
+						<canTargetBosses>false</canTargetBosses>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EnergyBlast"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_EnergyBlast">
+							<damage>true</damage>
+							<aoe>10</aoe>
+							<requiresLoS>false</requiresLoS>
+							<chanceToCast>0.6</chanceToCast>
+							<sendLetter>true</sendLetter>
+							<letterLabel>HVPAA_ComaNova_label</letterLabel>
+							<letterText>HVPAA_ComaNova_text</letterText>
+							<letterLabelF>HVPAA_ComaNova_label</letterLabelF>
+							<letterTextF>HVPAA_ComaNova_text</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationAdd">
+					<xpath>/Defs/AbilityDef[defName="EnergyBlast" or defName="EnergyCharge"]/comps/li[@Class="CompProperties_AbilityGiveHediff"]</xpath>
+					<value>
+						<canTargetBosses>false</canTargetBosses>
+					</value>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>/Defs/AbilityDef[defName="EnergyCharge"]</xpath>
+					<value>
+						<li Class="HVPAA_PsionicPlus.UseCaseTags_PanicPulse"><!--yes they're the same on purpose-->
+							<damage>true</damage>
+							<aoe>3</aoe>
+							<mfds><li>Minimal</li></mfds>
+							<allyMultiplier>2.5</allyMultiplier>
+							<trapPower>8</trapPower>
+							<marketValueDivisor>250</marketValueDivisor>
+							<chanceToCast>0.6</chanceToCast>
+							<sendLetter>true</sendLetter>
+							<letterLabel>HVPAA_ComaBlast_label</letterLabel>
+							<letterText>HVPAA_ComaBlast_text</letterText>
+							<letterLabelF>HVPAA_ComaBlast_label</letterLabelF>
+							<letterTextF>HVPAA_ComaBlast_text</letterTextF>
+							<letterDef>ThreatBig</letterDef>
+						</li>
+					</value>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

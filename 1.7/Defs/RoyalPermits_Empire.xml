@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <RoyalTitlePermitDef>
+    <defName>HVPAA_CallMilitaryAidArchotemplar</defName>
+    <label>call archotemplar</label>
+    <description>Call a single archotemplar to aid you in battle. Archotemplar are highly armored, wield persona weapons, and have multiple psycasts at their disposal.</description>
+    <workerClass>RoyalTitlePermitWorker_CallAid</workerClass>
+    <minTitle>Count</minTitle>
+    <faction>Empire</faction>
+    <permitPointCost>1</permitPointCost>
+    <prerequisite>CallMilitaryAidLarge</prerequisite>
+    <uiPosition>(4,9)</uiPosition>
+    <royalAid>
+      <favorCost>8</favorCost>
+      <pawnKindDef>HVPAA_Archotemplar</pawnKindDef>
+      <pawnCount>1</pawnCount>
+      <targetingRange>39.9</targetingRange>
+    </royalAid>
+    <cooldownDays>60</cooldownDays>
+  </RoyalTitlePermitDef>
+  
+  <RoyalTitlePermitDef>
+    <defName>HVPAA_CallMilitaryAidTemplar</defName>
+    <label>call templar squad</label>
+    <description>Call a group of 3 persona templar to aid you in battle. Persona templar are highly armored, wield persona weapons, and have a few low-level psycasts at their disposal.</description>
+    <workerClass>RoyalTitlePermitWorker_CallAid</workerClass>
+    <minTitle>Count</minTitle>
+    <faction>Empire</faction>
+    <permitPointCost>1</permitPointCost>
+    <prerequisite>CallMilitaryAidLarge</prerequisite>
+    <uiPosition>(4,10)</uiPosition>
+    <royalAid>
+      <favorCost>8</favorCost>
+      <pawnKindDef>HVPAA_PersonaTemplar</pawnKindDef>
+      <pawnCount>3</pawnCount>
+      <targetingRange>39.9</targetingRange>
+    </royalAid>
+    <cooldownDays>60</cooldownDays>
+  </RoyalTitlePermitDef>
+
+  <RoyalTitlePermitDef>
+    <defName>HVPAA_CallMilitaryAidCourtcaster</defName>
+    <label>call court psycasters</label>
+    <description>Call a pair of court psycasters to aid you in battle. Court psycasters wield a wide variety of psycasts.</description>
+    <workerClass>RoyalTitlePermitWorker_CallAid</workerClass>
+    <minTitle>Praetor</minTitle>
+    <faction>Empire</faction>
+    <permitPointCost>1</permitPointCost>
+    <uiPosition>(4,8)</uiPosition>
+    <royalAid>
+      <favorCost>8</favorCost>
+      <pawnKindDef>HVPAA_CourtPsycaster</pawnKindDef>
+      <pawnCount>2</pawnCount>
+      <targetingRange>44.9</targetingRange>
+    </royalAid>
+    <cooldownDays>45</cooldownDays>
+  </RoyalTitlePermitDef>
+  
+</Defs>

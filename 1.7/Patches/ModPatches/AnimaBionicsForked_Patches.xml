@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+	<!--appends tags so that Anima Speakers can get these via normal pawngen processes-->
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Anima Bionics - Forked</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/ThingDef[@Name="AnimaPart"]/techHediffsTags</xpath>
+				  <value>
+					  <li>AnimaBionics</li>
+				  </value>
+				</li>
+				<li Class="PatchOperationAdd">
+				  <xpath>/Defs/ThingDef[@Name="AnimaImplant"]/techHediffsTags</xpath>
+				  <value>
+					  <li>AnimaBionics</li>
+				  </value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>The Secret of Anima - Arsenal</li>
+					</mods>
+					<nomatch Class="PatchOperationAdd">
+					  <xpath>/Defs/PawnKindDef[defName="HVPAA_AnimaSpeaker"]/apparelRequired</xpath>
+					  <value>
+						  <li>Apparel_PlateArmor</li>
+					  </value>
+					</nomatch>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

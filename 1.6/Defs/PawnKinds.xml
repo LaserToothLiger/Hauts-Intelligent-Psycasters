@@ -319,10 +319,11 @@
 	</modExtensions>
   </PawnKindDef>
   
-  <!--other-mod exclusive-->
-    <!--Anima Bionics Forked-->
-  <PawnKindDef ParentName="TribalChiefBase" MayRequire="Seti.Victor.AnimaBodies">
+  <!--other-mod exclusive
+    Anima Bionics Forked or The Secrets of Anima - Arsenal-->
+  <PawnKindDef ParentName="TribalChiefBase" MayRequireAnyOf="Seti.Victor.AnimaBodies,tsoa.arsenal">
     <defName>HVPAA_AnimaSpeaker</defName>
+    <label>anima speaker</label>
     <combatPower>300</combatPower>
     <itemQuality>Good</itemQuality>
     <factionLeader>false</factionLeader>
@@ -333,20 +334,30 @@
       <li>
         <bodyPartGroup>FullHead</bodyPartGroup>
         <alternateTagChoices>
-          <li>
+          <li MayRequire="Seti.Victor.AnimaBodies">
             <tag>AnimaMask</tag>
             <chance>0.25</chance>
           </li>
-          <li>
+          <li MayRequire="Seti.Victor.AnimaBodies">
             <tag>AnimaVeil</tag>
             <chance>0.25</chance>
           </li>
         </alternateTagChoices>
       </li>
+      <li>
+        <bodyPartGroup>UpperHead</bodyPartGroup>
+        <alternateTagChoices>
+          <li MayRequire="tsoa.arsenal">
+            <tag>HVPAA_TSOA_Headgear</tag>
+            <chance>0.4</chance>
+          </li>
+        </alternateTagChoices>
+      </li>
     </specificApparelRequirements>
     <apparelRequired Inherit="False">
-      <li>Apparel_AnimaTribal</li>
-      <li>Apparel_PlateArmor</li>
+      <li MayRequire="Seti.Victor.AnimaBodies">Apparel_AnimaTribal</li>
+      <!--plate armor is placed here by an xpath patch if TSOA Arsenal isn't loaded. See AnimaBionicsForked_Patches-->
+      <li MayRequire="tsoa.arsenal">TSOA_AnimaShamanArmor</li>
     </apparelRequired>
     <techHediffsMoney>2000~6500</techHediffsMoney>
     <techHediffsMaxAmount>6</techHediffsMaxAmount>
@@ -367,7 +378,8 @@
     </disallowedTraits>
     <weaponMoney>99999</weaponMoney>
     <weaponTags Inherit="False">
-      <li>MeleeWeapon_AnimaStaff</li>
+      <li MayRequire="Seti.Victor.AnimaBodies">MeleeWeapon_AnimaStaff</li>
+      <li MayRequire="tsoa.arsenal">TSOA_AnimaWeaponsElite</li>
     </weaponTags>
     <xenotypeSet Inherit="False">
       <xenotypeChances>

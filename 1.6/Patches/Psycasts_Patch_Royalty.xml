@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Patch><!--these govern the AI for each ability
-Level 1 psycasts-->
+<Patch><!--first, Word psycasts can be used on pawns who belong to factions hostile to the player. While this opens up some options for players that may not be intended, actually meaningfully using them on foes in combat is difficult, niche, and interesting to execute, so that's fine imo.
+	more importantly, it lets hostile-faction NPCs use Word psycasts to their benefit-->
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/AbilityDef[@Name="WordOfBase"]/verbProperties/targetParams/neverTargetHostileFaction</xpath>
+		<value>
+		  <neverTargetHostileFaction>false</neverTargetHostileFaction>
+		</value>
+	</Operation>
+<!--NOW ONTO BUSINESS PROPER. these govern the AI for each ability
+	Level 1 psycasts-->
 	<Operation Class="PatchOperationAddModExtension">
 		<xpath>/Defs/AbilityDef[defName="Burden"]</xpath>
 		<value>
@@ -1632,6 +1640,7 @@ Level 1 psycasts-->
 							<aoe>20</aoe><!--Word castrange-->
 							<requiresLoS>false</requiresLoS>
 							<mfds><li>Dignified</li></mfds>
+							<avoidTargetsWithHediff>SLP_Psycast_Guidance</avoidTargetsWithHediff>
 							<dontCastBelowThisPsyfocus>0.6</dontCastBelowThisPsyfocus><!--this thing is reasonably expensive for player casting, but for NPCs it has basically no worth other than pissing their (largely non-regenerating) psyfocus down the drain
 																							for your POSSIBLE benefit. since it costs 25%, this ensures they can basically only cast it once, and it'll leave most of their other psycasts castable thereafter-->
 						</li>
@@ -2142,20 +2151,6 @@ Level 1 psycasts-->
 				</li>
 				<!--level 5-->
 				<li Class="PatchOperationAddModExtension">
-					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Echo"]</xpath>
-					<value>
-						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Echo">
-							<damage>true</damage>
-							<scanRadius>35</scanRadius><!--this is the radius in which the caster "detects" ally and foe shooters (including ranged pawns and turrets). if foes outnumber allies, the algorithm stops here instead of thinking about casting-->
-							<shooterScanRadius>13</shooterScanRadius><!--this is the radius in which allies can be considered valid targets-->
-							<aoe>3.9</aoe>
-							<avoidMakingTooMuchOfThing>CoolPsycasts_EchoThing</avoidMakingTooMuchOfThing>
-							<otherThingToAvoidBeingNear>BulletShieldPsychic</otherThingToAvoidBeingNear>
-							<otherThingAoE>8</otherThingAoE><!--targets are disqualified if they're in this range of an indestructible skipshield-->
-						</li>
-					</value>
-				</li>
-				<li Class="PatchOperationAddModExtension">
 					<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Embed"]</xpath>
 					<value>
 						<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Embed">
@@ -2434,6 +2429,20 @@ Level 1 psycasts-->
 								</value>
 							</li>
 							<li Class="PatchOperationAddModExtension"><xpath>/Defs/AbilityDef[defName="CoolPsycasts_Duplicate"]</xpath><value><li Class="HVPAA.SensitizeScalar"/></value></li>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Echo"]</xpath>
+								<value>
+									<li Class="HVPAA_CoolerPsycasts.UseCaseTags_Echo">
+										<damage>true</damage>
+										<scanRadius>35</scanRadius><!--this is the radius in which the caster "detects" ally and foe shooters (including ranged pawns and turrets). if foes outnumber allies, the algorithm stops here instead of thinking about casting-->
+										<shooterScanRadius>13</shooterScanRadius><!--this is the radius in which allies can be considered valid targets-->
+										<aoe>3.9</aoe>
+										<avoidMakingTooMuchOfThing>CoolPsycasts_EchoThing</avoidMakingTooMuchOfThing>
+										<otherThingToAvoidBeingNear>BulletShieldPsychic</otherThingToAvoidBeingNear>
+										<otherThingAoE>8</otherThingAoE><!--targets are disqualified if they're in this range of an indestructible skipshield-->
+									</li>
+								</value>
+							</li>
 							<li Class="PatchOperationAddModExtension">
 								<xpath>/Defs/AbilityDef[defName="CoolPsycasts_Jitterskip"]</xpath>
 								<value>

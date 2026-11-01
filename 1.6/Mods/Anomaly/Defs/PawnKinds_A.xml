@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
   
-  <!--Anomaly cultists-->
+  <!--Anomaly cultists: starting w Voidcaster, the "basic" mage type-->
   <PawnKindDef ParentName="HoraxianBase">
     <defName>HVPAA_Voidcaster</defName>
     <label>voidcaster</label>
@@ -90,6 +90,8 @@
 	  </li>
 	</modExtensions>
   </PawnKindDef>
+  
+  <!--Advanced mage type: Transgressors-->
   <PawnKindDef ParentName="HoraxianBase" Name="HVPAA_TransgressorBase" Abstract="True">
     <combatPower>400</combatPower>
     <apparelAllowHeadgearChance>0</apparelAllowHeadgearChance>
@@ -214,5 +216,62 @@
 		  <li Class="HediffCompProperties_DisappearsOnDeath"/>
 		</comps>
 	  </HediffDef>
+  
+  <!--'unholy knight' melee-mage hybrid type: Virionclad (requires The Secret of Anima - Arsenal)-->
+  <PawnKindDef ParentName="UnderthrallBase" MayRequire="tsoa.arsenal">
+    <defName>HVPAA_Virionclad</defName>
+    <label>virionclad</label>
+    <combatPower>100</combatPower>
+    <itemQuality>Good</itemQuality>
+    <factionLeader>false</factionLeader>
+    <canBeSapper>false</canBeSapper>
+    <apparelAllowHeadgearChance>1</apparelAllowHeadgearChance>
+    <nakedChance>0</nakedChance>
+    <apparelColor>(100,80,80)</apparelColor>
+    <apparelMoney>450~1100</apparelMoney>
+    <apparelRequired Inherit="False">
+      <li MayRequire="tsoa.arsenal">TSOA_BioferriteVirionHelm</li>
+      <li MayRequire="tsoa.arsenal">TSOA_BioferriteVirionArmor</li>
+    </apparelRequired>
+    <techHediffsMoney>2000~6500</techHediffsMoney>
+    <techHediffsMaxAmount>6</techHediffsMaxAmount>
+    <techHediffsTags>
+      <li>HVPAA_VoidBionics</li>
+    </techHediffsTags>
+	<techHediffsChance>1</techHediffsChance>
+    <skills>
+      <li>
+        <skill>Melee</skill>
+        <range>8~14</range>
+      </li>
+    </skills>
+    <disallowedTraits>
+      <li>Wimp</li>
+	  <li MayRequire="Ludeon.RimWorld.Biotech">Delicate</li>
+	  <li MayRequire="Hautarche.HautsTraits">HVT_Sniper</li>
+    </disallowedTraits>
+    <weaponMoney>99999</weaponMoney>
+    <weaponTags Inherit="False">
+      <li>TSOA_VoidWeapons</li>
+    </weaponTags>
+    <!--<xenotypeSet Inherit="False">
+      <xenotypeChances>
+        <ST_PlantPerson MayRequire="Starei.PlantPeople">0.1</ST_PlantPerson>
+        <VRE_Animakin MayRequire="vanillaracesexpanded.phytokin">0.03</VRE_Animakin>
+        <VRE_Poluxkin MayRequire="vanillaracesexpanded.phytokin">0.03</VRE_Poluxkin>
+        <VRE_Gauranlenkin MayRequire="vanillaracesexpanded.phytokin,Ludeon.RimWorld.Ideology">0.03</VRE_Gauranlenkin>
+      </xenotypeChances>
+    </xenotypeSet>-->
+	<modExtensions>
+	  <li Class="HVPAA.AddedSpecPsycasters">
+		<domesticChance>1</domesticChance>
+		<pointCost>5</pointCost>
+		<domesticCount>1~4</domesticCount>
+		<minPsylinkLevel>1~3</minPsylinkLevel>
+		<raidChance>0.3</raidChance>
+		<raidCount>2~6</raidCount>
+	  </li>
+	</modExtensions>
+  </PawnKindDef>
   
 </Defs>
