@@ -47,5 +47,6 @@
 		<li IfModActive="sleepy068.morepsycastsvol2">1.7/Mods/SleepysV2</li>
 		<li IfModActive="sleepy068.morepsycastsvol3">1.7/Mods/SleepysV3</li>
 		<li IfModActive="DimonSever000.PsionicPlus.Specific">1.7/Mods/PsionicPlus</li>
+		<li IfModActive="OskarPotocki.VFE.Empire">1.7/Mods/VFE_Empire</li><!--the Heterodox caster has to be split off so that the xml and new-for-1.7 xpath can be locked to the same folder-->
 	</v1.7>
 </loadFolders>

@@ -125,12 +125,14 @@
 	  <li>HVPAA_PersonaTemplar</li>
 	  <li>HVPAA_Archotemplar</li>
 	  <li>HVPAA_CourtPsycaster</li>
+	  <li MayRequire="Mortis.JusticiarValor">MJV_Justiciar</li>
 	</domesticSpecCasters>
 	<specChanceInRaids>0.2</specChanceInRaids>
 	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
 	<raidSpecCasters>
 	  <li>HVPAA_PersonaTemplar</li>
 	  <li>HVPAA_Archotemplar</li>
+	  <li MayRequire="Mortis.JusticiarValor">MJV_Justiciar</li>
 	</raidSpecCasters>
 	<offersSellcasts>true</offersSellcasts>
 	<maxSellcastPsylinkLevel>6</maxSellcastPsylinkLevel>
@@ -244,39 +246,6 @@
 	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
 	<raidSpecCasters>
 	  <li>HVPAA_ForsakenGorgon</li>
-	</raidSpecCasters>
-  </HVPAA.FactionPsycasterRuleDef>
-	<!--VFE Deserters-->
-  <HVPAA.FactionPsycasterRuleDef MayRequire="OskarPotocki.VFE.Empire">
-    <defName>HVPAA_Deserter</defName>
-	<bonusCastChance>
-	  <li>0.2</li>
-	  <li>0.18</li>
-	  <li>0.16</li>
-	  <li>0.14</li>
-	  <li>0.12</li>
-	  <li>0.1</li>
-	</bonusCastChance>
-	<randCastersPerCapita>0.02</randCastersPerCapita>
-	<randCasterHediffs></randCasterHediffs>
-	<maxRandCasterHediffs>2</maxRandCasterHediffs>
-	<randCasterItems>
-	  <li><key>GoJuice</key><value>0.45</value></li>
-	</randCasterItems>
-	<maxRandCasterItems>1</maxRandCasterItems>
-	<randCasterEquipment></randCasterEquipment>
-	<maxRandCasterEquipment>2</maxRandCasterEquipment>
-	<avgRandCasterLevel>3</avgRandCasterLevel>
-	<maxDomesticPower>40</maxDomesticPower>
-	<domesticSpecCasters>
-	  <li>HVPAA_RoguePsycaster</li>
-	  <li>HVPAA_Heterodox</li>
-	</domesticSpecCasters>
-	<specChanceInRaids>0.2</specChanceInRaids>
-	<specPointsPerRaidPoint>0.0125</specPointsPerRaidPoint>
-	<raidSpecCasters>
-	  <li>HVPAA_RoguePsycaster</li>
-	  <li>HVPAA_Heterodox</li>
 	</raidSpecCasters>
   </HVPAA.FactionPsycasterRuleDef>
 </Defs>

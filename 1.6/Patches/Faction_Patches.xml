@@ -205,7 +205,6 @@
 					  <li><key>TSOA_ShamanSword</key><value>0.06</value></li>
 					  <li><key>TSOA_ShamanSpear</key><value>0.06</value></li>
 					  <li><key>TSOA_ShamanGreatsword</key><value>0.06</value></li>
-					  <li><key>TSOA_AnimaBow</key><value>0.05</value></li>
 				  </value>
 				</li>
 				<li Class="PatchOperationFindMod">

@@ -401,53 +401,5 @@
 	  </li>
 	</modExtensions>
   </PawnKindDef>
-	<!--VFE Empire's Deserters-->
-  <PawnKindDef ParentName="JanissaryBase" MayRequire="OskarPotocki.VFE.Empire">
-    <defName>HVPAA_Heterodox</defName>
-    <label>heterodox</label>
-    <minTitleRequired Inherit="False"/>
-    <defaultFactionType>VFEE_Deserters</defaultFactionType>
-    <combatPower>350</combatPower>
-    <apparelColor>(55,85,55)</apparelColor>
-    <apparelRequired Inherit="False">
-      <li>Apparel_ArmorHelmetReconPrestige</li>
-      <li>VFEE_Apparel_ArmorDeserter</li>
-    </apparelRequired>
-    <techHediffsMoney>2000~6500</techHediffsMoney>
-    <techHediffsMaxAmount>6</techHediffsMaxAmount>
-    <techHediffsTags>
-      <li>Advanced</li>
-      <li>ImplantEmpireCommon</li>
-	  <li>ImplantEmpireRoyal</li>
-    </techHediffsTags>
-	<forceWeaponQuality>Excellent</forceWeaponQuality>
-    <skills>
-      <li>
-        <skill>Shooting</skill>
-        <range>8~20</range>
-      </li>
-    </skills>
-    <initialWillRange>10~12</initialWillRange>
-    <initialResistanceRange>80~100</initialResistanceRange>
-    <useFactionXenotypes>false</useFactionXenotypes>
-    <xenotypeSet>
-      <xenotypeChances>
-        <Neanderthal MayRequire="Ludeon.RimWorld.Biotech">0.03</Neanderthal>
-        <Genie MayRequire="Ludeon.RimWorld.Biotech">0.03</Genie>
-      </xenotypeChances>
-    </xenotypeSet>
-	<modExtensions>
-	  <li Class="HVPAA.AddedSpecPsycasters">
-		<domesticChance>0.075</domesticChance>
-		<pointCost>30</pointCost>
-		<domesticCount>1</domesticCount>
-		<minPsylinkLevel>5~6</minPsylinkLevel>
-		<bonusPsycasts>2</bonusPsycasts>
-		<raidChance>0.25</raidChance>
-		<raidCount>1</raidCount>
-		<combatCastIntervalOverride>120</combatCastIntervalOverride>
-	  </li>
-	</modExtensions>
-  </PawnKindDef>
   
 </Defs>

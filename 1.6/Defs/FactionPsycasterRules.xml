@@ -125,12 +125,14 @@
 	  <li>HVPAA_PersonaTemplar</li>
 	  <li>HVPAA_Archotemplar</li>
 	  <li>HVPAA_CourtPsycaster</li>
+	  <li MayRequire="Mortis.JusticiarValor">MJV_Justiciar</li>
 	</domesticSpecCasters>
 	<specChanceInRaids>0.2</specChanceInRaids>
 	<specPointsPerRaidPoint>0.01</specPointsPerRaidPoint>
 	<raidSpecCasters>
 	  <li>HVPAA_PersonaTemplar</li>
 	  <li>HVPAA_Archotemplar</li>
+	  <li MayRequire="Mortis.JusticiarValor">MJV_Justiciar</li>
 	</raidSpecCasters>
 	<offersSellcasts>true</offersSellcasts>
 	<maxSellcastPsylinkLevel>6</maxSellcastPsylinkLevel>

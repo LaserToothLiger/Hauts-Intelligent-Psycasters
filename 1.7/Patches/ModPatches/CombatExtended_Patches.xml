@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Combat Extended</li>
+		</mods>
+		<match Class="PatchOperationSequence">
+			<operations>
+				<!--Rogue Psycasters akin to Janissaries. CE apparently didn't bother patching the base, so we gotta do this-->
+				<li Class="PatchOperationAdd">
+					<xpath>Defs/PawnKindDef[defName="HVPAA_RoguePsycaster"]</xpath>
+					<value>
+						<apparelIgnoreSeasons>true</apparelIgnoreSeasons>
+					</value>
+				</li>
+				<li Class="PatchOperationConditional">
+					<xpath>Defs/PawnKindDef[defName="HVPAA_RoguePsycaster"]/specificApparelRequirements/li[bodyPartGroup="UpperHead"]/alternateTagChoices/li[tag="Gunlink"]</xpath>
+					<match Class="PatchOperationRemove">
+						<xpath>Defs/PawnKindDef[defName="HVPAA_RoguePsycaster"]/specificApparelRequirements/li[bodyPartGroup="UpperHead"]/alternateTagChoices/li[tag="Gunlink"]</xpath>
+					</match>
+				</li>
+				<li Class="PatchOperationAddModExtension">
+					<xpath>Defs/PawnKindDef[defName="HVPAA_RoguePsycaster"]</xpath>
+					<value>
+						<li Class="CombatExtended.LoadoutPropertiesExtension">
+							<primaryMagazineCount>
+								<min>4</min>
+								<max>6</max>
+							</primaryMagazineCount>
+							<sidearms>
+								<li>
+									<generateChance>0.5</generateChance>
+									<sidearmMoney>
+										<min>200</min>
+										<max>400</max>
+									</sidearmMoney>
+									<weaponTags>
+										<li>CE_Sidearm_Melee</li>
+									</weaponTags>
+								</li>
+								<li>
+									<generateChance>0.25</generateChance>
+									<sidearmMoney>
+										<min>10</min>
+										<max>100</max>
+									</sidearmMoney>
+									<weaponTags>
+										<li>GrenadeSmoke</li>
+									</weaponTags>
+									<magazineCount>
+										<min>0</min>
+										<max>1</max>
+									</magazineCount>
+								</li>
+								<li>
+									<generateChance>0.25</generateChance>
+									<sidearmMoney>
+										<min>10</min>
+										<max>100</max>
+									</sidearmMoney>
+									<weaponTags>
+										<li>GrenadeDestructive</li>
+									</weaponTags>
+									<magazineCount>
+										<min>0</min>
+										<max>0</max>
+									</magazineCount>
+								</li>
+								<li>
+									<generateChance>0.125</generateChance>
+									<sidearmMoney>
+										<min>80</min>
+										<max>160</max>
+									</sidearmMoney>
+									<weaponTags>
+										<li>CE_FlareLauncher</li>
+									</weaponTags>
+									<magazineCount>
+										<min>2</min>
+										<max>5</max>
+									</magazineCount>
+								</li>
+							</sidearms>
+						</li>
+					</value>
+				</li>
+				<li Class="PatchOperationFindMod">
+					<mods>
+						<li>Anomaly</li>
+					</mods>
+					<match Class="PatchOperationSequence">
+						<operations>
+							<li Class="PatchOperationAddModExtension">
+								<xpath>Defs/PawnKindDef[defName="HVPAA_Voidcaster"]</xpath>
+								<value>
+									<li Class="CombatExtended.LoadoutPropertiesExtension">
+										<primaryMagazineCount>
+											<min>4</min>
+											<max>8</max>
+										</primaryMagazineCount>
+										<sidearms>
+											<li>
+												<generateChance>0.33</generateChance>
+												<sidearmMoney>
+													<min>20</min>
+													<max>120</max>
+												</sidearmMoney>
+												<weaponTags>
+													<li>CE_Sidearm_Melee</li>
+												</weaponTags>
+											</li>
+										</sidearms>
+									</li>
+								</value>
+							</li>
+						</operations>
+					</match>
+				</li>
+			</operations>
+		</match>
+	</Operation>
+</Patch>

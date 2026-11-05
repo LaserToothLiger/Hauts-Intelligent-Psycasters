@@ -269,7 +269,7 @@
 		<domesticCount>1~4</domesticCount>
 		<minPsylinkLevel>1~3</minPsylinkLevel>
 		<raidChance>0.3</raidChance>
-		<raidCount>2~6</raidCount>
+		<raidCount>2~5</raidCount>
 	  </li>
 	</modExtensions>
   </PawnKindDef>

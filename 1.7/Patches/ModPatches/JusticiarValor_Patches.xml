@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationFindMod">
+		<mods>
+			<li>Justiciar Valor</li>
+		</mods>
+		<match Class="PatchOperationAddModExtension">
+			<xpath>/Defs/PawnKindDef[defName="MJV_Justiciar"]</xpath>
+			<value>
+			  <li Class="HVPAA.AddedSpecPsycasters">
+				<domesticChance>0.075</domesticChance>
+				<pointCost>25</pointCost>
+				<domesticCount>1</domesticCount>
+				<minPsylinkLevel>3~4</minPsylinkLevel>
+				<bonusPsycasts>1</bonusPsycasts>
+				<raidChance>0.05</raidChance>
+				<raidCount>1</raidCount>
+			  </li>
+			</value>
+		</match>
+	</Operation>
+</Patch>
