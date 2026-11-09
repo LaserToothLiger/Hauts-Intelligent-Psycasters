@@ -11,7 +11,7 @@ namespace HVPAA
      * showNPCasterLevel: governs whether the yellow "Level __" text is visible next to each pawn with the HVPAA-AI casting hediff
      * mostDangerousNotifs: sends a red letter when certain psycasts are used in anti-player contexts
      * powerLimiting: makes the AI of various unfair psycasts worse in some way. They'll be allowed to choose worse targets (or not have guidance to choose better ones), or something to that effect. Exact effect depends per psycast
-     * nicerPsycasters: gives every psycaster +1 niceness, which results in more use of Defense and Healing psycasts, as well as in most NPCasters treating neutral pawns as allies
+     * nicerPsycasters: gives every psycaster who isn't hostile to the player +1 niceness, which results in more use of Defense and Healing psycasts, as well as in most non-hostile NPCasters treating neutral pawns as allies
      * psycasterCommonalityFactor: the higher you make this, the more random and spec casters you see. 100 = 100%
      * non|hostileUsabilities: psycasts' defNames are the keys, whether or not they're considerable for casting by the HIPAA-AI of pawns non|hostile to the player are the values*/
     public class HVPAA_Settings : ModSettings
@@ -145,7 +145,7 @@ namespace HVPAA
             //toggle artificial stupidity
             listingStandard.CheckboxLabeled("HVPAA_SettingPowerLimits".Translate(), ref settings.powerLimiting, "HVPAA_TooltipPowerLimits".Translate());
             //toggle whether psycasters should be "nice" by default
-            listingStandard.CheckboxLabeled("HVPAA_SettingNicerPsycasters".Translate(), ref settings.nicerPsycasters, "HVPAA_TooltipNicerPsycasters".Translate());
+            listingStandard.CheckboxLabeled("HVPAA_SettingNicerPsycasters".Translate(), ref settings.nicerPsycasters, "HVPAA_TooltipNicerPsycastersPostWaylith".Translate());
             listingStandard.Gap(10f);
             listingStandard.Label("HVPAA_UsabilityHeader".Translate());
             listingStandard.End();

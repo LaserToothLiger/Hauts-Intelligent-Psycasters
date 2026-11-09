@@ -317,7 +317,7 @@ namespace HVPAA
             this.cureUser = true;
             this.painkiller = true;
             this.scarHealer = true;
-            this.niceToEvil = HVPAA_Mod.settings.nicerPsycasters ? 1f : 0f;
+            this.niceToEvil = (HVPAA_Mod.settings.nicerPsycasters && Faction.OfPlayer != null && this.Pawn.HostileTo(Faction.OfPlayer)) ? 1f : 0f;
             this.niceToAnimals = 0f;
             this.pyro = false;
             this.pacifist = this.Pawn.WorkTagIsDisabled(WorkTags.Violent);
